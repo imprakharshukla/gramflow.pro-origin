@@ -23,6 +23,7 @@
     "@types/node": "^18.16.5",
     "dotenv-cli": "^7.2.1",
     "prisma": "^4.13.0",
-    "typescript": "^5.0.4"
+    "typescript": "^5.0.4",
+    "zod-prisma": "^0.5.4"
   }
 }

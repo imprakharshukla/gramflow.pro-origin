@@ -41,23 +41,13 @@ client.defineJob({
       if (totalPosts && totalPosts < validatedData.media_count) {
         const diff = validatedData.media_count - totalPosts;
         await io.logger.info(`Difference in posts: ${diff}`);
-        await io.logger.info(
-          env.ENV === "dev" ? env.CLERK_DEV_JWT : env.CLERK_PROD_JWT,
-        );
-        const req = await fetch(
-          `${AppConfig.BaseAdminUrl}/api/instagram?count=${diff}`,
-          {
-            headers: {
-              Authorization: `Bearer ${
-                env.ENV === "dev" ? env.CLERK_DEV_JWT : env.CLERK_PROD_JWT
-              }`,
-            },
+        await fetch(`${AppConfig.BaseAdminUrl}/api/instagram?count=${diff}`, {
+          headers: {
+            Authorization: `Bearer ${
+              env.ENV === "dev" ? env.CLERK_DEV_JWT : env.CLERK_PROD_JWT
+            }`,
           },
-        );
-        await io.logger.info(JSON.stringify(res));
-        if (!req.ok) {
-          return { status: "error" };
-        }
+        });
       }
       await kv.set("total_posts", validatedData.media_count);
       return { status: "success" };
