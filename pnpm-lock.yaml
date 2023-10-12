@@ -79,6 +79,9 @@ importers:
       '@tanstack/react-query':
         specifier: ^4.32.6
         version: 4.32.6(react-dom@18.2.0)(react@18.2.0)
+      '@tanstack/react-query-devtools':
+        specifier: ^4.32.6
+        version: 4.32.6(@tanstack/react-query@4.32.6)(react-dom@18.2.0)(react@18.2.0)
       '@tanstack/react-table':
         specifier: ^8.9.3
         version: 8.9.3(react-dom@18.2.0)(react@18.2.0)
@@ -176,6 +179,9 @@ importers:
       '@acme/eslint-config':
         specifier: workspace:*
         version: link:../../packages/config/eslint
+      '@prisma/nextjs-monorepo-workaround-plugin':
+        specifier: ^5.4.2
+        version: 5.4.2
       '@types/jest':
         specifier: ^29.5.4
         version: 29.5.4
@@ -2485,6 +2491,10 @@ packages:
       chalk: 4.1.2
       cross-spawn: 7.0.3
     dev: false
+
+  /@prisma/nextjs-monorepo-workaround-plugin@5.4.2:
+    resolution: {integrity: sha512-fs4g2hys6TUG49pr6TRRT9wNHaCf4fqr8kben3QOCa8GBBHmX+N/hGVpjYCi1wOeVLVeFJIUYR61CWWudJymtQ==}
+    dev: true
 
   /@radix-ui/number@1.0.0:
     resolution: {integrity: sha512-Ofwh/1HX69ZfJRiRBMTy7rgjAzHmwe4kW9C9Y99HTRUcYLUuVT0KESFj15rPjRgKJs20GPq8Bm5aEDJ8DuA3vA==}
@@ -8895,7 +8905,7 @@ packages:
       '@panva/hkdf': 1.1.1
       cookie: 0.5.0
       jose: 4.14.4
-      next: 13.4.3(@babel/core@7.22.11)(react-dom@18.2.0)(react@18.2.0)
+      next: 13.4.3(@babel/core@7.23.0)(react-dom@18.2.0)(react@18.2.0)
       oauth: 0.9.15
       openid-client: 5.4.3
       preact: 10.17.1
@@ -8925,7 +8935,7 @@ packages:
       react: '*'
       react-dom: '*'
     dependencies:
-      next: 13.4.3(@babel/core@7.22.11)(react-dom@18.2.0)(react@18.2.0)
+      next: 13.4.3(@babel/core@7.23.0)(react-dom@18.2.0)(react@18.2.0)
       react: 18.2.0
       react-dom: 18.2.0(react@18.2.0)
     dev: false

@@ -16,7 +16,7 @@ export default function AuthNavMenu() {
             {/* <img src="/cl_logo.svg" className="mr-3 h-12" alt="Logo" /> */}
             {/* )} */}
           </Link>
-          <p className="py-1 text-xs font-light">
+          <p className="py-1 text-xs font-light hover:underline">
             Powered By{" "}
             <a
               href="https://gramflow.pro"

@@ -12,7 +12,7 @@ export default function NavMenu({ className }: { className?: string }) {
             <img src="/cl_logo.svg" className="mr-3 h-12" alt="Logo" />
           </a>
 
-          <p className="mt-2 text-xs font-light">
+          <p className="mt-2 text-xs font-light hover:underline">
             Powered By{" "}
             <a
               href="https://text-link.com"

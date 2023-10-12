@@ -5,6 +5,7 @@ import { siteConfig } from "~/config/site";
 import { fontSans } from "~/lib/fonts";
 import { ThemeProvider } from "~/providers/theme-provider";
 import "~/styles/globals.css";
+import { Metadata } from "next";
 import { ClerkProvider } from "@clerk/nextjs";
 import { Toaster } from "react-hot-toast";
 
@@ -71,14 +72,14 @@ export default async function RootLayout({
       }}
     >
       <html lang="en" suppressHydrationWarning>
-        <head />
-        <body
-          className={cn(
-            "min-h-screen bg-background font-sans antialiased",
-            fontSans.variable,
-          )}
-        >
-          <QueryProvider>
+        <QueryProvider>
+          <head />
+          <body
+            className={cn(
+              "min-h-screen bg-background font-sans antialiased",
+              fontSans.variable,
+            )}
+          >
             <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
               <Toaster />
 
@@ -88,8 +89,8 @@ export default async function RootLayout({
             </ThemeProvider>
 
             <TailwindIndicator />
-          </QueryProvider>
-        </body>
+          </body>
+        </QueryProvider>
       </html>
     </ClerkProvider>
   );
