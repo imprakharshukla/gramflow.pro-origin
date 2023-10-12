@@ -1,0 +1,29 @@
+import * as z from "zod"
+import { Status, COURIER } from "@prisma/client"
+import { CompleteUsers, RelatedUsersModel } from "./index"
+
+export const OrdersModel = z.object({
+  id: z.string().uuid(),
+  instagram_post_urls: z.string().array(),
+  user_id: z.string().nullish(),
+  price: z.number().int(),
+  status: z.nativeEnum(Status),
+  courier: z.nativeEnum(COURIER),
+  images: z.string().array(),
+  awb: z.string().nullish(),
+  created_at: z.date(),
+  updated_at: z.date(),
+})
+
+export interface CompleteOrders extends z.infer<typeof OrdersModel> {
+  user?: CompleteUsers | null
+}
+
+/**
+ * RelatedOrdersModel contains all relations on your model in addition to the scalars
+ *
+ * NOTE: Lazy required in case of potential circular dependencies within schema
+ */
+export const RelatedOrdersModel: z.ZodSchema<CompleteOrders> = z.lazy(() => OrdersModel.extend({
+  user: RelatedUsersModel.nullish(),
+}))
