@@ -1,4 +1,3 @@
-
 {
   "name": "blaze-ai",
   "private": true,
@@ -22,7 +21,8 @@
     "lint": "turbo lint && manypkg check",
     "lint:fix": "turbo lint:fix && manypkg fix",
     "type-check": "turbo type-check",
-    "test": "turbo test"
+    "test": "turbo test",
+    "sync": "git pull public main && pnpm i"
   },
   "dependencies": {
     "@acme/eslint-config": "workspace:*",
