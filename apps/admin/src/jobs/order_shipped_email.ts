@@ -39,14 +39,14 @@ client.defineJob({
   trigger: supabaseTriggers.onUpdated({
     schema: "public",
     table: "Orders",
-    filter: {
-      old_record: {
-        status: [{ $ignoreCaseEquals: Status.MANIFESTED }],
-      },
-      record: {
-        status: [{ $ignoreCaseEquals: Status.SHIPPED }],
-      },
-    },
+    // filter: {
+    //   old_record: {
+    //     status: [{ $ignoreCaseEquals: Status.MANIFESTED }],
+    //   },
+    //   record: {
+    //     status: [{ $ignoreCaseEquals: Status.SHIPPED }],
+    //   },
+    // },
   }),
   integrations: {
     slack,
@@ -56,6 +56,14 @@ client.defineJob({
       await io.logger.error("User ID not available!");
       return;
     }
+    if (
+      payload.old_record.status !== Status.MANIFESTED &&
+      payload.record.status !== Status.SHIPPED
+    ) {
+      await io.logger.error("Product not shipped");
+      return;
+    }
+
     const user = await prisma.users.findUnique({
       where: {
         id: payload.record.user_id,

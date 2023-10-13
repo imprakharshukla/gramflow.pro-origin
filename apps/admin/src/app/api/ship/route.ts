@@ -417,7 +417,8 @@ export const updateStatusFromDelhivery = async (order_ids: string[]) => {
               } else if (status === "Manifested") {
                 statusToBeUpdated = Status.MANIFESTED;
               }
-
+              console.log(`The order ${order_id} is ${statusToBeUpdated}`);
+              //check if the order alrteady has the status
               await prisma.orders.update({
                 where: {
                   id: order_id,
