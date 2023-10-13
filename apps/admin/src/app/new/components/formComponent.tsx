@@ -57,12 +57,16 @@ function extractPricesFromCaption(inputString: string): number[] {
 }
 
 export const OrderFormComponent = ({
+  setSelectedImages,
   selectedPosts,
-  page,
   setGeneratedOrderId,
 }: {
   selectedPosts: SelectedPostsPropType[];
-  page: number;
+  setSelectedImages: Dispatch<
+    SetStateAction<
+      { parent: string; url: string; index: number; caption: string }[]
+    >
+  >;
   setGeneratedOrderId: Dispatch<SetStateAction<string>>;
 }) => {
   const [shippingChecked, setShippingChecked] = useState(true);
@@ -114,6 +118,7 @@ export const OrderFormComponent = ({
       router.push(`/new`);
       return;
     }
+    console.log({ selectedPosts });
   }, [selectedPosts]);
 
   // useEffect(() => {
@@ -166,7 +171,11 @@ export const OrderFormComponent = ({
     );
   return (
     <div>
-      {createOrderLoading && <Loader />}
+      {createOrderLoading && (
+        <div className="min-h-scren flex items-center justify-center">
+          <Loader />
+        </div>
+      )}
       {!createOrderLoading && (
         <div>
           <div className="flex flex-wrap items-center justify-between gap-3">
@@ -177,9 +186,7 @@ export const OrderFormComponent = ({
 
             <div className="flex space-x-3">
               <Button
-                onClick={() =>
-                  router.push(`/new?page=${page}&state=${State.Selection}`)
-                }
+                onClick={() => router.push(`/new?state=${State.Selection}`)}
                 variant={"outline"}
                 disabled={selectedPosts.length <= 0}
               >
@@ -204,11 +211,16 @@ export const OrderFormComponent = ({
                         <Button
                           variant={"ghost"}
                           size={"sm"}
-                          
                           type="button"
                           onClick={() => {
-                            //delete the selected post from the array
-                            selectedPosts.splice(index, 1);
+                            //delete this product from the array
+                            toast.success("Product has been deleted.");
+                            const newSelectedPosts = selectedPosts.filter(
+                              (post, inx) => {
+                                return inx !== index;
+                              },
+                            );
+                            setSelectedImages(newSelectedPosts);
                           }}
                           className="ml-3 text-red-500"
                         >

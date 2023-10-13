@@ -1,17 +1,15 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useUser } from "@clerk/nextjs";
+import { motion } from "framer-motion";
 
 import { columns } from "~/app/dashboard/columns";
 import { DataTable } from "~/app/dashboard/data-table";
 
 export const OrderTable = () => {
-  const { isLoaded, user } = useUser();
-
   return (
-    <div className="mt-4">
+    <motion.div initial={{ opacity: 0 }}
+    animate={{ opacity: 1 }} className="mt-4">
       <DataTable columns={columns} />
-    </div>
+    </motion.div>
   );
 };

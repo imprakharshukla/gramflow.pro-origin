@@ -1,14 +1,17 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { Text, Title } from "@tremor/react";
+import { motion } from "framer-motion";
 import { HomeIcon } from "lucide-react";
+import { useInView } from "react-intersection-observer";
 import { type z } from "zod";
 
 import { type PostsModel } from "@acme/db/prisma/zod";
-import { Button, Loader } from "@acme/ui";
+import { Button, Loader, Separator } from "@acme/ui";
 
 import { GreetingsComponent } from "~/features/ui/components/greetingsComponent";
 import { OrderFormComponent } from "./formComponent";
@@ -20,16 +23,7 @@ export enum State {
   Form,
   Success,
 }
-export const GridComponent = ({
-  posts,
-  page,
-  state,
-}: {
-  posts: z.infer<typeof PostsModel>[];
-  page: number;
-  limit: number;
-  state: State;
-}) => {
+export const GridComponent = ({ state }: { state: State }) => {
   const fetchPosts = async ({
     page,
     limit,
@@ -43,13 +37,13 @@ export const GridComponent = ({
 
     return response;
   };
-  const LIMIT = 10;
+  const LIMIT = 5;
+  const { ref, inView } = useInView();
 
   const { data, isSuccess, hasNextPage, fetchNextPage, isFetchingNextPage } =
-    useInfiniteQuery(
-      ["posts", page, LIMIT],
-      ({ pageParam = 1, limit = LIMIT }) =>
-        fetchPosts({ page: pageParam, limit }),
+    useInfiniteQuery<z.infer<typeof PostsModel>[]>(
+      ["posts", LIMIT],
+      ({ pageParam = 1 }) => fetchPosts({ page: pageParam, limit: LIMIT }),
       {
         getNextPageParam: (lastPage, allPages) => {
           const nextPage =
@@ -90,12 +84,27 @@ export const GridComponent = ({
   };
 
   useEffect(() => {
+    if (inView && hasNextPage) {
+      console.log("Component in view!");
+      fetchNextPage();
+    }
+  }, [inView, fetchNextPage, hasNextPage]);
+
+  useEffect(() => {
     console.log({ selectedImages });
   }, [selectedImages]);
 
   return (
-    <div className="px-4 py-5 lg:px-10">
-      {state === State.Loading && <Loader />}
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      className="px-4 py-5 lg:px-10"
+    >
+      {state === State.Loading && (
+        <div className="flex min-h-screen items-center justify-center">
+          <Loader />
+        </div>
+      )}
       {state === State.Selection && (
         <div className="">
           <div className="flex flex-wrap items-center justify-between gap-3">
@@ -106,9 +115,7 @@ export const GridComponent = ({
 
             <div className="flex space-x-3">
               <Button
-                onClick={() =>
-                  router.push(`/new?page=${page}&state=${State.Form}`)
-                }
+                onClick={() => router.push(`/new?state=${State.Form}`)}
                 disabled={selectedImages.length <= 0}
               >
                 Proceed
@@ -118,69 +125,104 @@ export const GridComponent = ({
               </Button>
             </div>
           </div>
+          {selectedImages.length > 0 && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className="my-5 grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-4"
+            >
+              {selectedImages.map((image) => {
+                return (
+                  <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    key={image.url}
+                    className="relative"
+                  >
+                    <img
+                      src={image.url}
+                      alt={"selected image"}
+                      className="h-full w-full object-cover"
+                    />
+                    <div
+                      className="absolute right-1 top-1 flex h-6 w-6 cursor-pointer items-center justify-center rounded-full bg-red-500 text-white"
+                      onClick={() =>
+                        setSelectedImages((prevSelectedImages) =>
+                          prevSelectedImages.filter(
+                            (selectedImage) => selectedImage.url !== image.url,
+                          ),
+                        )
+                      }
+                    >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        className="h-4 w-4"
+                        viewBox="0 0 20 20"
+                        fill="currentColor"
+                      >
+                        <path
+                          fillRule="evenodd"
+                          d="M10 11.414l4.95 4.95 1.414-1.414L11.414 10l4.95-4.95-1.414-1.414L10 8.586 5.05 3.636 3.636 5.05 8.586 10l-4.95 4.95 1.414 1.414L10 11.414z"
+                          clipRule="evenodd"
+                        />
+                      </svg>
+                    </div>
+                  </motion.div>
+                );
+              })}
+            </motion.div>
+          )}
+          {selectedImages.length > 0 && <Separator />}
           <div className="grid grid-cols-2 gap-3 py-4 md:grid-cols-3 lg:grid-cols-4">
             {isSuccess &&
-              data.pages.map((post) => {
-                return post.slides.map((slide, index) => {
-                  const isSelected = selectedImages.some(
-                    (image) => image.url === slide,
-                  );
+              data.pages.map((page) => {
+                return page.map((post, index) => {
+                  return post.slides.map((slide) => {
+                    const isSelected = selectedImages.some(
+                      (image) => image.url === slide,
+                    );
 
-                  const caption = post.caption;
+                    const caption = post.caption;
 
-                  return (
-                    <div
-                      key={slide}
-                      className={`relative rounded ${
-                        isSelected ? "brightness-125" : "grayscale filter"
-                      } transition-opacity duration-300 ease-in-out`}
-                      onClick={() => {
-                        console.log({ slide, parent: post.post_link, index });
-                        toggleImageSelection(
-                          slide,
-                          post.post_link,
-                          index,
-                          caption,
-                        );
-                      }}
-                    >
-                      <img
-                        alt=""
-                        src={slide}
-                        className={`h-full w-full object-cover ${
-                          isSelected ? "opacity-100" : "opacity-80"
+                    return (
+                      <div
+                        ref={page.length === index + 1 ? ref : null}
+                        key={slide}
+                        className={`relative rounded ${
+                          isSelected ? "brightness-125" : "grayscale filter"
                         } transition-opacity duration-300 ease-in-out`}
-                      />
-                    </div>
-                  );
+                        onClick={() => {
+                          console.log({ slide, parent: post.post_link, index });
+                          toggleImageSelection(
+                            slide,
+                            post.post_link,
+                            index,
+                            caption,
+                          );
+                        }}
+                      >
+                        <Image
+                          alt=""
+                          height={100}
+                          width={100}
+                          src={slide}
+                          className={`h-full w-full object-cover ${
+                            isSelected ? "opacity-100" : "opacity-80"
+                          } transition-opacity duration-300 ease-in-out`}
+                        />
+                      </div>
+                    );
+                  });
                 });
               })}
           </div>{" "}
-          <div className="flex space-x-6">
-            <Button
-              onClick={() =>
-                router.push(
-                  `/new?page=${page > 1 ? page - 1 : 1}&state=${state}`,
-                )
-              }
-            >
-              Previous
-            </Button>
-
-            <Button
-              onClick={() =>
-                router.push(`/new?page=${page + 1}&state=${state}`)
-              }
-            >
-              Next
-            </Button>
-          </div>
+          {isFetchingNextPage && <Loader />}
         </div>
       )}
       {state === State.Form && (
-        <div>
+        <div className="mx-auto w-full">
           <OrderFormComponent
-            page={page}
+            setSelectedImages={setSelectedImages}
             setGeneratedOrderId={setGeneratedOrderId}
             selectedPosts={selectedImages}
           />
@@ -191,6 +233,6 @@ export const GridComponent = ({
           <OrderCreationSuccessComponent generatedOrderId={generatedOrderId} />
         </div>
       )}
-    </div>
+    </motion.div>
   );
 };
