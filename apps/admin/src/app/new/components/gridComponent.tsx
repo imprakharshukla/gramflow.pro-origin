@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { useInfiniteQuery } from "@tanstack/react-query";
 import { Text, Title } from "@tremor/react";
 import { HomeIcon } from "lucide-react";
 import { type z } from "zod";
@@ -9,7 +10,6 @@ import { type z } from "zod";
 import { type PostsModel } from "@acme/db/prisma/zod";
 import { Button, Loader } from "@acme/ui";
 
-import { getGreetings } from "~/app/dashboard/page";
 import { GreetingsComponent } from "~/features/ui/components/greetingsComponent";
 import { OrderFormComponent } from "./formComponent";
 import OrderCreationSuccessComponent from "./orderCreationSuccessComponent";
@@ -30,6 +30,34 @@ export const GridComponent = ({
   limit: number;
   state: State;
 }) => {
+  const fetchPosts = async ({
+    page,
+    limit,
+  }: {
+    page: number;
+    limit: number;
+  }) => {
+    const response = await fetch(
+      `/api/posts?page=${page}&results=${limit}`,
+    ).then((res) => res.json());
+
+    return response;
+  };
+  const LIMIT = 10;
+
+  const { data, isSuccess, hasNextPage, fetchNextPage, isFetchingNextPage } =
+    useInfiniteQuery(
+      ["posts", page, LIMIT],
+      ({ pageParam = 1, limit = LIMIT }) =>
+        fetchPosts({ page: pageParam, limit }),
+      {
+        getNextPageParam: (lastPage, allPages) => {
+          const nextPage =
+            lastPage.length === LIMIT ? allPages.length + 1 : undefined;
+          return nextPage;
+        },
+      },
+    );
   const router = useRouter();
   const [selectedImages, setSelectedImages] = useState<
     { parent: string; url: string; index: number; caption: string }[]
@@ -91,8 +119,8 @@ export const GridComponent = ({
             </div>
           </div>
           <div className="grid grid-cols-2 gap-3 py-4 md:grid-cols-3 lg:grid-cols-4">
-            {posts &&
-              posts.map((post) => {
+            {isSuccess &&
+              data.pages.map((post) => {
                 return post.slides.map((slide, index) => {
                   const isSelected = selectedImages.some(
                     (image) => image.url === slide,
