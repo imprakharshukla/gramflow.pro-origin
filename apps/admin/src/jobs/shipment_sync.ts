@@ -37,7 +37,7 @@ client.defineJob({
     );
     console.log({ chunkedOrders });
     for (const chunk of chunkedOrders) {
-      const order_ids = chunk.map((order) => order.id);
+      const order_ids = chunk.map((order) => ({id: order.id, status: order.status}));
       console.log({ order_ids });
       const shippingRequest = await updateStatusFromDelhivery(order_ids);
       console.log({ shippingRequest });

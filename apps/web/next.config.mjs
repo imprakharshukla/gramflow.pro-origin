@@ -5,15 +5,9 @@ import "@acme/auth/env.mjs";
 // @ts-ignore
 import { PrismaPlugin } from "@prisma/nextjs-monorepo-workaround-plugin";
 
-
-
 import { AppConfig } from "@acme/utils/config.mjs";
 
-
-
-
-
-console.log(`images.${AppConfig.Domain}`)
+console.log(`images.${AppConfig.Domain}`);
 
 /** @type {import("next").NextConfig} */
 const config = {

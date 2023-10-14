@@ -19,6 +19,7 @@
     "@acme/ui": "workspace:*",
     "@acme/utils": "workspace:*",
     "@hookform/resolvers": "^3.2.0",
+    "@prisma/nextjs-monorepo-workaround-plugin": "^5.4.2",
     "@t3-oss/env-nextjs": "^0.3.1",
     "@tanstack/react-query": "^4.32.6",
     "@tanstack/react-query-devtools": "^4.32.6",

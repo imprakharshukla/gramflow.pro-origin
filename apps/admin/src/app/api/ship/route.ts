@@ -347,7 +347,13 @@ export async function OPTIONS(req: Request) {
 
       //loop through the chunks and update
       for (const chunk of chunkedOrderIds) {
-        const shippingRequest = await updateStatusFromDelhivery(chunk);
+        const chunkWithStatus = chunk.map((id) => ({
+          id,
+          status: Status.PENDING,
+        }));
+        const shippingRequest = await updateStatusFromDelhivery(
+          chunkWithStatus,
+        );
         console.log({ shippingRequest });
       }
     } else {
@@ -367,7 +373,10 @@ export async function OPTIONS(req: Request) {
       }
       console.log({ chunkedOrders });
       for (const chunk of chunkedOrders) {
-        const order_ids = chunk.map((order) => order.id);
+        const order_ids = chunk.map((order) => ({
+          id: order.id,
+          status: order.status,
+        }));
         console.log({ order_ids });
         const shippingRequest = await updateStatusFromDelhivery(order_ids);
         console.log({ shippingRequest });
@@ -381,7 +390,12 @@ export async function OPTIONS(req: Request) {
   }
 }
 
-export const updateStatusFromDelhivery = async (order_ids: string[]) => {
+export const updateStatusFromDelhivery = async (
+  order_ids: {
+    id: string;
+    status: Status;
+  }[],
+) => {
   return new Promise((resolve, reject) => {
     const options = {
       method: "GET",
@@ -391,11 +405,10 @@ export const updateStatusFromDelhivery = async (order_ids: string[]) => {
         "Content-Type": "text/plain; charset=utf-8",
       },
     };
-
     fetch(
-      `https://track.delhivery.com/api/v1/packages/json/?ref_ids=${order_ids.join(
-        ",",
-      )}`,
+      `https://track.delhivery.com/api/v1/packages/json/?ref_ids=${order_ids
+        .map((order) => order.id)
+        .join(",")}`,
       options,
     )
       .then((response) => response.json())
@@ -417,17 +430,31 @@ export const updateStatusFromDelhivery = async (order_ids: string[]) => {
               } else if (status === "Manifested") {
                 statusToBeUpdated = Status.MANIFESTED;
               }
-              console.log(`The order ${order_id} is ${statusToBeUpdated}`);
+
+              console.log({ order_ids });
+
               //check if the order alrteady has the status
-              await prisma.orders.update({
-                where: {
-                  id: order_id,
-                },
-                data: {
-                  status: statusToBeUpdated,
-                  awb: shipment.Shipment.AWB,
-                },
-              });
+              if (
+                statusToBeUpdated ===
+                order_ids.find((order) => order.id === order_id)?.status
+              ) {
+                console.log(
+                  `The order ${order_id} already has the status ${statusToBeUpdated}`,
+                );
+              } else {
+                await prisma.orders.update({
+                  where: {
+                    id: order_id,
+                  },
+                  data: {
+                    status: statusToBeUpdated,
+                    awb: shipment.Shipment.AWB,
+                  },
+                });
+                console.log(
+                  `The order ${order_id} is now ${statusToBeUpdated}`,
+                );
+              }
             });
             resolve("OK");
           } else {
