@@ -4,6 +4,12 @@ import { z } from "zod";
 export const AddOrderPostSchema = z.object({
   instagram_post_urls: z.string().array(),
   images: z.string().array().optional(),
+  size: z.object({
+    length: z.string(),
+    breadth: z.string(),
+    height: z.string(),
+    weight: z.string(),
+  }),
 });
 
 export const OrderPageOrderFetchSchema = z.object({
@@ -38,10 +44,24 @@ export const UpdateOrderPutSchema = z.object({
   delete: z.boolean().optional(),
 });
 
+export const UpdateOrderWeightAndSizePutSchema = z.object({
+  awb: z.string().optional(),
+  courier: z.nativeEnum(COURIER).optional(),
+  status: z.nativeEnum(Status).optional(),
+  length: z.string().optional(),
+  breadth: z.string().optional(),
+  height: z.string().optional(),
+  weight: z.string().optional(),
+});
+
 export const OrderShippingUpdateSchema = z.object({
   awb: z.string(),
   courier: z.nativeEnum(COURIER),
   status: z.nativeEnum(Status),
+  length: z.string(),
+  breadth: z.string(),
+  height: z.string(),
+  weight: z.string(),
 });
 
 const ShippingAddressSchema = z.object({});

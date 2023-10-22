@@ -106,8 +106,8 @@ export const GridComponent = ({ state }: { state: State }) => {
         </div>
       )}
       {state === State.Selection && (
-        <div className="">
-          <div className="flex flex-wrap items-center justify-between gap-3">
+        <div className=" px-4 py-2">
+          <div className="sticky top-0 z-10 flex flex-wrap items-center justify-between gap-3 bg-background dark:bg-background py-4">
             <div>
               <Title>Create Order</Title>
               <GreetingsComponent text="please select the pictures you want to create the orders with." />

@@ -34,7 +34,7 @@ export default async function New({
   return (
     <div>
       <Suspense fallback={<Loader />}>
-        <GridComponent posts={posts} state={state} />
+        <GridComponent state={state} />
       </Suspense>
     </div>
   );

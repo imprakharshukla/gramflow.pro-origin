@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useMutation } from "@tanstack/react-query";
 import { ArrowLeft, Loader2, RefreshCcw } from "lucide-react";
@@ -9,6 +9,9 @@ import toast from "react-hot-toast";
 import * as z from "zod";
 
 import { Button, Input, Loader } from "@acme/ui";
+import { AppConfig, cn } from "@acme/utils";
+
+import { RecordDisplay } from "~/app/dashboard/components/dashboardOrderDetailSheet";
 
 type Product = {
   link: string;
@@ -24,7 +27,39 @@ const formSchema = z.object({
     }),
   ),
 });
+
+export const SizeSelection = ({
+  setPackageSize,
+  packageSize,
+}: {
+  setPackageSize: Dispatch<SetStateAction<string>>;
+  packageSize: string;
+}) => {
+  return (
+    <>
+      <div className="grid w-fit grid-cols-1 gap-3 ">
+        {Object.keys(AppConfig.DefaultPackageDetails).map((size) => {
+          console.log(packageSize);
+          //@ts-ignore
+          const order = AppConfig.DefaultPackageDetails[size];
+          return (
+            <RecordDisplay
+              onClick={() => setPackageSize(size)}
+              className={cn(
+                "cursor-pointer",
+                packageSize === size && "border-blue-500",
+              )}
+              label={size}
+              value={`${order.length} cm x ${order.breadth} cm x ${order.height} cm @ ${order.weight} gm`}
+            />
+          );
+        }) || []}
+      </div>
+    </>
+  );
+};
 export default function OrderForm() {
+  const [packageSize, setPackageSize] = useState("MEDIUM");
   const router = useRouter();
   const form = useForm({
     resolver: async (values) => {
@@ -68,7 +103,13 @@ export default function OrderForm() {
   } = useMutation(
     async (orders: string[]) => {
       // Transform the orders array into the format expected by your API
-      const requestBody = { instagram_post_urls: orders, images: [] };
+
+      const requestBody = {
+        instagram_post_urls: orders,
+        images: [],
+        //@ts-ignore
+        size: AppConfig.DefaultPackageDetails[packageSize],
+      };
 
       const req = await fetch("/api/order", {
         method: "POST",
@@ -172,7 +213,7 @@ export default function OrderForm() {
     );
     createOrderMutate(dataToSend);
     console.log({ dataToSend });
-    return
+    return;
   }
 
   const handleShareButton = async () => {
@@ -300,6 +341,7 @@ export default function OrderForm() {
               />
             </div>
           ))}
+
           <div className="flex space-x-4">
             <Button
               disabled={createOrderLoading}
@@ -311,6 +353,12 @@ export default function OrderForm() {
             >
               Add Product
             </Button>
+          </div>
+          <div className="mt-5">
+            <SizeSelection
+              setPackageSize={setPackageSize}
+              packageSize={packageSize}
+            />
           </div>
           {fields.length > 0 && (
             <Button disabled={createOrderLoading} type="submit">

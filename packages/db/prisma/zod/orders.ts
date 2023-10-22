@@ -13,6 +13,10 @@ export const OrdersModel = z.object({
   awb: z.string().nullish(),
   created_at: z.date(),
   updated_at: z.date(),
+  length: z.string().nullish(),
+  breadth: z.string().nullish(),
+  height: z.string().nullish(),
+  weight: z.string().nullish(),
 })
 
 export interface CompleteOrders extends z.infer<typeof OrdersModel> {

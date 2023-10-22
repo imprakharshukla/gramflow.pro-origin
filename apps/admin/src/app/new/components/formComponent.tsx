@@ -28,7 +28,9 @@ import {
   Loader,
   Separator,
 } from "@acme/ui";
+import { AppConfig, cn } from "@acme/utils";
 
+import { RecordDisplay } from "~/app/dashboard/components/dashboardOrderDetailSheet";
 import { GreetingsComponent } from "~/features/ui/components/greetingsComponent";
 import { State } from "./gridComponent";
 
@@ -56,6 +58,37 @@ function extractPricesFromCaption(inputString: string): number[] {
   return [];
 }
 
+export const SizeSelection = ({
+  setPackageSize,
+  packageSize,
+}: {
+  setPackageSize: Dispatch<SetStateAction<string>>;
+  packageSize: string;
+}) => {
+  return (
+    <>
+      <div className="grid w-fit grid-cols-1 gap-3 ">
+        {Object.keys(AppConfig.DefaultPackageDetails).map((size) => {
+          console.log(packageSize);
+          //@ts-ignore
+          const order = AppConfig.DefaultPackageDetails[size];
+          return (
+            <RecordDisplay
+              onClick={() => setPackageSize(size)}
+              className={cn(
+                "cursor-pointer",
+                packageSize === size && "border-blue-500",
+              )}
+              label={size}
+              value={`${order.length} cm x ${order.breadth} cm x ${order.height} cm @ ${order.weight} gm`}
+            />
+          );
+        }) || []}
+      </div>
+    </>
+  );
+};
+
 export const OrderFormComponent = ({
   setSelectedImages,
   selectedPosts,
@@ -69,6 +102,7 @@ export const OrderFormComponent = ({
   >;
   setGeneratedOrderId: Dispatch<SetStateAction<string>>;
 }) => {
+  const [packageSize, setPackageSize] = useState("MEDIUM");
   const [shippingChecked, setShippingChecked] = useState(true);
   const router = useRouter();
   const {
@@ -110,7 +144,12 @@ export const OrderFormComponent = ({
     });
     const images = selectedPosts.map((post) => post.url);
     console.log({ dataToSend });
-    createOrderMutate({ orders: dataToSend, images });
+    //@ts-ignore
+    createOrderMutate({
+      orders: dataToSend,
+      images,
+      size: AppConfig.DefaultPackageDetails[packageSize],
+    });
   };
 
   useEffect(() => {
@@ -132,9 +171,23 @@ export const OrderFormComponent = ({
 
   const { mutate: createOrderMutate, isLoading: createOrderLoading } =
     useMutation(
-      async ({ orders, images }: { orders: string[]; images: string[] }) => {
+      async ({
+        orders,
+        images,
+        size,
+      }: {
+        orders: string[];
+        images: string[];
+        size: {
+          length: string;
+          breadth: string;
+          height: string;
+          weight: string;
+        };
+      }) => {
         // Transform the orders array into the format expected by your API
-        const requestBody = { instagram_post_urls: orders, images };
+        const requestBody = { instagram_post_urls: orders, images, size };
+        console.log({ requestBody });
 
         const req = await fetch("/api/order", {
           method: "POST",
@@ -275,6 +328,12 @@ export const OrderFormComponent = ({
                   </Card>
                 </div>
               ))}
+            </div>
+            <div className="mt-5">
+              <SizeSelection
+                setPackageSize={setPackageSize}
+                packageSize={packageSize}
+              />
             </div>
             <div className="mt-3 flex flex-col gap-8">
               <div className="mt-5 flex items-center space-x-2">

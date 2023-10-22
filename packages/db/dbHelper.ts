@@ -3,6 +3,7 @@ import { z } from "zod";
 
 import {
   OrderShippingUpdateSchema,
+  UpdateOrderWeightAndSizePutSchema,
   type AddOrderPostSchema,
   type UserSchema,
 } from "@acme/utils/src/schema";
@@ -89,7 +90,7 @@ export const deleteOtp = async (id: string) => {
 };
 
 export const OrderShippingUpdateSchemaWithOrderId =
-  OrderShippingUpdateSchema.extend({
+  UpdateOrderWeightAndSizePutSchema.extend({
     id: z.string().uuid(),
   });
 
@@ -103,9 +104,13 @@ export const updateOrderStatus = async (
       id: id,
     },
     data: {
-      status: rest.status,
-      courier: rest.courier,
-      awb: rest.awb,
+      status: rest.status !== undefined ? rest.status : undefined,
+      length: rest.length !== undefined ? rest.length : undefined,
+      breadth: rest.breadth !== undefined ? rest.breadth : undefined,
+      height: rest.height !== undefined ? rest.height : undefined,
+      weight: rest.weight !== undefined ? rest.weight : undefined,
+      courier: rest.courier !== undefined ? rest.courier : undefined,
+      awb: rest.awb !== undefined ? rest.awb : undefined,
     },
   });
 };
@@ -130,11 +135,15 @@ export const addOrder = async (
       : await fetchImageUrls(order.instagram_post_urls);
   console.log({ mediaUrls });
   //add order.instagram_post_id to the instagram_post_ids array
-
+  const size = order.size;
   return prisma.orders.create({
     data: {
       instagram_post_urls: order.instagram_post_urls,
       images: mediaUrls,
+      length: size.length,
+      breadth: size.breadth,
+      height: size.height,
+      weight: size.weight,
     },
   });
 };

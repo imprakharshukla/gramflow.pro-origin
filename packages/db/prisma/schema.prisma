@@ -64,8 +64,18 @@ model Orders {
   awb                 String?
   created_at          DateTime @default(now())
   updated_at          DateTime @updatedAt
+  length              String?  @default("0")
+  breadth             String?  @default("0")
+  height              String?  @default("0")
+  weight              String?  @default("0")
 
   @@index([user_id, id])
+}
+
+enum Size {
+  SMALL
+  MEDIUM
+  LARGE
 }
 
 enum Status {

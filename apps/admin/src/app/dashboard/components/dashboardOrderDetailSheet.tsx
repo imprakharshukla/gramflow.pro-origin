@@ -4,21 +4,22 @@ import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Status } from "@prisma/client";
+import { COURIER, Size, Status } from "@prisma/client";
 import { useQueryClient } from "@tanstack/react-query";
 import { Badge as StatusBadge, type Color } from "@tremor/react";
 import { format } from "date-fns";
-import { Loader2, ShareIcon } from "lucide-react";
+import { Loader2, ShareIcon, X } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { toast } from "react-hot-toast";
 import { type z } from "zod";
-import { AppConfig } from "@acme/utils";
+
 import { type CompleteOrders } from "@acme/db/prisma/zod";
 import {
   Badge,
   Button,
   Card,
   CardContent,
+  CardHeader,
   CardTitle,
   Form,
   FormControl,
@@ -39,18 +40,25 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@acme/ui";
+import { SheetClose } from "@acme/ui/src/sheet";
+import { AppConfig } from "@acme/utils";
 import { OrderShippingUpdateSchema } from "@acme/utils/src/schema";
 
 export const RecordDisplay = ({
   label,
   value,
   className,
+  ...restProps
 }: {
   label: string;
   value?: string | null;
   className?: string;
+  onClick?: () => void;
 }) => (
-  <Card className={`flex items-center border p-3 text-sm ${className}`}>
+  <Card
+    className={`flex items-center border p-3 text-sm ${className}`}
+    {...restProps}
+  >
     <Label className={"border-r pr-2"}>{label}</Label>
     <p className="ml-2 text-xs text-muted-foreground">{value}</p>
   </Card>
@@ -74,8 +82,12 @@ const UpdateForm = ({ order }: { order: CompleteOrders }) => {
     resolver: zodResolver(OrderShippingUpdateSchema),
     defaultValues: {
       awb: order.awb ?? "",
-      courier: order.courier ?? "DEFAULT",
-      status: order.status ?? "PENDING",
+      courier: order.courier ?? COURIER.DEFAULT,
+      status: order.status ?? Status.PENDING,
+      length: order.length ?? "",
+      breadth: order.breadth ?? "",
+      height: order.height ?? "",
+      weight: order.weight ?? "",
     },
   });
 
@@ -169,11 +181,13 @@ const UpdateForm = ({ order }: { order: CompleteOrders }) => {
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
-                    <SelectItem value="DELHIVERY">Delhivery</SelectItem>
-                    <SelectItem value="XPRESSBEES">XpressBees</SelectItem>
-                    <SelectItem value="ECOM_EXPRESS">Ecom Express</SelectItem>
-                    <SelectItem value="INDIA_POST">India Post</SelectItem>
-                    <SelectItem value="DTDC">DTDC</SelectItem>
+                    {Object.keys(COURIER).map((courier) => {
+                      return (
+                        <SelectItem key={courier} value={courier}>
+                          {courier.toUpperCase()}
+                        </SelectItem>
+                      );
+                    }) || []}
                   </SelectContent>
                 </Select>
 
@@ -181,17 +195,76 @@ const UpdateForm = ({ order }: { order: CompleteOrders }) => {
               </FormItem>
             )}
           />
+          <SizeSelection form={form} />
+          <div className="grid grid-cols-1 gap-2 md:grid-cols-2">
+            <FormField
+              control={form.control}
+              name="length"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Length</FormLabel>
+                  <FormControl>
+                    {/*@ts-ignore*/}
+                    <Input placeholder={"Length"} {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="breadth"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Breadth</FormLabel>
+                  <FormControl>
+                    {/*@ts-ignore*/}
+                    <Input placeholder={"Breadth"} {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="height"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Height</FormLabel>
+                  <FormControl>
+                    {/*@ts-ignore*/}
+                    <Input placeholder={"Height"} {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="weight"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Weight</FormLabel>
+                  <FormControl>
+                    {/*@ts-ignore*/}
+                    <Input placeholder={"Weight"} {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
           <FormField
             control={form.control}
             name="awb"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>AWB Number</FormLabel>
+                <FormLabel>AWB</FormLabel>
                 <FormControl>
                   {/*@ts-ignore*/}
                   <Input
                     disabled={!allowUpdating}
-                    placeholder={"AWB Number"}
+                    placeholder={"AWB"}
                     {...field}
                   />
                 </FormControl>
@@ -208,6 +281,32 @@ const UpdateForm = ({ order }: { order: CompleteOrders }) => {
         </form>
       </Form>
     </div>
+  );
+};
+
+export const SizeSelection = ({ form }) => {
+  return (
+    <>
+      <div className="grid grid-cols-1 gap-3 w-fit">
+        {Object.keys(AppConfig.DefaultPackageDetails).map((size) => {
+          //@ts-ignore
+          const order = AppConfig.DefaultPackageDetails[size];
+          return (
+            <RecordDisplay
+              onClick={() => {
+                form.setValue("weight", order.weight);
+                form.setValue("length", order.length);
+                form.setValue("breadth", order.breadth);
+                form.setValue("height", order.height);
+              }}
+              className="cursor-pointer hover:border-blue-500"
+              label={size}
+              value={`${order.length} cm x ${order.breadth} cm x ${order.height} cm @ ${order.weight} gm`}
+            />
+          );
+        }) || []}
+      </div>
+    </>
   );
 };
 
@@ -244,7 +343,12 @@ export function DashboardOrderDetailSheet({
       side={"top"}
       className={"max-h-screen overflow-y-scroll pb-20"}
     >
-      <SheetHeader>
+      <SheetHeader className="sticky top-0 bg-background pb-4 pt-6 dark:bg-background">
+        <SheetClose className="flex justify-end">
+          <Button variant={"ghost"}>
+            <X className="h-4 w-4" />
+          </Button>
+        </SheetClose>
         <SheetTitle>Manage Order</SheetTitle>
         <SheetDescription>
           <div className="flex items-center justify-between gap-4">
@@ -299,6 +403,10 @@ export function DashboardOrderDetailSheet({
         })}
         <div className="p-1"></div>
         <RecordDisplay label="Order ID" value={order.id} />
+        <RecordDisplay
+          label="Size"
+          value={`${order.length} cm x ${order.breadth} cm x ${order.height} cm @ ${order.weight} gm`}
+        />
         <RecordDisplay
           label="Date"
           value={format(

@@ -1,5 +1,6 @@
 import { type Metadata } from "next";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import {
   Button,
   Card,
@@ -12,6 +13,9 @@ import {
   Text,
   Title,
 } from "@tremor/react";
+import { Plus } from "lucide-react";
+
+import { Button as UiButton } from "@acme/ui";
 
 import { OrderTable } from "~/app/dashboard/components/orderTableComponent";
 import KpiCards from "./components/analytics/kpiCards";
@@ -33,11 +37,15 @@ export default function Dashboard() {
 
         <div className="flex space-x-3">
           <Button>
-            {" "}
             <Link href="/new" rel="noopener noreferrer" target="_blank">
-              Create Order{" "}
+              Create Order
             </Link>
           </Button>
+          <UiButton variant="outline">
+            <Link href="/order" rel="noopener noreferrer" target="_blank">
+              <Plus className="h-4 w-4" />
+            </Link>
+          </UiButton>
         </div>
       </div>
 
