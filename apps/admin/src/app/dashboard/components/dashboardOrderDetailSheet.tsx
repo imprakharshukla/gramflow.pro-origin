@@ -3,8 +3,9 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { COURIER, Size, Status } from "@prisma/client";
+import { COURIER, Status } from "@prisma/client";
 import { useQueryClient } from "@tanstack/react-query";
 import { Badge as StatusBadge, type Color } from "@tremor/react";
 import { format } from "date-fns";
@@ -287,7 +288,7 @@ const UpdateForm = ({ order }: { order: CompleteOrders }) => {
 export const SizeSelection = ({ form }) => {
   return (
     <>
-      <div className="grid grid-cols-1 gap-3 w-fit">
+      <div className="grid w-fit grid-cols-1 gap-3">
         {Object.keys(AppConfig.DefaultPackageDetails).map((size) => {
           //@ts-ignore
           const order = AppConfig.DefaultPackageDetails[size];
@@ -338,17 +339,21 @@ export function DashboardOrderDetailSheet({
       }
     }
   };
+
+  const router = useRouter();
   return (
     <SheetContent
       side={"top"}
       className={"max-h-screen overflow-y-scroll pb-20"}
     >
       <SheetHeader className="sticky top-0 bg-background pb-4 pt-6 dark:bg-background">
-        <SheetClose className="flex justify-end">
-          <Button variant={"ghost"}>
-            <X className="h-4 w-4" />
-          </Button>
-        </SheetClose>
+        <div className="flex justify-end">
+          <SheetClose>
+            <Button variant={"ghost"}>
+              <X className="h-4 w-4" />
+            </Button>
+          </SheetClose>
+        </div>
         <SheetTitle>Manage Order</SheetTitle>
         <SheetDescription>
           <div className="flex items-center justify-between gap-4">
@@ -387,6 +392,17 @@ export function DashboardOrderDetailSheet({
         ))}
       </div>
 
+      {order.status === "PENDING" && (
+        <Button
+          onClick={() => {
+            router.push(`/add?orderId=${order.id}`);
+          }}
+          variant={"outline"}
+          className="mt-4"
+        >
+          Accept Manually
+        </Button>
+      )}
       <div className="grid gap-4 py-4">
         {order.instagram_post_urls.map((url, index) => {
           const uri = new URL(url);

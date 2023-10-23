@@ -20,6 +20,7 @@ export const env = createEnv({
     CF_FILES_BUCKET_NAME: z.string(),
     CLERK_DEV_JWT: z.string(),
     CLERK_PROD_JWT: z.string(),
+    RESEND_API_KEY: z.string(),
 
     //instagram
     INSTAGRAM_TOKEN: z.string(),
@@ -83,7 +84,7 @@ export const env = createEnv({
     CF_BUCKET_NAME: process.env.CF_BUCKET_NAME,
 
     INSTAGRAM_TOKEN: process.env.INSTAGRAM_TOKEN,
-
+    RESEND_API_KEY: process.env.RESEND_API_KEY,
     CLERK_SECRET_KEY: process.env.CLERK_SECRET_KEY,
 
     NEXT_PUBLIC_CLERK_AFTER_SIGN_IN_URL:
