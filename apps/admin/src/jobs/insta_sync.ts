@@ -1,5 +1,5 @@
 import { intervalTrigger } from "@trigger.dev/sdk";
-import { kv } from "@vercel/kv";
+import { Redis } from "@upstash/redis";
 import { z } from "zod";
 
 import { AppConfig } from "@acme/utils";
@@ -10,6 +10,11 @@ import { client } from "~/trigger";
 const instagramResponseSchema = z.object({
   media_count: z.number(),
   id: z.string(),
+});
+
+const redis = new Redis({
+  url: env.UPSTASH_URL,
+  token: env.UPSTASH_TOKEN,
 });
 
 client.defineJob({
@@ -35,7 +40,7 @@ client.defineJob({
       const validatedData = instagramResponseSchema.parse(data);
       await io.logger.info(`Total posts From Instagram: ${data.media_count}`);
 
-      const totalPosts = await kv.get<number>("total_posts");
+      const totalPosts = await redis.get<number>("total_posts");
       await io.logger.info(`Total posts From KV: ${totalPosts}`);
 
       if (totalPosts && totalPosts < validatedData.media_count) {
@@ -49,7 +54,7 @@ client.defineJob({
           },
         });
       }
-      await kv.set("total_posts", validatedData.media_count);
+      await redis.set("total_posts", validatedData.media_count);
       return { status: "success" };
     } catch (e) {
       await io.logger.error(

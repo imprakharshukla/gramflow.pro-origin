@@ -41,6 +41,7 @@
     "@trigger.dev/sdk": "^2.1.9",
     "@trigger.dev/slack": "^2.1.9",
     "@trigger.dev/supabase": "^2.1.9",
+    "@upstash/redis": "^1.23.4",
     "@vercel/kv": "^0.2.3",
     "aws-sdk": "^2.1440.0",
     "csv-writer": "^1.6.0",
