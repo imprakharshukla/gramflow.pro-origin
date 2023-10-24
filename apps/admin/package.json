@@ -12,11 +12,13 @@
     "type-check": "tsc --noEmit",
     "with-env": "dotenv -e ../../.env --",
     "trigger-dev": "doppler run --mount .env -- pnpm dlx @trigger.dev/cli@latest dev",
-    "test": "doppler run --config=test -- jest"
+    "test": "doppler run --config=test -- jest",
+    "supabase-gen": "doppler run -- pnpm dlx supabase gen types typescript --project-id $SUPABASE_PROJECT_ID --schema public > types/supabase.ts"
   },
   "dependencies": {
     "@acme/auth": "workspace:*",
     "@acme/db": "workspace:*",
+    "@acme/email": "workspace:*",
     "@acme/tailwind-config": "workspace:*",
     "@acme/ui": "workspace:*",
     "@acme/utils": "workspace:*",
@@ -63,6 +65,7 @@
     "react-email": "^1.9.5",
     "react-hook-form": "^7.45.4",
     "react-intersection-observer": "^9.5.2",
+    "resend": "^1.1.0",
     "supabase": "^1.88.0",
     "superjson": "1.9.1",
     "web": "^0.0.2",

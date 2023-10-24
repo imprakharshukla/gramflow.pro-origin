@@ -1,14 +1,17 @@
 {
   "name": "@acme/email",
   "version": "0.0.18",
+  "main": "./index.ts",
+  "types": "./index.ts",
   "scripts": {
-    "dev": "echo Email server not enabled",
+    "dev": "echo Email server not enabled!",
     "export": "email export"
   },
   "dependencies": {
     "@acme/db": "workspace:^",
     "@acme/utils": "workspace:^",
     "@react-email/components": "0.0.6",
+    "@react-email/tailwind": "^0.0.9",
     "date-fns": "^2.30.0",
     "react-email": "1.9.3"
   }

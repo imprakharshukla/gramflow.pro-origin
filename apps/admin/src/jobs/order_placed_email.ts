@@ -1,9 +1,10 @@
 import { Status } from "@prisma/client";
 import { Slack } from "@trigger.dev/slack";
 import { SupabaseManagement } from "@trigger.dev/supabase";
-import formData from "form-data";
-import Mailgun from "mailgun.js";
 
+import { Resend } from "resend";
+
+import { OrderAcceptedEmail } from "@acme/email";
 import { AppConfig } from "@acme/utils";
 
 import { env } from "~/env.mjs";
@@ -11,14 +12,7 @@ import { client } from "~/trigger";
 import { type Database } from "../../types/supabase";
 import { prisma } from "../lib/prismaClient";
 
-// @ts-ignore
-const mailgun = new Mailgun(formData);
-const mg = mailgun.client({
-  username: "api",
-  key: env.MAILGUN_API_KEY ?? "",
-});
-const Domain = env.MAILGUN_DOMAIN ?? "";
-
+const resend = new Resend(env.RESEND_API_KEY);
 const slack = new Slack({
   id: "slack",
 });
@@ -69,24 +63,23 @@ client.defineJob({
       return;
     }
 
-    const data = {
-      from: `${AppConfig.StoreName} Updates <no-reply@${env.MAILGUN_DOMAIN}>`,
-      to: user.email,
-      subject: "Order Confirmed",
-      template: "purchase_confirm",
-      "h:X-Mailgun-Variables": JSON.stringify({
-        order_id: payload.record.id,
-        name: user.name,
-        tracking_link: `
-      ${AppConfig.BaseOrderUrl}/order/${payload.record.id}`,
-      }),
-    };
-    const email = await mg.messages.create(Domain, data);
+    const data = await resend.emails.send({
+      from: `${AppConfig.StoreName.replace(" ", "")} <no-reply@${
+        env.RESEND_DOMAIN
+      }>`,
+      to: [user.email],
+      subject: "Order Placed",
+      //@ts-ignore
+      react: OrderAcceptedEmail({ order: payload.record }),
+    });
+    console.log({ data });
+    console.log(`Email sent to ${user.email}`);
+
     await io.slack.postMessage("post message", {
       channel: "C05PJ1T8CE7",
-      text: `Sent email to ${user.email} with id ${email.id} for placed order ${payload.record.id}! ✅`,
+      text: `Sent email to ${user.email} for placed order ${payload.record.id}! ✅`,
     });
-    await io.logger.info(`Email sent to ${user.email} with id ${email.id}`);
+    await io.logger.info(`Email sent to ${user.email}`);
     return { status: "success" };
   },
 });

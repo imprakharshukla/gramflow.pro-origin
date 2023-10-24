@@ -1,5 +1,4 @@
 import * as React from "react";
-import { Orders, Users } from "@prisma/client";
 import {
   Body,
   Button,
@@ -22,55 +21,54 @@ import { CompleteOrders } from "@acme/db/prisma/zod";
 import { AppConfig } from "@acme/utils";
 
 const defaultOrder = {
-  id: "7bd099e6-b463-4698-bed8-56d345sds2e2",
-  instagram_post_urls: [
-    "https://www.instagram.com/p/CyTQHfjvtDE/?img_index=2&price=850",
-    "https://www.instagram.com/p/CyTQHfjvtDE/?img_index=2&price=850",
-  ],
-  user_id: "cbbe5b5b-4466-4c9d-a6d3-2c687faedabe",
-  price: 850,
-  status: "DELIVERED",
-  courier: "DEFAULT",
-  images: [
-    `https://${AppConfig.ImageBaseUrl}/clnn8az1h0002lc0fcvvj789s_0.jpg`,
-    `https://${AppConfig.ImageBaseUrl}/clnn8az1h0002lc0fcvvj789s_0.jpg`,
-  ],
-  awb: "24478913501013",
-  created_at: "2023-10-14T14:58:33.385Z",
-  updated_at: "2023-10-18T06:48:03.961Z",
-  length: "0",
-  breadth: "0",
-  height: "0",
-  weight: "0",
-  user: {
-    id: "cbbe5b5b-4466-4c9d-a6d3-2c687fsddabe",
-    name: "John Doe",
-    email: "johndoe@gmail.com",
-    house_number: "John Residence",
-    pincode: "131029",
-    landmark: "Ashoka University",
-    locality: "Rajiv Gandhi Educational City",
-    instagram_username: "john_doe",
-    city: "Sonipat",
-    state: "Haryana",
-    country: "India",
-    phone_no: "9999999999",
-    created_at: "2023-10-14T15:01:15.460Z",
-    updated_at: "2023-10-14T15:01:15.460Z",
-  },
-};
+    id: "7bd099e6-b463-4698-bed8-56d345sds2e2",
+    instagram_post_urls: [
+      "https://www.instagram.com/p/CyTQHfjvtDE/?img_index=2&price=850",
+      "https://www.instagram.com/p/CyTQHfjvtDE/?img_index=2&price=850",
+    ],
+    user_id: "cbbe5b5b-4466-4c9d-a6d3-2c687faedabe",
+    price: 850,
+    status: "DELIVERED",
+    courier: "DEFAULT",
+    images: [
+      `https://${AppConfig.ImageBaseUrl}/clnn8az1h0002lc0fcvvj789s_0.jpg`,
+      `https://${AppConfig.ImageBaseUrl}/clnn8az1h0002lc0fcvvj789s_0.jpg`,
+    ],
+    awb: "24478913501013",
+    created_at: "2023-10-14T14:58:33.385Z",
+    updated_at: "2023-10-18T06:48:03.961Z",
+    length: "0",
+    breadth: "0",
+    height: "0",
+    weight: "0",
+    user: {
+      id: "cbbe5b5b-4466-4c9d-a6d3-2c687fsddabe",
+      name: "John Doe",
+      email: "johndoe@gmail.com",
+      house_number: "John Residence",
+      pincode: "131029",
+      landmark: "Ashoka University",
+      locality: "Rajiv Gandhi Educational City",
+      instagram_username: "john_doe",
+      city: "Sonipat",
+      state: "Haryana",
+      country: "India",
+      phone_no: "9999999999",
+      created_at: "2023-10-14T15:01:15.460Z",
+      updated_at: "2023-10-14T15:01:15.460Z",
+    },
+  };
 
-export const OrderShippedEmail = ({
+export const OrderDeliveredEmail = ({
   order = defaultOrder,
 }: {
-  order: Orders & { user: Users | null };
+  order: CompleteOrders;
 }) => {
   return (
     <Html>
       <Head />
       <Preview>
-        Your order from {AppConfig.StoreName} ({AppConfig.InstagramUsername}) is
-        on its way!
+        Your order from {AppConfig.StoreName} ({AppConfig.InstagramUsername}) has been delivered!
       </Preview>
       <Tailwind>
         <Body className="mx-auto my-auto bg-white font-sans">
@@ -84,15 +82,15 @@ export const OrderShippedEmail = ({
                 className="mx-auto my-0"
               />
               <Heading className="pt-3 text-center text-2xl">
-                Your order is on its way!
+                Your order has been delivered!
               </Heading>
               <Text className="text-center text-xs text-gray-500">
-                We hope that you will love your order, it will reach you soon 🎀
+                We hope that you loved your order, please share your experience with us 🎀
               </Text>
             </Section>
             <Hr />
             <Section className="flex flex-col gap-2">
-              <Text className="text-md font-semibold">Shipping To:</Text>
+              <Text className="text-md font-semibold">Delivered At:</Text>
               <Text className="-mb-2 text-xs font-semibold">Ayushi{","}</Text>
               <Text className="text-xs text-gray-500">
                 World University of Design, Beside Ashoka University, Sonipat, ,
@@ -101,12 +99,12 @@ export const OrderShippedEmail = ({
 
               <Button
                 className="-mb-2 mb-4 rounded bg-pink-600 px-3 py-2 text-center text-sm font-medium text-white no-underline"
-                href={`https://delhivery.com/track/package/${order.awb}`}
+                href={`https://instagram.com/${AppConfig.InstagramUsername}`}
               >
-                Track your order
+                Report an Issue
               </Button>
               <Text className="-mb-2 text-xs font-semibold">
-                Shipped via{","}
+                Delivered by{","}
               </Text>
               <Text className="text-xs text-gray-500">
                 {order.courier.slice(0, 1).toUpperCase() +
@@ -175,7 +173,7 @@ export const OrderShippedEmail = ({
     </Html>
   );
 };
-export default OrderShippedEmail;
+export default OrderDeliveredEmail;
 
 const paddingX = {
   paddingLeft: "40px",

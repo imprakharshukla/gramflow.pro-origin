@@ -11,6 +11,8 @@ export const env = createEnv({
     DATABASE_URL: z.string().url(),
     DIRECT_URL: z.string().url(),
     SHADOW_DATABASE_URL: z.string().url(),
+    UPSTASH_URL: z.string(),
+    UPSTASH_TOKEN: z.string(),
     //cloudlfare
     CF_ACCESS_KEY_ID: z.string(),
     CF_SECRET_ACCESS_KEY: z.string(),
@@ -21,6 +23,7 @@ export const env = createEnv({
     CLERK_DEV_JWT: z.string(),
     CLERK_PROD_JWT: z.string(),
     RESEND_API_KEY: z.string(),
+    RESEND_DOMAIN: z.string(),
 
     //instagram
     INSTAGRAM_TOKEN: z.string(),
@@ -85,6 +88,7 @@ export const env = createEnv({
 
     INSTAGRAM_TOKEN: process.env.INSTAGRAM_TOKEN,
     RESEND_API_KEY: process.env.RESEND_API_KEY,
+    RESEND_DOMAIN: process.env.RESEND_DOMAIN,
     CLERK_SECRET_KEY: process.env.CLERK_SECRET_KEY,
 
     NEXT_PUBLIC_CLERK_AFTER_SIGN_IN_URL:
@@ -96,7 +100,8 @@ export const env = createEnv({
     SUPABASE_URL: process.env.SUPABASE_URL,
 
     DELHIVERY_API_KEY: process.env.DELHIVERY_API_KEY,
-
+    UPSTASH_URL: process.env.UPSTASH_URL,
+    UPSTASH_TOKEN: process.env.UPSTASH_TOKEN,
     MAILGUN_API_KEY: process.env.MAILGUN_API_KEY,
     MAILGUN_DOMAIN: process.env.MAILGUN_DOMAIN,
 

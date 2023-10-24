@@ -1,5 +1,4 @@
 import * as React from "react";
-import { Orders, Users } from "@prisma/client";
 import {
   Body,
   Button,
@@ -60,17 +59,17 @@ const defaultOrder = {
   },
 };
 
-export const OrderShippedEmail = ({
+export const OrderAcceptedEmail = ({
   order = defaultOrder,
 }: {
-  order: Orders & { user: Users | null };
+  order: CompleteOrders;
 }) => {
   return (
     <Html>
       <Head />
       <Preview>
         Your order from {AppConfig.StoreName} ({AppConfig.InstagramUsername}) is
-        on its way!
+        accepted!
       </Preview>
       <Tailwind>
         <Body className="mx-auto my-auto bg-white font-sans">
@@ -84,10 +83,11 @@ export const OrderShippedEmail = ({
                 className="mx-auto my-0"
               />
               <Heading className="pt-3 text-center text-2xl">
-                Your order is on its way!
+                Your order has been accepted!
               </Heading>
               <Text className="text-center text-xs text-gray-500">
-                We hope that you will love your order, it will reach you soon 🎀
+                Thank you for shopping with us, your order will soon be shipped
+                🚚
               </Text>
             </Section>
             <Hr />
@@ -101,18 +101,12 @@ export const OrderShippedEmail = ({
 
               <Button
                 className="-mb-2 mb-4 rounded bg-pink-600 px-3 py-2 text-center text-sm font-medium text-white no-underline"
-                href={`https://delhivery.com/track/package/${order.awb}`}
+                href={`${AppConfig.BaseOrderUrl}/order/${order.id}}`}
               >
-                Track your order
+                View Order
               </Button>
-              <Text className="-mb-2 text-xs font-semibold">
-                Shipped via{","}
-              </Text>
-              <Text className="text-xs text-gray-500">
-                {order.courier.slice(0, 1).toUpperCase() +
-                  order.courier.slice(1).toLowerCase()}
-                - {order.awb}
-              </Text>
+              <Text className="-mb-2 text-xs font-semibold">Order ID{":"}</Text>
+              <Text className="text-xs text-gray-500">{order.id}</Text>
             </Section>
             <Hr />
 
@@ -175,7 +169,7 @@ export const OrderShippedEmail = ({
     </Html>
   );
 };
-export default OrderShippedEmail;
+export default OrderAcceptedEmail;
 
 const paddingX = {
   paddingLeft: "40px",

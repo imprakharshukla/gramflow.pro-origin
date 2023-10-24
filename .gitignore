@@ -52,3 +52,7 @@ yarn-error.log*
 # config files
 packages/utils/config.mjs
 packages/utils/config.ts
+
+
+# Email package
+/packages/email/.react-email

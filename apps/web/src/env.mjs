@@ -18,6 +18,8 @@ export const env = createEnv({
     //mailgun
     MAILGUN_API_KEY: z.string(),
     MAILGUN_DOMAIN: z.string(),
+    RESEND_API_KEY: z.string(),
+    RESEND_DOMAIN: z.string(),
 
     //instagram
     INSTAGRAM_TOKEN: z.string(),
@@ -48,6 +50,9 @@ export const env = createEnv({
     //mailgun
     MAILGUN_API_KEY: process.env.MAILGUN_API_KEY,
     MAILGUN_DOMAIN: process.env.MAILGUN_DOMAIN,
+
+    RESEND_API_KEY: process.env.RESEND_API_KEY,
+    RESEND_DOMAIN: process.env.RESEND_DOMAIN,
 
     //instagram
     INSTAGRAM_TOKEN: process.env.INSTAGRAM_TOKEN,

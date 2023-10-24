@@ -88,6 +88,7 @@ We use the following tech stack:
   
 - NextJS (App. Directory) w Typescript  
 - Turborepo (Monorepo)  
+- PNPM Workspaces (Managing dependencies and packages within the monorepo)
 - Tailwind CSS  
 - NextJS API Routes  
 - Trigger.dev (Scheduled Jobs and database Backups)  
@@ -96,11 +97,11 @@ We use the following tech stack:
 - Supabase (Postgres- Database)  
 - Shadcn UI  
 - Doppler (Environment Variables and Secret Management)  
-- Mailgun (Emails)  
+- Resend (Emails)  
 - Clerk.dev (Authentication for Admin Panel)  
 - Tremor (Dashboard's Visual Analytics)  
 - AWS S3 SDK  
-- Vercel KV (Syncing Instagram Posts)  
+- Upstash Redis (Syncing Instagram Posts)  
 - Jest (Testing [Coming soon])  
 - React Hook Form (Complex Forms)  
 - Zod (Schema Validation)  

@@ -2,12 +2,12 @@ import { NextResponse } from "next/server";
 import { PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
 import { auth } from "@clerk/nextjs";
 import { Status } from "@prisma/client";
-import formData from "form-data";
-import Mailgun from "mailgun.js";
+import { Resend } from "resend";
 import { z } from "zod";
 
 import { addOrder, checkIfAnyOrderContainsProducts } from "@acme/db/dbHelper";
 import { fetchImageUrls } from "@acme/db/instagramHelper";
+import { OrderShippedEmail } from "@acme/email";
 import { AppConfig } from "@acme/utils";
 import { AddOrderPostSchema } from "@acme/utils/src/schema";
 import { sendMessageWithSectionsAndImages } from "@acme/utils/src/slackHelper";
@@ -15,13 +15,7 @@ import { sendMessageWithSectionsAndImages } from "@acme/utils/src/slackHelper";
 import { env } from "~/env.mjs";
 import { prisma } from "../../../lib/prismaClient";
 
-// @ts-ignore
-const mailgun = new Mailgun(formData);
-const mg = mailgun.client({
-  username: "api",
-  key: env.MAILGUN_API_KEY ?? "",
-});
-const Domain = env.MAILGUN_DOMAIN ?? "";
+const resend = new Resend(env.RESEND_API_KEY);
 
 export async function GET(req: Request) {
   const { userId }: { userId: string | null } = auth();
@@ -227,21 +221,16 @@ export async function OPTIONS(req: Request) {
     //send emails to the users
     for (let i = 0; i < orders.length; i++) {
       const order = orders[i];
-      if (order) {
-        const data = {
-          from: `${AppConfig.StoreName} Updates <no-reply@${env.MAILGUN_DOMAIN}>`,
-          to: order?.user?.email,
+      if (order && order.user?.email) {
+        const data = await resend.emails.send({
+          from: `${AppConfig.StoreName.replace(" ", "")} <no-reply@${
+            env.RESEND_DOMAIN
+          }>`,
+          to: [order?.user?.email],
           subject: "Order Shipped",
-          template: "purchase_confirm",
-          "h:X-Mailgun-Variables": JSON.stringify({
-            order_id: order?.id,
-            name: order.user?.name,
-            tracking_link: `
-        ${AppConfig.BaseOrderUrl}/order/${order.id}`,
-          }),
-        };
-        const email = await mg.messages.create(Domain, data);
-        console.log({ email });
+          react: OrderShippedEmail({ order }),
+        });
+        console.log({ data });
         console.log(`Email sent to ${order.user?.email}`);
       }
     }

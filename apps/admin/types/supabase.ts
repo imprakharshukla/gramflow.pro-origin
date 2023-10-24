@@ -45,36 +45,51 @@ export interface Database {
       Orders: {
         Row: {
           awb: string | null
+          breadth: string | null
           courier: Database["public"]["Enums"]["COURIER"]
           created_at: string
+          height: string | null
           id: string
           images: string[] | null
           instagram_post_urls: string[] | null
+          length: string | null
+          price: number
           status: Database["public"]["Enums"]["Status"]
           updated_at: string
           user_id: string | null
+          weight: string | null
         }
         Insert: {
           awb?: string | null
+          breadth?: string | null
           courier?: Database["public"]["Enums"]["COURIER"]
           created_at?: string
+          height?: string | null
           id: string
           images?: string[] | null
           instagram_post_urls?: string[] | null
+          length?: string | null
+          price?: number
           status?: Database["public"]["Enums"]["Status"]
           updated_at: string
           user_id?: string | null
+          weight?: string | null
         }
         Update: {
           awb?: string | null
+          breadth?: string | null
           courier?: Database["public"]["Enums"]["COURIER"]
           created_at?: string
+          height?: string | null
           id?: string
           images?: string[] | null
           instagram_post_urls?: string[] | null
+          length?: string | null
+          price?: number
           status?: Database["public"]["Enums"]["Status"]
           updated_at?: string
           user_id?: string | null
+          weight?: string | null
         }
         Relationships: [
           {
@@ -205,6 +220,8 @@ export interface Database {
         | "XPRESSBEES"
         | "DELHIVERY"
         | "DTDC"
+        | "OTHER"
+      Size: "SMALL" | "MEDIUM" | "LARGE"
       Status:
         | "PENDING"
         | "ACCEPTED"
@@ -212,6 +229,8 @@ export interface Database {
         | "DELIVERED"
         | "CANCELLED"
         | "MANIFESTED"
+        | "HOLD"
+        | "RTO"
     }
     CompositeTypes: {
       [_ in never]: never

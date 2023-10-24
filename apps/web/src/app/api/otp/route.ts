@@ -1,15 +1,14 @@
 import { NextResponse } from "next/server";
-import formData from "form-data";
-import Mailgun from "mailgun.js";
+import { Resend } from "resend";
 import { z } from "zod";
 
+import { OtpEmail } from "@acme/email";
 import { AppConfig } from "@acme/utils";
 
-import { prisma } from "../../../lib/prismaClient";
 import { env } from "~/env.mjs";
+import { prisma } from "../../../lib/prismaClient";
 
-// @ts-ignore
-const mailgun = new Mailgun(formData);
+const resend = new Resend(env.RESEND_API_KEY);
 
 export async function GET(req: Request) {
   try {
@@ -37,22 +36,18 @@ export async function GET(req: Request) {
       },
     });
 
-    const mg = mailgun.client({
-      username: "api",
-      key: env.MAILGUN_API_KEY ?? "",
+    const data = await resend.emails.send({
+      from: `${AppConfig.StoreName.replace(" ", "")} <no-reply@${
+        env.RESEND_DOMAIN
+      }>`,
+      to: [email],
+      subject: "Order Shipped",
+      //@ts-ignore
+      react: OtpEmail({ otp: otp }),
     });
-    const Domain = env.MAILGUN_DOMAIN ?? "";
-    const data = {
-      from: `${AppConfig.StoreName} Verification <no-reply@${env.MAILGUN_DOMAIN}>`,
-      to: email,  
-      subject: `${otp} is your ${AppConfig.StoreName} verification code`,
-      template: "Otp Verfication",
-      "h:X-Mailgun-Variables": JSON.stringify({
-        otp: otp,
-      }),
-    };
-    const emailReq = await mg.messages.create(Domain, data);
-    console.log({ emailReq });
+    console.log({ data });
+    console.log(`Email sent to ${email}`);
+    console.log({ data });
     return NextResponse.json({ success: "Email sent" });
   } catch (error) {
     console.log({ error });
