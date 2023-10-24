@@ -75,7 +75,7 @@ export const OrderDeliveredEmail = ({
           <Container className="mx-auto my-[40px] w-[465px] rounded border border-solid border-[#eaeaea] p-[20px]">
             <Section className="mt-[32px]">
               <Img
-                src={`${AppConfig.BaseOrderUrl}/cl_logo.png`}
+                src={`${AppConfig.BaseOrderUrl}/cl_email_logo.png`}
                 width="80"
                 height="37"
                 alt={`${AppConfig.StoreName} Logo`}
@@ -91,11 +91,21 @@ export const OrderDeliveredEmail = ({
             <Hr />
             <Section className="flex flex-col gap-2">
               <Text className="text-md font-semibold">Delivered At:</Text>
-              <Text className="-mb-2 text-xs font-semibold">Ayushi{","}</Text>
-              <Text className="text-xs text-gray-500">
-                World University of Design, Beside Ashoka University, Sonipat, ,
-                Haryana, India- 131029
+              
+              <Text className="-mb-2 text-xs font-semibold">
+                {order.user?.name}
+                {","}
               </Text>
+              <Text className="text-xs text-gray-500">
+                {order.user?.house_number}
+                {","} {order.user?.landmark}
+                {","} {order.user?.locality}
+                {","} {order.user?.city}
+                {","} {order.user?.state}
+                {","} {order.user?.country}
+                {"-"} {order.user?.pincode}
+              </Text>
+
 
               <Button
                 className="-mb-2 mb-4 rounded bg-pink-600 px-3 py-2 text-center text-sm font-medium text-white no-underline"
@@ -130,7 +140,7 @@ export const OrderDeliveredEmail = ({
             <Hr className="-mb-2 mt-6" />
             <Section style={paddingY}>
               <Img
-                src={`${AppConfig.BaseOrderUrl}/cl_logo.png`}
+                src={`${AppConfig.BaseOrderUrl}/cl_email_logo.png`}
                 width="100"
                 height="50"
                 alt={`${AppConfig.StoreName} Logo`}

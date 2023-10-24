@@ -31,7 +31,7 @@ export const OtpEmail = ({ otp = "0000" }: { otp: string }) => {
           <Container className="mx-auto my-[40px] w-[465px] rounded border border-solid border-[#eaeaea] p-[20px]">
             <Section className="mt-[32px]">
               <Img
-                src={`${AppConfig.BaseOrderUrl}/cl_logo.png`}
+                src={`${AppConfig.BaseOrderUrl}/cl_email_logo.png`}
                 width="80"
                 height="37"
                 alt={`${AppConfig.StoreName} Logo`}
@@ -68,7 +68,7 @@ export const OtpEmail = ({ otp = "0000" }: { otp: string }) => {
             <Hr className="-mb-2 mt-6" />
             <Section style={paddingY}>
               <Img
-                src={`${AppConfig.BaseOrderUrl}/cl_logo.png`}
+                src={`${AppConfig.BaseOrderUrl}/cl_email_logo.png`}
                 width="100"
                 height="50"
                 alt={`${AppConfig.StoreName} Logo`}

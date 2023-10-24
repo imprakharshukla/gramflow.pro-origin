@@ -21,43 +21,43 @@ import { CompleteOrders } from "@acme/db/prisma/zod";
 import { AppConfig } from "@acme/utils";
 
 const defaultOrder = {
-    id: "7bd099e6-b463-4698-bed8-56d345sds2e2",
-    instagram_post_urls: [
-      "https://www.instagram.com/p/CyTQHfjvtDE/?img_index=2&price=850",
-      "https://www.instagram.com/p/CyTQHfjvtDE/?img_index=2&price=850",
-    ],
-    user_id: "cbbe5b5b-4466-4c9d-a6d3-2c687faedabe",
-    price: 850,
-    status: "DELIVERED",
-    courier: "DEFAULT",
-    images: [
-      `https://${AppConfig.ImageBaseUrl}/clnn8az1h0002lc0fcvvj789s_0.jpg`,
-      `https://${AppConfig.ImageBaseUrl}/clnn8az1h0002lc0fcvvj789s_0.jpg`,
-    ],
-    awb: "24478913501013",
-    created_at: "2023-10-14T14:58:33.385Z",
-    updated_at: "2023-10-18T06:48:03.961Z",
-    length: "0",
-    breadth: "0",
-    height: "0",
-    weight: "0",
-    user: {
-      id: "cbbe5b5b-4466-4c9d-a6d3-2c687fsddabe",
-      name: "John Doe",
-      email: "johndoe@gmail.com",
-      house_number: "John Residence",
-      pincode: "131029",
-      landmark: "Ashoka University",
-      locality: "Rajiv Gandhi Educational City",
-      instagram_username: "john_doe",
-      city: "Sonipat",
-      state: "Haryana",
-      country: "India",
-      phone_no: "9999999999",
-      created_at: "2023-10-14T15:01:15.460Z",
-      updated_at: "2023-10-14T15:01:15.460Z",
-    },
-  };
+  id: "7bd099e6-b463-4698-bed8-56d345sds2e2",
+  instagram_post_urls: [
+    "https://www.instagram.com/p/CyTQHfjvtDE/?img_index=2&price=850",
+    "https://www.instagram.com/p/CyTQHfjvtDE/?img_index=2&price=850",
+  ],
+  user_id: "cbbe5b5b-4466-4c9d-a6d3-2c687faedabe",
+  price: 850,
+  status: "DELIVERED",
+  courier: "DEFAULT",
+  images: [
+    `https://${AppConfig.ImageBaseUrl}/clnn8az1h0002lc0fcvvj789s_0.jpg`,
+    `https://${AppConfig.ImageBaseUrl}/clnn8az1h0002lc0fcvvj789s_0.jpg`,
+  ],
+  awb: "24478913501013",
+  created_at: "2023-10-14T14:58:33.385Z",
+  updated_at: "2023-10-18T06:48:03.961Z",
+  length: "0",
+  breadth: "0",
+  height: "0",
+  weight: "0",
+  user: {
+    id: "cbbe5b5b-4466-4c9d-a6d3-2c687fsddabe",
+    name: "John Doe",
+    email: "johndoe@gmail.com",
+    house_number: "John Residence",
+    pincode: "131029",
+    landmark: "Ashoka University",
+    locality: "Rajiv Gandhi Educational City",
+    instagram_username: "john_doe",
+    city: "Sonipat",
+    state: "Haryana",
+    country: "India",
+    phone_no: "9999999999",
+    created_at: "2023-10-14T15:01:15.460Z",
+    updated_at: "2023-10-14T15:01:15.460Z",
+  },
+};
 
 export const OrderOutForDeliveryEmail = ({
   order = defaultOrder,
@@ -68,14 +68,15 @@ export const OrderOutForDeliveryEmail = ({
     <Html>
       <Head />
       <Preview>
-        Your order from {AppConfig.StoreName} ({AppConfig.InstagramUsername}) will be delivered today!
+        Your order from {AppConfig.StoreName} ({AppConfig.InstagramUsername})
+        will be delivered today!
       </Preview>
       <Tailwind>
         <Body className="mx-auto my-auto bg-white font-sans">
           <Container className="mx-auto my-[40px] w-[465px] rounded border border-solid border-[#eaeaea] p-[20px]">
             <Section className="mt-[32px]">
               <Img
-                src={`${AppConfig.BaseOrderUrl}/cl_logo.png`}
+                src={`${AppConfig.BaseOrderUrl}/cl_email_logo.png`}
                 width="80"
                 height="37"
                 alt={`${AppConfig.StoreName} Logo`}
@@ -92,10 +93,19 @@ export const OrderOutForDeliveryEmail = ({
             <Hr />
             <Section className="flex flex-col gap-2">
               <Text className="text-md font-semibold">Arriving At:</Text>
-              <Text className="-mb-2 text-xs font-semibold">Ayushi{","}</Text>
+
+              <Text className="-mb-2 text-xs font-semibold">
+                {order.user?.name}
+                {","}
+              </Text>
               <Text className="text-xs text-gray-500">
-                World University of Design, Beside Ashoka University, Sonipat, ,
-                Haryana, India- 131029
+                {order.user?.house_number}
+                {","} {order.user?.landmark}
+                {","} {order.user?.locality}
+                {","} {order.user?.city}
+                {","} {order.user?.state}
+                {","} {order.user?.country}
+                {"-"} {order.user?.pincode}
               </Text>
 
               <Button
@@ -131,7 +141,7 @@ export const OrderOutForDeliveryEmail = ({
             <Hr className="-mb-2 mt-6" />
             <Section style={paddingY}>
               <Img
-                src={`${AppConfig.BaseOrderUrl}/cl_logo.png`}
+                src={`${AppConfig.BaseOrderUrl}/cl_email_logo.png`}
                 width="100"
                 height="50"
                 alt={`${AppConfig.StoreName} Logo`}
