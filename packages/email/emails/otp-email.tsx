@@ -24,7 +24,7 @@ export const OtpEmail = ({ otp = "0000" }: { otp: string }) => {
     <Html>
       <Head />
       <Preview>
-       Your OTP from {AppConfig.StoreName} ({AppConfig.InstagramUsername}) is {otp}.
+       Your OTP from {AppConfig.StoreName} (@{AppConfig.InstagramUsername}) is {otp}.
       </Preview>
       <Tailwind>
         <Body className="mx-auto my-auto bg-white font-sans">

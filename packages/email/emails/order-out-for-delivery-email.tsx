@@ -68,7 +68,7 @@ export const OrderOutForDeliveryEmail = ({
     <Html>
       <Head />
       <Preview>
-        Your order from {AppConfig.StoreName} ({AppConfig.InstagramUsername})
+        Your order from {AppConfig.StoreName} (@{AppConfig.InstagramUsername})
         will be delivered today!
       </Preview>
       <Tailwind>
@@ -100,7 +100,7 @@ export const OrderOutForDeliveryEmail = ({
               </Text>
               <Text className="text-xs text-gray-500">
                 {order.user?.house_number}
-                {","} {order.user?.landmark}
+                {order.user?.landmark ? `, ${order.user?.landmark}` : ""}
                 {","} {order.user?.locality}
                 {","} {order.user?.city}
                 {","} {order.user?.state}

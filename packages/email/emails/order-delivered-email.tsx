@@ -68,7 +68,7 @@ export const OrderDeliveredEmail = ({
     <Html>
       <Head />
       <Preview>
-        Your order from {AppConfig.StoreName} ({AppConfig.InstagramUsername}) has been delivered!
+        Your order from {AppConfig.StoreName} (@{AppConfig.InstagramUsername}) has been delivered!
       </Preview>
       <Tailwind>
         <Body className="mx-auto my-auto bg-white font-sans">
@@ -98,7 +98,7 @@ export const OrderDeliveredEmail = ({
               </Text>
               <Text className="text-xs text-gray-500">
                 {order.user?.house_number}
-                {","} {order.user?.landmark}
+                {order.user?.landmark ? `, ${order.user?.landmark}` : ""}
                 {","} {order.user?.locality}
                 {","} {order.user?.city}
                 {","} {order.user?.state}

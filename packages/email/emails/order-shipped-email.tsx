@@ -69,7 +69,7 @@ export const OrderShippedEmail = ({
     <Html>
       <Head />
       <Preview>
-        Your order from {AppConfig.StoreName} ({AppConfig.InstagramUsername}) is
+        Your order from {AppConfig.StoreName} (@{AppConfig.InstagramUsername}) is
         on its way!
       </Preview>
       <Tailwind>
@@ -100,7 +100,7 @@ export const OrderShippedEmail = ({
               </Text>
               <Text className="text-xs text-gray-500">
                 {order.user?.house_number}
-                {","} {order.user?.landmark}
+                {order.user?.landmark ? `, ${order.user?.landmark}` : ""}
                 {","} {order.user?.locality}
                 {","} {order.user?.city}
                 {","} {order.user?.state}
