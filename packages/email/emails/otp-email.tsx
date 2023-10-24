@@ -67,12 +67,11 @@ export const OtpEmail = ({ otp = "0000" }: { otp: string }) => {
             </Section>
             <Hr className="-mb-2 mt-6" />
             <Section style={paddingY}>
-              <Img
+                         <Img
                 src={`${AppConfig.BaseOrderUrl}/cl_email_logo.png`}
-                width="100"
-                height="50"
+                height="80"
                 alt={`${AppConfig.StoreName} Logo`}
-                className="mx-auto my-5"
+                className="mx-auto my-0 shadow rounded-full"
               />
               <Row>
                 <Column align="center">

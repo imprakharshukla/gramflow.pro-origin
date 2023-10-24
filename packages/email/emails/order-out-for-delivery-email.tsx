@@ -75,12 +75,11 @@ export const OrderOutForDeliveryEmail = ({
         <Body className="mx-auto my-auto bg-white font-sans">
           <Container className="mx-auto my-[40px] w-[465px] rounded border border-solid border-[#eaeaea] p-[20px]">
             <Section className="mt-[32px]">
-              <Img
+            <Img
                 src={`${AppConfig.BaseOrderUrl}/cl_email_logo.png`}
-                width="80"
-                height="37"
+                height="80"
                 alt={`${AppConfig.StoreName} Logo`}
-                className="mx-auto my-0"
+                className="mx-auto my-0 rounded-full shadow"
               />
               <Heading className="pt-3 text-center text-2xl">
                 Your order is out for delivery!
@@ -138,14 +137,13 @@ export const OrderOutForDeliveryEmail = ({
                 .
               </Text>
             </Section>
-            <Hr className="-mb-2 mt-6" />
+            <Hr className="mt-6" />
             <Section style={paddingY}>
               <Img
                 src={`${AppConfig.BaseOrderUrl}/cl_email_logo.png`}
-                width="100"
-                height="50"
+                height="80"
                 alt={`${AppConfig.StoreName} Logo`}
-                className="mx-auto my-5"
+                className="mx-auto mb-5 rounded-full shadow"
               />
               <Row>
                 <Column align="center">

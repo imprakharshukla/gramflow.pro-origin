@@ -4,7 +4,7 @@
   "main": "./index.ts",
   "types": "./index.ts",
   "scripts": {
-    "dev": "echo Email server not enabled!",
+    "dev": "email dev --port 3002",
     "export": "email export"
   },
   "dependencies": {
