@@ -6,7 +6,6 @@ import { prisma } from "~/lib/prismaClient";
 
 const apiBaseUrl = "https://graph.instagram.com/v17.0/";
 
-
 export interface ChildRoot {
   data: Child[];
 }
@@ -95,6 +94,10 @@ async function fetchInitialData(postNumber: number) {
 
     for (const parent of extractedData) {
       const permalinkId = parent.permalink.split("/p/")[1]?.split("/")[0] ?? "";
+      if (permalinkId.length === 0) {
+        console.log(`${parent.permalink} is not a post`);
+        continue;
+      }
       if (!processedParents[permalinkId]) {
         const childData = await fetchParentData(parent.id);
         finalData.push({
