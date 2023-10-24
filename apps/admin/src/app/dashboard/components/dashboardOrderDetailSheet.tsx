@@ -57,7 +57,7 @@ export const RecordDisplay = ({
   onClick?: () => void;
 }) => (
   <Card
-    className={`flex items-center border p-3 text-sm ${className}`}
+    className={`flex cursor-pointer items-center border p-3 text-sm ${className}`}
     {...restProps}
   >
     <Label className={"border-r pr-2"}>{label}</Label>

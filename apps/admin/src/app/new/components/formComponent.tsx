@@ -34,6 +34,20 @@ import { RecordDisplay } from "~/app/dashboard/components/dashboardOrderDetailSh
 import { GreetingsComponent } from "~/features/ui/components/greetingsComponent";
 import { State } from "./gridComponent";
 
+interface PackageDetails {
+  weight: string;
+  length: string;
+  breadth: string;
+  height: string;
+  charge: string;
+  payment_mode: string;
+}
+
+interface SizeSelectionProps {
+  setPackageSize: Dispatch<SetStateAction<string>>;
+  packageSize: string;
+}
+
 export interface Root {
   product: Product[];
 }
@@ -58,34 +72,23 @@ function extractPricesFromCaption(inputString: string): number[] {
   return [];
 }
 
-export const SizeSelection = ({
+export const SizeSelection: React.FC<SizeSelectionProps> = ({
   setPackageSize,
   packageSize,
-}: {
-  setPackageSize: Dispatch<SetStateAction<string>>;
-  packageSize: string;
 }) => {
   return (
-    <>
-      <div className="grid w-fit grid-cols-1 gap-3 ">
-        {Object.keys(AppConfig.DefaultPackageDetails).map((size) => {
-          console.log(packageSize);
-          //@ts-ignore
-          const order = AppConfig.DefaultPackageDetails[size];
-          return (
-            <RecordDisplay
-              onClick={() => setPackageSize(size)}
-              className={cn(
-                "cursor-pointer",
-                packageSize === size && "border-blue-500",
-              )}
-              label={size}
-              value={`${order.length} cm x ${order.breadth} cm x ${order.height} cm @ ${order.weight} gm`}
-            />
-          );
-        }) || []}
-      </div>
-    </>
+    <div className="grid w-fit grid-cols-1 gap-3">
+      {Object.entries(AppConfig.DefaultPackageDetails).map(([size, pack]) => {
+        return (
+          <RecordDisplay
+            onClick={() => setPackageSize(size)}
+            className={packageSize === size ? "border-blue-500" : ""}
+            label={size}
+            value={`${pack.length} cm x ${pack.breadth} cm x ${pack.height} cm x ${pack.weight} gm @  ₹${pack.charge}`}
+          />
+        );
+      })}
+    </div>
   );
 };
 
@@ -132,10 +135,14 @@ export const OrderFormComponent = ({
     const dataToSend = values.product.map((product, index) => {
       if (shippingChecked) {
         //add shipping to the last product
+        const shippingPrice =
+          AppConfig.DefaultPackageDetails[
+            packageSize as keyof typeof AppConfig.DefaultPackageDetails
+          ].charge;
         if (index === values.product.length - 1) {
           return `${selectedPosts[index]?.parent}?img_index=${
             Number(selectedPosts[index]?.index) + 1
-          }&price=${Number(product.price) + 50}`;
+          }&price=${Number(product.price) + parseInt(shippingPrice)}`;
         }
       }
       return `${selectedPosts[index]?.parent}?img_index=${
@@ -148,7 +155,9 @@ export const OrderFormComponent = ({
     createOrderMutate({
       orders: dataToSend,
       images,
-      size: AppConfig.DefaultPackageDetails[packageSize],
+      size: AppConfig.DefaultPackageDetails[
+        packageSize as keyof typeof AppConfig.DefaultPackageDetails
+      ],
     });
   };
 
@@ -346,7 +355,13 @@ export const OrderFormComponent = ({
                   htmlFor="shipping"
                   className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                 >
-                  Add Shipping
+                  Add ₹
+                  {
+                    AppConfig.DefaultPackageDetails[
+                      packageSize as keyof typeof AppConfig.DefaultPackageDetails
+                    ].charge
+                  }{" "}
+                  in shipping
                 </label>
               </div>
               <Button

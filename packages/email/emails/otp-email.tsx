@@ -32,8 +32,7 @@ export const OtpEmail = ({ otp = "0000" }: { otp: string }) => {
             <Section className="mt-[32px]">
               <Img
                 src={`${AppConfig.BaseOrderUrl}/cl_email_logo.png`}
-                width="80"
-                height="37"
+                height="80"
                 alt={`${AppConfig.StoreName} Logo`}
                 className="mx-auto my-0"
               />

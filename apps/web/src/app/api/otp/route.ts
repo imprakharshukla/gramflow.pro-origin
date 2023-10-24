@@ -41,7 +41,7 @@ export async function GET(req: Request) {
         env.RESEND_DOMAIN
       }>`,
       to: [email],
-      subject: "Order Shipped",
+      subject: `${AppConfig.StoreName} OTP is ${otp}`,
       //@ts-ignore
       react: OtpEmail({ otp: otp }),
     });
