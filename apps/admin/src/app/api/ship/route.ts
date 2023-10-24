@@ -429,6 +429,8 @@ export const updateStatusFromDelhivery = async (
                 statusToBeUpdated = Status.SHIPPED;
               } else if (status === "Manifested") {
                 statusToBeUpdated = Status.MANIFESTED;
+              } else if (status === "Out for Delivery") {
+                statusToBeUpdated = Status.OUT_FOR_DELIVERY;
               }
 
               console.log({ order_ids });

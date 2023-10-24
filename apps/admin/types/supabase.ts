@@ -231,6 +231,7 @@ export interface Database {
         | "MANIFESTED"
         | "HOLD"
         | "RTO"
+        | "OUT_FOR_DELIVERY"
     }
     CompositeTypes: {
       [_ in never]: never

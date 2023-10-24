@@ -74,6 +74,7 @@ export const pillColors: { [key: string]: Color } = {
   [Status.CANCELLED]: "red",
   [Status.RTO]: "gray",
   [Status.HOLD]: "yellow",
+  [Status.OUT_FOR_DELIVERY]: "purple",
 };
 
 const UpdateForm = ({ order }: { order: CompleteOrders }) => {
