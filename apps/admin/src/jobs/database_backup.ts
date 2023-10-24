@@ -8,16 +8,16 @@ import {
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { cronTrigger } from "@trigger.dev/sdk";
 
+import { env } from "~/env.mjs";
 import { client } from "~/trigger";
 import { prisma } from "../lib/prismaClient";
-import { env } from "~/env.mjs";
 
 const fsPromises = fs.promises;
 
 client.defineJob({
   id: "database-backup",
   name: "Database Backup",
-  
+
   version: "0.0.1",
   trigger: cronTrigger({
     cron: "0 */3 * * *",
@@ -25,10 +25,12 @@ client.defineJob({
   run: async (_, io, ctx) => {
     const users = await prisma.users.findMany();
     const orders = await prisma.orders.findMany();
+    const posts = await prisma.posts.findMany();
 
     const data = {
       users,
       orders,
+      posts,
     };
 
     const fileName = `${os.tmpdir()}/backup_${new Date().getTime()}.json`;
