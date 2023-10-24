@@ -48,11 +48,19 @@ export const metadata: Metadata = {
     },
   },
   icons: {
-    icon: "/favicon.ico",
-    shortcut: "/favicon-16x16.png",
-    apple: "/apple-touch-icon.png",
+    icon: [
+      {
+        media: "(prefers-color-scheme: light)",
+        url: "/favicon.ico",
+        href: "/favicon.ico",
+      },
+      {
+        media: "(prefers-color-scheme: dark)",
+        url: "/favicon-dark.ico",
+        href: "/favicon-dark.ico",
+      },
+    ],
   },
-
   manifest: `${siteConfig.url}/site.webmanifest`,
 };
 

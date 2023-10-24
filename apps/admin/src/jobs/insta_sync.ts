@@ -2,10 +2,15 @@ import { intervalTrigger } from "@trigger.dev/sdk";
 import { Redis } from "@upstash/redis";
 import { z } from "zod";
 
+
+
 import { AppConfig } from "@acme/utils";
+
+
 
 import { env } from "~/env.mjs";
 import { client } from "~/trigger";
+
 
 const instagramResponseSchema = z.object({
   media_count: z.number(),

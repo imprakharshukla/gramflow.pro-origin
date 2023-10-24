@@ -104,17 +104,17 @@ importers:
         specifier: ^3.7.9
         version: 3.7.9(prop-types@15.8.1)(react-dom@18.2.0)(react@18.2.0)(tailwindcss@3.3.2)
       '@trigger.dev/nextjs':
-        specifier: ^2.1.9
-        version: 2.1.9(@trigger.dev/sdk@2.1.9)(next@13.4.3)
+        specifier: ^2.2.1
+        version: 2.2.1(@trigger.dev/sdk@2.2.1)(next@13.4.3)
       '@trigger.dev/sdk':
-        specifier: ^2.1.9
-        version: 2.1.9
+        specifier: ^2.2.1
+        version: 2.2.1
       '@trigger.dev/slack':
-        specifier: ^2.1.9
-        version: 2.1.9
+        specifier: ^2.2.1
+        version: 2.2.1
       '@trigger.dev/supabase':
-        specifier: ^2.1.9
-        version: 2.1.9
+        specifier: ^2.2.1
+        version: 2.2.1
       '@upstash/redis':
         specifier: ^1.23.4
         version: 1.23.4
@@ -5229,9 +5229,9 @@ packages:
       zod-error: 1.5.0
     dev: false
 
-  /@trigger.dev/core@2.1.9:
-    resolution: {integrity: sha512-ZlCJWRDPJr+gI3ifIRL5VLdBU7rbZWsh7aqcysupXIljFd/ELG0oFOHmuU++671FvykomcsDR/Y2oTKX2xTArg==}
-    engines: {node: '>=16.8.0'}
+  /@trigger.dev/core@2.2.1:
+    resolution: {integrity: sha512-1b/eUNjpitTyk7fNSNBzxldRXVV8xbGzCTfjHK63AcFUwitcvaSCEdSwIj5SRJ2eoMtL4lWxx/nCq0mwIFmYVw==}
+    engines: {node: '>=18.0.0'}
     dependencies:
       ulid: 2.3.0
       zod: 3.22.3
@@ -5248,14 +5248,11 @@ packages:
       - encoding
     dev: false
 
-  /@trigger.dev/integration-kit@2.1.9:
-    resolution: {integrity: sha512-x9WY0+3DjEI99dFZFsPnxpbq5iE6dBpBbSZwcpFKPNtrEm5fLBbfj6JNdPJMoyA7fSKKAt2wYrho1cevNeJdQw==}
-    engines: {node: '>=16.8.0'}
+  /@trigger.dev/integration-kit@2.2.1:
+    resolution: {integrity: sha512-+0c6qKGgNnrLEOgvcF+8jEoviGPDeVPvAprRvYhu1Yh+4d4kWBVa7Tv28QgNOTmnDBFF7H/gTUtGpbkErffp3w==}
+    engines: {node: '>=18.0.0'}
     dependencies:
-      node-fetch: 2.6.13
       uuid: 9.0.0
-    transitivePeerDependencies:
-      - encoding
     dev: false
 
   /@trigger.dev/nextjs@2.0.11(@trigger.dev/sdk@2.0.11)(next@13.4.3):
@@ -5272,14 +5269,14 @@ packages:
       - supports-color
     dev: false
 
-  /@trigger.dev/nextjs@2.1.9(@trigger.dev/sdk@2.1.9)(next@13.4.3):
-    resolution: {integrity: sha512-iJai/8HRtYdmD01Njfeygcr+5M1LzWr6OM5+Io2P+U52xTO8Va+TeG9V3WfhhjIg+yKe9iL+94sVQbjq11vK+w==}
-    engines: {node: '>=16.8.0'}
+  /@trigger.dev/nextjs@2.2.1(@trigger.dev/sdk@2.2.1)(next@13.4.3):
+    resolution: {integrity: sha512-erJ5rqA9Wcab628+jHOeVaCPIdQJGloIMvlc6/w3RnrNrMBuCKZX1HEVT/N2ugllbNYJVo15xihcQ7bFBBN2oQ==}
+    engines: {node: '>=18.0.0'}
     peerDependencies:
-      '@trigger.dev/sdk': ^2.1.9
+      '@trigger.dev/sdk': ^2.2.1
       next: '>=12.0.0 <14.0.0'
     dependencies:
-      '@trigger.dev/sdk': 2.1.9
+      '@trigger.dev/sdk': 2.2.1
       debug: 4.3.4
       next: 13.4.3(@babel/core@7.23.0)(react-dom@18.2.0)(react@18.2.0)
     transitivePeerDependencies:
@@ -5313,11 +5310,11 @@ packages:
       - utf-8-validate
     dev: false
 
-  /@trigger.dev/sdk@2.1.9:
-    resolution: {integrity: sha512-OUs1Zk5BcESSJtZnVIPxQn1/+ULTGi6yEiZEpPdNDLP1Frm3C4jzqglngaDL1nRc07P3qR8cW3h1Rt89ykT+0w==}
-    engines: {node: '>=16.8.0'}
+  /@trigger.dev/sdk@2.2.1:
+    resolution: {integrity: sha512-zZqeiQkB+CCjXUsT5OcfnP1NlgKfwdaEfag7qctzmy3pJYApAt7B1DZwN9iM1CO/jNn3hJj8bqkGUspCi6SXJQ==}
+    engines: {node: '>=18.0.0'}
     dependencies:
-      '@trigger.dev/core': 2.1.9
+      '@trigger.dev/core': 2.2.1
       chalk: 5.3.0
       cronstrue: 2.31.0
       debug: 4.3.4
@@ -5325,7 +5322,6 @@ packages:
       get-caller-file: 2.0.5
       git-remote-origin-url: 4.0.0
       git-repo-info: 2.1.1
-      node-fetch: 2.6.13
       slug: 6.1.0
       terminal-link: 3.0.0
       ulid: 2.3.0
@@ -5334,22 +5330,20 @@ packages:
       zod: 3.22.3
     transitivePeerDependencies:
       - bufferutil
-      - encoding
       - supports-color
       - utf-8-validate
     dev: false
 
-  /@trigger.dev/slack@2.1.9:
-    resolution: {integrity: sha512-bN2jY5x2eWpiROoKx3mrdTJU5KIN71lsI80zVtiqMNLygDlIybPijieEj0JhWKNbF5StJ3A6yeolbRWrmY0nJg==}
+  /@trigger.dev/slack@2.2.1:
+    resolution: {integrity: sha512-lP5uwZ/YpWdDe/IFZyooVBnmtR3E0Y8FFvf+NtDu0slbpfVOM/IQeYBU2O6dW56FyaHCBBHE9oFW7Mtvj41rxw==}
     engines: {node: '>=16.8.0'}
     dependencies:
       '@slack/web-api': 6.9.0
-      '@trigger.dev/sdk': 2.1.9
+      '@trigger.dev/sdk': 2.2.1
       zod: 3.22.3
     transitivePeerDependencies:
       - bufferutil
       - debug
-      - encoding
       - supports-color
       - utf-8-validate
     dev: false
@@ -5360,7 +5354,7 @@ packages:
     dependencies:
       '@supabase/supabase-js': 2.33.1
       '@trigger.dev/integration-kit': 2.0.11
-      '@trigger.dev/sdk': 2.1.9
+      '@trigger.dev/sdk': 2.2.1
       supabase-management-js: 0.1.6
       zod: 3.21.4
     transitivePeerDependencies:
@@ -5370,13 +5364,13 @@ packages:
       - utf-8-validate
     dev: false
 
-  /@trigger.dev/supabase@2.1.9:
-    resolution: {integrity: sha512-o3nHHosWEWB3iL24MycIyXe9x20jMVrl/zfst78bHEVrCcuMnHQFRhyBV5sBxZR9sEsG4yX9GPeQdJFy30GRfw==}
+  /@trigger.dev/supabase@2.2.1:
+    resolution: {integrity: sha512-goKAO9tC9bG7yy/uoZrF+eQPCW5uvJXB108qqJkOFWx6cSF7XxZRhkQW+Hrqa28D1kb1iHCbqdzZyUTmbaeJEw==}
     engines: {node: '>=18.0.0'}
     dependencies:
       '@supabase/supabase-js': 2.33.1
-      '@trigger.dev/integration-kit': 2.1.9
-      '@trigger.dev/sdk': 2.1.9
+      '@trigger.dev/integration-kit': 2.2.1
+      '@trigger.dev/sdk': 2.2.1
       supabase-management-js: 0.1.6
       zod: 3.22.3
     transitivePeerDependencies:
@@ -10614,7 +10608,7 @@ packages:
       '@panva/hkdf': 1.1.1
       cookie: 0.5.0
       jose: 4.14.4
-      next: 13.4.3(@babel/core@7.22.11)(react-dom@18.2.0)(react@18.2.0)
+      next: 13.4.3(@babel/core@7.23.0)(react-dom@18.2.0)(react@18.2.0)
       oauth: 0.9.15
       openid-client: 5.4.3
       preact: 10.17.1
@@ -10644,7 +10638,7 @@ packages:
       react: '*'
       react-dom: '*'
     dependencies:
-      next: 13.4.3(@babel/core@7.22.11)(react-dom@18.2.0)(react@18.2.0)
+      next: 13.4.3(@babel/core@7.23.0)(react-dom@18.2.0)(react@18.2.0)
       react: 18.2.0
       react-dom: 18.2.0(react@18.2.0)
     dev: false
