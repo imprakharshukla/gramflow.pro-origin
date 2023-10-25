@@ -91,7 +91,7 @@ export const OrderOutForDeliveryEmail = ({
 
               <Button
                 className="-mb-2 mb-4 rounded bg-pink-600 px-3 py-2 text-center text-sm font-medium text-white no-underline"
-                href={`https://delhivery.com/track/package/${order.awb}`}
+                href={`https://delhivery.com/track/package/${awb}`}
               >
                 Track Order
               </Button>
