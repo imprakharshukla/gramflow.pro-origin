@@ -52,7 +52,7 @@ export const columns: ColumnDef<CompleteOrders>[] = [
               />
 
               <div className={"relative"}>
-                <Sheet key={row.id} >
+                <Sheet key={row.id}>
                   <SheetTrigger asChild className={""}>
                     <div>
                       {/*// row.original.images.map((image, index) => (*/}
@@ -95,9 +95,31 @@ export const columns: ColumnDef<CompleteOrders>[] = [
     accessorKey: "number_of_items",
     header: () => <div className={"w-12"}>No. of Items</div>,
     cell: ({ row }) => {
+      const height = row.original.height;
+      let packageSize = "Custom";
+      Object.entries(AppConfig.DefaultPackageDetails).forEach(
+        ([key, value]) => {
+          if (value.height === height) {
+            packageSize = key;
+          }
+        },
+      );
       return (
-        <div className={"flex items-center justify-center"}>
-          {row.original.images.length}
+        <div
+          className={"flex flex-col items-center justify-center gap-2 text-xs"}
+        >
+          <p>{row.original.images.length}</p>
+          <StatusBadge
+            size="xs"
+            // color={
+            //   packageSize == "Custom"
+            //     ? "gray"
+            //     : (pillColors[row.original.status] as Color)
+            // }
+            className={"text-xs font-medium"}
+          >
+            {packageSize.slice(0, 1) + packageSize.slice(1).toLowerCase()}
+          </StatusBadge>
         </div>
       );
     },
@@ -117,10 +139,10 @@ export const columns: ColumnDef<CompleteOrders>[] = [
     },
     cell: ({ row }) => {
       return (
-        <div className={"flex items-center justify-center"}>
+        <div className={"flex items-center justify-center break-all text-xs"}>
           {format(
             new Date(row.original.created_at ?? new Date()),
-            "dd/MM/yy, hh:mm a",
+            "dd/MM/yy, EEE, hh:mm a",
           )}
         </div>
       );
@@ -131,9 +153,8 @@ export const columns: ColumnDef<CompleteOrders>[] = [
     accessorKey: "status",
     header: "Status",
     cell: ({ row }) => {
-     
       return (
-        <div className={"flex items-center justify-center"}>
+        <div className={"flex items-center justify-center text-xs"}>
           <StatusBadge
             size="xs"
             color={pillColors[row.original.status] as Color}
@@ -147,22 +168,25 @@ export const columns: ColumnDef<CompleteOrders>[] = [
   },
   {
     accessorKey: "price",
-    header: "Price",
+    header: () => <div className={"w-16"}>Price</div>,
     cell: ({ row }) => {
       // fetch the price from the instagram_post_urls in which they are like this: https://www.instagram.com/p/CPQX0Y3nZ6I/?price=100 by adding all the prices of all the products in the array
-      const price = row.original.instagram_post_urls.reduce((acc, curr) => {
-        const url = new URL(curr);
-        const priceValue = url.searchParams.get("price");
-        const parsedPrice = Number(priceValue);
-        return acc + (isNaN(parsedPrice) ? 0 : parsedPrice); // Add parsed price to accumulator
-      }, 0);
       return (
-        <div className={"flex items-center justify-center"}>₹ {price}</div>
+        <div className={"flex items-center justify-center break-keep text-sm"}>
+          ₹ {new Intl.NumberFormat("en-IN").format(row.original.price)}
+        </div>
       );
     },
   },
   {
     accessorKey: "user.name",
+    cell: ({ row }) => {
+      return (
+        <div className={"flex items-center justify-center text-sm"}>
+          {row.original.user?.name}
+        </div>
+      );
+    },
     header: "Name",
   },
   {
@@ -203,13 +227,15 @@ export const columns: ColumnDef<CompleteOrders>[] = [
     cell: ({ row }) => {
       const instagram_user_id = row.original.user?.instagram_username;
       return (
-        <div className="flex items-center justify-center space-x-2">
-          <Link href={`https://instagram.com/${instagram_user_id}`}>
-            {instagram_user_id}{" "}
-            <span>
-              <ExternalLink className={"inline-block"} size={16} />
-            </span>
-          </Link>
+        <div className="flex items-center justify-center space-x-2 text-sm">
+          {instagram_user_id && (
+            <Link href={`https://instagram.com/${instagram_user_id}`}>
+              {instagram_user_id}{" "}
+              <span>
+                <ExternalLink className={"inline-block"} size={16} />
+              </span>
+            </Link>
+          )}
         </div>
       );
     },

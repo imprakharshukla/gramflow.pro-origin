@@ -77,6 +77,7 @@ export const pillColors: { [key: string]: Color } = {
   [Status.OUT_FOR_DELIVERY]: "purple",
 };
 
+
 const UpdateForm = ({ order }: { order: CompleteOrders }) => {
   const queryClient = useQueryClient();
 
