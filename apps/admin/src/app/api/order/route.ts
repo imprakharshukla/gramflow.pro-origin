@@ -150,7 +150,7 @@ export async function POST(req: Request) {
     // check if user is authenticated
     const { userId }: { userId: string | null } = auth();
 
-    if (headers.get("x-api-key") !== env.PERSONAL_API_KEY && !userId) {
+    if (!userId) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
     console.log({ data });
