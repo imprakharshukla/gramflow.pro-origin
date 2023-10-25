@@ -12,6 +12,7 @@ export interface ChildRoot {
 
 export interface Child {
   media_url: string;
+  media_type: string;
 }
 
 export interface Root {
@@ -51,7 +52,7 @@ interface FinalObject {
 const finalData: FinalObject[] = [];
 
 async function fetchParentData(parentPostId: string) {
-  const apiUrl = `${apiBaseUrl}${parentPostId}/children?fields=media_url&access_token=${env.INSTAGRAM_TOKEN}`;
+  const apiUrl = `${apiBaseUrl}${parentPostId}/children?fields=media_type,media_url&access_token=${env.INSTAGRAM_TOKEN}`;
   console.log(apiUrl);
   try {
     const response = await fetch(apiUrl);
@@ -59,7 +60,9 @@ async function fetchParentData(parentPostId: string) {
       throw new Error(`Failed to fetch data for parent post ${parentPostId}`);
     }
     const data = (await response.json()) as ChildRoot;
-    const arrayWithoutId = data.data.map(({ media_url }) => media_url);
+    const arrayWithoutId = data.data
+      .filter(({ media_type }) => media_type === 'IMAGE')
+      .map(({ media_url }) => media_url);
     console.log({ arrayWithoutId });
     return arrayWithoutId;
   } catch (error) {
