@@ -24,8 +24,8 @@ const supabaseManagement = new SupabaseManagement({
 const supabaseTriggers = supabaseManagement.db<Database>(env.SUPABASE_URL);
 
 client.defineJob({
-    id: "order-out-for-delivery-email",
-    name: "Order Out For Delivery Email",
+  id: "order-out-for-delivery-email",
+  name: "Order Out For Delivery Email",
   version: "1.0.0",
   trigger: supabaseTriggers.onUpdated({
     schema: "public",
@@ -62,6 +62,8 @@ client.defineJob({
       return;
     }
 
+    const order = payload.record;
+
     const data = await resend.emails.send({
       from: `${AppConfig.StoreName.replace(" ", "")} <no-reply@${
         env.RESEND_DOMAIN
@@ -69,7 +71,19 @@ client.defineJob({
       to: [user.email],
       subject: "Order Out For Delivery",
       //@ts-ignore
-      react: OrderOutForDeliveryEmail({ order: payload.record }),
+      react: OrderOutForDeliveryEmail({
+        id: order.id,
+        awb: order.awb ?? "",
+        name: user.name,
+        house_number: user.house_number,
+        courier: order.courier ?? "",
+        pincode: user.pincode,
+        landmark: user.landmark ?? "",
+        locality: user.locality,
+        city: user.city,
+        state: user.state,
+        country: user.country,
+      }),
     });
     console.log({ data });
     console.log(`Email sent to ${user.email}`);

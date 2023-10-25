@@ -1,4 +1,5 @@
 import * as React from "react";
+import { COURIER } from "@prisma/client";
 import {
   Body,
   Button,
@@ -20,49 +21,30 @@ import {
 import { CompleteOrders } from "@acme/db/prisma/zod";
 import { AppConfig } from "@acme/utils";
 
-const defaultOrder = {
-  id: "7bd099e6-b463-4698-bed8-56d345sds2e2",
-  instagram_post_urls: [
-    "https://www.instagram.com/p/CyTQHfjvtDE/?img_index=2&price=850",
-    "https://www.instagram.com/p/CyTQHfjvtDE/?img_index=2&price=850",
-  ],
-  user_id: "cbbe5b5b-4466-4c9d-a6d3-2c687faedabe",
-  price: 850,
-  status: "DELIVERED",
-  courier: "DEFAULT",
-  images: [
-    `https://${AppConfig.ImageBaseUrl}/clnn8az1h0002lc0fcvvj789s_0.jpg`,
-    `https://${AppConfig.ImageBaseUrl}/clnn8az1h0002lc0fcvvj789s_0.jpg`,
-  ],
-  awb: "24478913501013",
-  created_at: "2023-10-14T14:58:33.385Z",
-  updated_at: "2023-10-18T06:48:03.961Z",
-  length: "0",
-  breadth: "0",
-  height: "0",
-  weight: "0",
-  user: {
-    id: "cbbe5b5b-4466-4c9d-a6d3-2c687fsddabe",
-    name: "John Doe",
-    email: "johndoe@gmail.com",
-    house_number: "John Residence",
-    pincode: "131029",
-    landmark: "Ashoka University",
-    locality: "Rajiv Gandhi Educational City",
-    instagram_username: "john_doe",
-    city: "Sonipat",
-    state: "Haryana",
-    country: "India",
-    phone_no: "9999999999",
-    created_at: "2023-10-14T15:01:15.460Z",
-    updated_at: "2023-10-14T15:01:15.460Z",
-  },
-};
-
 export const OrderOutForDeliveryEmail = ({
-  order = defaultOrder,
+  id,
+  awb,
+  name,
+  house_number,
+  pincode,
+  landmark,
+  courier,
+  locality,
+  city,
+  state,
+  country,
 }: {
-  order: CompleteOrders;
+  id: string;
+  awb: string;
+  name: string;
+  house_number: string;
+  pincode: string;
+  landmark: string;
+  locality: string;
+  city: string;
+  courier: COURIER;
+  state: string;
+  country: string;
 }) => {
   return (
     <Html>
@@ -75,7 +57,7 @@ export const OrderOutForDeliveryEmail = ({
         <Body className="mx-auto my-auto bg-white font-sans">
           <Container className="mx-auto my-[40px] w-[465px] rounded border border-solid border-[#eaeaea] p-[20px]">
             <Section className="mt-[32px]">
-            <Img
+              <Img
                 src={`${AppConfig.BaseOrderUrl}/cl_email_logo.png`}
                 height="80"
                 alt={`${AppConfig.StoreName} Logo`}
@@ -94,17 +76,17 @@ export const OrderOutForDeliveryEmail = ({
               <Text className="text-md font-semibold">Arriving At:</Text>
 
               <Text className="-mb-2 text-xs font-semibold">
-                {order.user?.name}
+                {name}
                 {","}
               </Text>
               <Text className="text-xs text-gray-500">
-                {order.user?.house_number}
-                {order.user?.landmark ? `, ${order.user?.landmark}` : ""}
-                {","} {order.user?.locality}
-                {","} {order.user?.city}
-                {","} {order.user?.state}
-                {","} {order.user?.country}
-                {"-"} {order.user?.pincode}
+                {house_number}
+                {landmark ? `, ${landmark}` : ""}
+                {","} {locality}
+                {","} {city}
+                {","} {state}
+                {","} {country}
+                {"-"} {pincode}
               </Text>
 
               <Button
@@ -117,9 +99,9 @@ export const OrderOutForDeliveryEmail = ({
                 Arriving via{","}
               </Text>
               <Text className="text-xs text-gray-500">
-                {order.courier.slice(0, 1).toUpperCase() +
-                  order.courier.slice(1).toLowerCase()}
-                - {order.awb}
+                {courier.slice(0, 1).toUpperCase() +
+                  courier.slice(1).toLowerCase()}
+                - {awb}
               </Text>
             </Section>
             <Hr />

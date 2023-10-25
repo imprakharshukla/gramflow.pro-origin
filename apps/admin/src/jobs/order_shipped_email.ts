@@ -66,14 +66,26 @@ client.defineJob({
       return;
     }
 
+    const order = payload.record;
     const data = await resend.emails.send({
       from: `${AppConfig.StoreName.replace(" ", "")} <no-reply@${
         env.RESEND_DOMAIN
       }>`,
       to: [user.email],
       subject: "Order Shipped",
-      //@ts-ignore
-      react: OrderShippedEmail({ order: payload.record }),
+      react: OrderShippedEmail({
+        id: order.id,
+        awb: order.awb ?? "",
+        name: user.name,
+        courier: order.courier ?? "",
+        house_number: user.house_number,
+        pincode: user.pincode,
+        landmark: user.landmark ?? "",
+        locality: user.locality,
+        city: user.city,
+        state: user.state,
+        country: user.country,
+      }),
     });
     console.log({ data });
     console.log(`Email sent to ${user.email}`);

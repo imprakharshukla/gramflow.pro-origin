@@ -1,7 +1,6 @@
-import { Status } from "@prisma/client";
+import { COURIER, Status } from "@prisma/client";
 import { Slack } from "@trigger.dev/slack";
 import { SupabaseManagement } from "@trigger.dev/supabase";
-
 import { Resend } from "resend";
 
 import { OrderAcceptedEmail } from "@acme/email";
@@ -63,14 +62,25 @@ client.defineJob({
       return;
     }
 
+    const order = payload.record;
     const data = await resend.emails.send({
       from: `${AppConfig.StoreName.replace(" ", "")} <no-reply@${
         env.RESEND_DOMAIN
       }>`,
       to: [user.email],
       subject: "Order Placed",
-      //@ts-ignore
-      react: OrderAcceptedEmail({ order: payload.record }),
+      react: OrderAcceptedEmail({
+        id: order.id,
+        awb: order.awb ?? "",
+        name: user.name,
+        house_number: user.house_number,
+        pincode: user.pincode,
+        landmark: user.landmark ?? "",
+        locality: user.locality,
+        city: user.city,
+        state: user.state,
+        country: user.country,
+      }),
     });
     console.log({ data });
     console.log(`Email sent to ${user.email}`);

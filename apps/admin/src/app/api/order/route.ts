@@ -228,7 +228,19 @@ export async function OPTIONS(req: Request) {
           }>`,
           to: [order?.user?.email],
           subject: "Order Shipped",
-          react: OrderShippedEmail({ order }),
+          react: OrderShippedEmail({
+            id: order.id,
+            awb: order.awb ?? "",
+            name: order.user.name,
+            house_number: order.user.house_number,
+            pincode: order.user.pincode,
+            landmark: order.user.landmark ?? "",
+            locality: order.user.locality,
+            city: order.user.city,
+            state: order.user.state,
+            country: order.user.country,
+            courier: order.courier,
+          }),
         });
         console.log({ data });
         console.log(`Email sent to ${order.user?.email}`);
