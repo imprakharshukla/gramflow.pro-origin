@@ -247,12 +247,7 @@ export async function PUT(req: Request) {
 
     await csvWriter.writeRecords(csvArray);
     console.log(`CSV file written to ${tempFilePath}`);
-    // const url = await sendFileToTelegram(
-    //   tempFilePath,
-    //   env.TELEGRAM_API_KEY ?? "",
-    //   env.TELEGRAM_CHAT_ID ?? "",
-    // );
-    // console.log({ url });
+
 
     //upload the file to s3 cloudflare r2
     const S3 = new S3Client({

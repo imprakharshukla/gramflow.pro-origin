@@ -7,17 +7,15 @@ export const env = createEnv({
    * built with invalid env vars.
    */
   server: {
+    //prisma
     DATABASE_URL: z.string().url(),
     DIRECT_URL: z.string().url(),
     SHADOW_DATABASE_URL: z.string().url(),
 
     //misc
     ENV: z.string(),
-    PERSONAL_API_KEY: z.string(),
 
-    //mailgun
-    MAILGUN_API_KEY: z.string(),
-    MAILGUN_DOMAIN: z.string(),
+    //resend
     RESEND_API_KEY: z.string(),
     RESEND_DOMAIN: z.string(),
 
@@ -39,23 +37,21 @@ export const env = createEnv({
    * Destructure all variables from `process.env` to make sure they aren't tree-shaken away.
    */
   runtimeEnv: {
+    //prisma
     DATABASE_URL: process.env.DATABASE_URL,
     DIRECT_URL: process.env.DIRECT_URL,
     SHADOW_DATABASE_URL: process.env.SHADOW_DATABASE_URL,
 
     //misc
     ENV: process.env.ENV,
-    PERSONAL_API_KEY: process.env.PERSONAL_API_KEY,
 
-    //mailgun
-    MAILGUN_API_KEY: process.env.MAILGUN_API_KEY,
-    MAILGUN_DOMAIN: process.env.MAILGUN_DOMAIN,
-
+    //resend
     RESEND_API_KEY: process.env.RESEND_API_KEY,
     RESEND_DOMAIN: process.env.RESEND_DOMAIN,
 
     //instagram
     INSTAGRAM_TOKEN: process.env.INSTAGRAM_TOKEN,
+
     //slack
     SLACK_TOKEN: process.env.SLACK_TOKEN,
     SLACK_WEBHOOK_URL_ACCEPTED: process.env.SLACK_WEBHOOK_URL_ACCEPTED,
