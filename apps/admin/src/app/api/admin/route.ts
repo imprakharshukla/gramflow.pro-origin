@@ -6,7 +6,7 @@ import {
   getAllOrders,
   getAllOrdersWithPagination,
   updateOrderStatus,
-} from "@acme/db/dbHelper";
+} from "@gramflow/db/dbHelper";
 
 import { prisma } from "~/lib/prismaClient";
 

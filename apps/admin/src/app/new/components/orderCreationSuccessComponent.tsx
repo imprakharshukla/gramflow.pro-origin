@@ -3,8 +3,8 @@ import { useRouter } from "next/navigation";
 import { Title } from "@tremor/react";
 import { HomeIcon, RefreshCcw } from "lucide-react";
 import { toast } from "react-hot-toast";
-import { AppConfig } from "@acme/utils";
-import { Button } from "@acme/ui";
+import { AppConfig } from "@gramflow/utils";
+import { Button } from "@gramflow/ui";
 
 import { GreetingsComponent } from "~/features/ui/components/greetingsComponent";
 

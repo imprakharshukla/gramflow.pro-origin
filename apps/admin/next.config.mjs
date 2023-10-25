@@ -1,12 +1,12 @@
 // Importing env files here to validate on build
 
 import "./src/env.mjs";
-import "@acme/auth/env.mjs";
+import "@gramflow/auth/env.mjs";
 import { PrismaPlugin } from "@prisma/nextjs-monorepo-workaround-plugin";
 
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
-import { AppConfig } from "@acme/utils/config.mjs";
+import { AppConfig } from "@gramflow/utils/config.mjs";
 
 /** @type {import("next").NextConfig} */
 const config = {
@@ -32,7 +32,7 @@ const config = {
   },
   reactStrictMode: true,
   /** Enables hot reloading for local packages without a build step */
-  transpilePackages: ["@acme/auth", "@acme/db", "@acme/utils", "@acme/ui"],
+  transpilePackages: ["@gramflow/auth", "@gramflow/db", "@gramflow/utils", "@gramflow/ui"],
   /** We already do linting and typechecking as separate tasks in CI */
   eslint: { ignoreDuringBuilds: true },
   typescript: { ignoreBuildErrors: true },

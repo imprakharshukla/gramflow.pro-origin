@@ -1,5 +1,5 @@
 {
-  "name": "@acme/web",
+  "name": "@gramflow/web",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -13,12 +13,12 @@
     "with-env": "dotenv -e ../../.env --"
   },
   "dependencies": {
-    "@acme/auth": "workspace:*",
-    "@acme/db": "workspace:*",
-    "@acme/email": "workspace:^",
-    "@acme/tailwind-config": "workspace:*",
-    "@acme/ui": "workspace:*",
-    "@acme/utils": "workspace:*",
+    "@gramflow/auth": "workspace:*",
+    "@gramflow/db": "workspace:*",
+    "@gramflow/email": "workspace:^",
+    "@gramflow/tailwind-config": "workspace:*",
+    "@gramflow/ui": "workspace:*",
+    "@gramflow/utils": "workspace:*",
     "@hookform/resolvers": "^3.2.0",
     "@prisma/nextjs-monorepo-workaround-plugin": "^5.4.2",
     "@t3-oss/env-nextjs": "^0.3.1",
@@ -46,7 +46,7 @@
     "zod-prisma": "^0.5.4"
   },
   "devDependencies": {
-    "@acme/eslint-config": "workspace:*",
+    "@gramflow/eslint-config": "workspace:*",
     "@types/node": "^18.16.5",
     "@types/node-telegram-bot-api": "^0.61.7",
     "@types/react": "^18.2.6",

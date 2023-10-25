@@ -1,5 +1,5 @@
 {
-  "name": "@acme/db",
+  "name": "@gramflow/db",
   "version": "0.1.0",
   "main": "./index.ts",
   "types": "./index.ts",
@@ -13,9 +13,9 @@
     "with-env": "dotenv -e ../../.env --"
   },
   "dependencies": {
-    "@acme/tailwind-config": "workspace:*",
-    "@acme/ui": "workspace:*",
-    "@acme/utils": "workspace:*",
+    "@gramflow/tailwind-config": "workspace:*",
+    "@gramflow/ui": "workspace:*",
+    "@gramflow/utils": "workspace:*",
     "@prisma/client": "^4.13.0",
     "zod": "^3.21.4"
   },

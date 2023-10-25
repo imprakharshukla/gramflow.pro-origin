@@ -1,7 +1,7 @@
 import { Suspense } from "react";
 import { Metadata } from "next";
 
-import { Loader } from "@acme/ui";
+import { Loader } from "@gramflow/ui";
 
 import { prisma } from "~/lib/prismaClient";
 import { GridComponent } from "./components/gridComponent";

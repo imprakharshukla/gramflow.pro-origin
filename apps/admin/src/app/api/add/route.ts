@@ -1,8 +1,8 @@
 import { NextResponse } from "next/server";
 
-import { updateOrder, upsertUser } from "@acme/db/dbHelper";
-import { UpdateUserPutSchema } from "@acme/utils/src/schema";
-import { sendMessageWithSectionsAndImages } from "@acme/utils/src/slackHelper";
+import { updateOrder, upsertUser } from "@gramflow/db/dbHelper";
+import { UpdateUserPutSchema } from "@gramflow/utils/src/schema";
+import { sendMessageWithSectionsAndImages } from "@gramflow/utils/src/slackHelper";
 
 import { env } from "~/env.mjs";
 

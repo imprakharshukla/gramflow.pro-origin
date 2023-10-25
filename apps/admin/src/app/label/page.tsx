@@ -1,5 +1,5 @@
-import { type Orders, type Users } from "@acme/db";
-import { ThemeToggle } from "@acme/ui";
+import { type Orders, type Users } from "@gramflow/db";
+import { ThemeToggle } from "@gramflow/ui";
 
 import { prisma } from "~/lib/prismaClient";
 import ShippingLabelTable from "./components/shippingLabelTable";

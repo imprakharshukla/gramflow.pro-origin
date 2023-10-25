@@ -8,8 +8,8 @@ import { useFieldArray, useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import * as z from "zod";
 
-import { Button, Input, Loader } from "@acme/ui";
-import { AppConfig, cn } from "@acme/utils";
+import { Button, Input, Loader } from "@gramflow/ui";
+import { AppConfig, cn } from "@gramflow/utils";
 
 import { RecordDisplay } from "~/app/dashboard/components/dashboardOrderDetailSheet";
 

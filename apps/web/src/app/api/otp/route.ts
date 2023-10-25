@@ -2,8 +2,8 @@ import { NextResponse } from "next/server";
 import { Resend } from "resend";
 import { z } from "zod";
 
-import { OtpEmail } from "@acme/email";
-import { AppConfig } from "@acme/utils";
+import { OtpEmail } from "@gramflow/email";
+import { AppConfig } from "@gramflow/utils";
 
 import { env } from "~/env.mjs";
 import { prisma } from "../../../lib/prismaClient";

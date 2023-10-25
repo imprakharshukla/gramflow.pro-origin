@@ -6,9 +6,9 @@ import {
   deleteOtp,
   updateOrder,
   upsertUser,
-} from "@acme/db/dbHelper";
-import { UpdateUserPutSchema } from "@acme/utils/src/schema";
-import { sendMessageWithSectionsAndImages } from "@acme/utils/src/slackHelper";
+} from "@gramflow/db/dbHelper";
+import { UpdateUserPutSchema } from "@gramflow/utils/src/schema";
+import { sendMessageWithSectionsAndImages } from "@gramflow/utils/src/slackHelper";
 import { env } from "~/env.mjs";
 
 export async function PUT(req: Request) {

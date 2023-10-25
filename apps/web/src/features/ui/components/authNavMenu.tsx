@@ -1,6 +1,6 @@
 import Link from "next/link";
 
-import { AppConfig } from "@acme/utils";
+import { AppConfig } from "@gramflow/utils";
 
 export default function AuthNavMenu() {
   return (

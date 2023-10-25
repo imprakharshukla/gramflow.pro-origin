@@ -14,7 +14,7 @@ import { useForm } from "react-hook-form";
 import { toast } from "react-hot-toast";
 import { type z } from "zod";
 
-import { type CompleteOrders } from "@acme/db/prisma/zod";
+import { type CompleteOrders } from "@gramflow/db/prisma/zod";
 import {
   Badge,
   Button,
@@ -40,10 +40,10 @@ import {
   SheetFooter,
   SheetHeader,
   SheetTitle,
-} from "@acme/ui";
-import { SheetClose } from "@acme/ui/src/sheet";
-import { AppConfig } from "@acme/utils";
-import { OrderShippingUpdateSchema } from "@acme/utils/src/schema";
+} from "@gramflow/ui";
+import { SheetClose } from "@gramflow/ui/src/sheet";
+import { AppConfig } from "@gramflow/utils";
+import { OrderShippingUpdateSchema } from "@gramflow/utils/src/schema";
 
 export const RecordDisplay = ({
   label,

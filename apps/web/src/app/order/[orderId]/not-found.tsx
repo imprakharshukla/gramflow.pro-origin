@@ -1,6 +1,6 @@
 import Link from "next/link";
 
-import { Button } from "@acme/ui";
+import { Button } from "@gramflow/ui";
 
 import Order404Component from "./components/Order404Component";
 

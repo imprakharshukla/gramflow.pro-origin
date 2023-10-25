@@ -1,7 +1,7 @@
 import { useRouter } from "next/navigation";
 import { Status } from "@prisma/client";
 
-import { db as prisma } from "@acme/db";
+import { db as prisma } from "@gramflow/db";
 
 import OrderManager from "./components/OrderManagerComponent";
 import Order404Component from "./components/Order404Component";

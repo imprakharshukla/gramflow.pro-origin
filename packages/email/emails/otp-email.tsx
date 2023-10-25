@@ -17,7 +17,7 @@ import {
   Text,
 } from "@react-email/components";
 
-import { AppConfig } from "@acme/utils";
+import { AppConfig } from "@gramflow/utils";
 
 export const OtpEmail = ({ otp = "0000" }: { otp: string }) => {
   return (

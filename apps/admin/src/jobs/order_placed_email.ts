@@ -3,8 +3,8 @@ import { Slack } from "@trigger.dev/slack";
 import { SupabaseManagement } from "@trigger.dev/supabase";
 import { Resend } from "resend";
 
-import { OrderAcceptedEmail } from "@acme/email";
-import { AppConfig } from "@acme/utils";
+import { OrderAcceptedEmail } from "@gramflow/email";
+import { AppConfig } from "@gramflow/utils";
 
 import { env } from "~/env.mjs";
 import { client } from "~/trigger";

@@ -1,5 +1,5 @@
 {
-  "name": "@acme/admin",
+  "name": "@gramflow/admin",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -16,12 +16,12 @@
     "supabase-gen": "doppler run -- pnpm dlx supabase gen types typescript --project-id $SUPABASE_PROJECT_ID --schema public > types/supabase.ts"
   },
   "dependencies": {
-    "@acme/auth": "workspace:*",
-    "@acme/db": "workspace:*",
-    "@acme/email": "workspace:*",
-    "@acme/tailwind-config": "workspace:*",
-    "@acme/ui": "workspace:*",
-    "@acme/utils": "workspace:*",
+    "@gramflow/auth": "workspace:*",
+    "@gramflow/db": "workspace:*",
+    "@gramflow/email": "workspace:*",
+    "@gramflow/tailwind-config": "workspace:*",
+    "@gramflow/ui": "workspace:*",
+    "@gramflow/utils": "workspace:*",
     "@aws-sdk/client-s3": "^3.400.0",
     "@aws-sdk/s3-request-presigner": "^3.400.0",
     "@clerk/nextjs": "^4.23.2",
@@ -73,7 +73,7 @@
     "zod-prisma": "^0.5.4"
   },
   "devDependencies": {
-    "@acme/eslint-config": "workspace:*",
+    "@gramflow/eslint-config": "workspace:*",
     "@prisma/nextjs-monorepo-workaround-plugin": "^5.4.2",
     "@types/jest": "^29.5.4",
     "@types/node": "^18.16.5",

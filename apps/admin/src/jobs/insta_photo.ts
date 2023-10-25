@@ -1,6 +1,6 @@
 import { cronTrigger, eventTrigger } from "@trigger.dev/sdk";
 
-import { fetchImageUrls } from "@acme/db/instagramHelper";
+import { fetchImageUrls } from "@gramflow/db/instagramHelper";
 
 import { client } from "~/trigger";
 import { prisma } from "../lib/prismaClient";

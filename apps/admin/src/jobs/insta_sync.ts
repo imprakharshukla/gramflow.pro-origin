@@ -4,7 +4,7 @@ import { z } from "zod";
 
 
 
-import { AppConfig } from "@acme/utils";
+import { AppConfig } from "@gramflow/utils";
 
 
 

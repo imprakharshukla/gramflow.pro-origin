@@ -15,7 +15,7 @@ import {
 } from "@tremor/react";
 import { Plus } from "lucide-react";
 
-import { Button as UiButton } from "@acme/ui";
+import { Button as UiButton } from "@gramflow/ui";
 
 import { OrderTable } from "~/app/dashboard/components/orderTableComponent";
 import KpiCards from "./components/analytics/kpiCards";

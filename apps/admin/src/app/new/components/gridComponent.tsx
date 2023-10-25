@@ -10,8 +10,8 @@ import { HomeIcon } from "lucide-react";
 import { useInView } from "react-intersection-observer";
 import { type z } from "zod";
 
-import { type PostsModel } from "@acme/db/prisma/zod";
-import { Button, Loader, Separator } from "@acme/ui";
+import { type PostsModel } from "@gramflow/db/prisma/zod";
+import { Button, Loader, Separator } from "@gramflow/ui";
 
 import { GreetingsComponent } from "~/features/ui/components/greetingsComponent";
 import { OrderFormComponent } from "./formComponent";

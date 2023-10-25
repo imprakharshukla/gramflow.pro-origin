@@ -1,6 +1,6 @@
 import { type z } from "zod";
 
-import { type OrdersModel, type UsersModel } from "@acme/db/prisma/zod";
+import { type OrdersModel, type UsersModel } from "@gramflow/db/prisma/zod";
 
 export const orderSeedData: z.infer<typeof OrdersModel> = {
   //random uuid

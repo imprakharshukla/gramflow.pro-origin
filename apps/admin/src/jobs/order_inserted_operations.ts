@@ -1,7 +1,7 @@
 import { PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
 import { SupabaseManagement } from "@trigger.dev/supabase";
 
-import { AppConfig } from "@acme/utils";
+import { AppConfig } from "@gramflow/utils";
 
 import { env } from "~/env.mjs";
 import { client } from "~/trigger";

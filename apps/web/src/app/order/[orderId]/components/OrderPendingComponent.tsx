@@ -6,8 +6,8 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import { type z } from "zod";
 
-import { Button } from "@acme/ui";
-import { type OrderPageOrderFetchSchema } from "@acme/utils/src/schema";
+import { Button } from "@gramflow/ui";
+import { type OrderPageOrderFetchSchema } from "@gramflow/utils/src/schema";
 
 import { OrderStatus } from "./OrderManagerComponent";
 

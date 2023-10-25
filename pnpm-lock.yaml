@@ -4,7 +4,7 @@ importers:
 
   .:
     dependencies:
-      '@acme/eslint-config':
+      '@gramflow/eslint-config':
         specifier: workspace:*
         version: link:packages/config/eslint
       '@ianvs/prettier-plugin-sort-imports':
@@ -34,24 +34,6 @@ importers:
 
   apps/admin:
     dependencies:
-      '@acme/auth':
-        specifier: workspace:*
-        version: link:../../packages/auth
-      '@acme/db':
-        specifier: workspace:*
-        version: link:../../packages/db
-      '@acme/email':
-        specifier: workspace:*
-        version: link:../../packages/email
-      '@acme/tailwind-config':
-        specifier: workspace:*
-        version: link:../../packages/config/tailwind
-      '@acme/ui':
-        specifier: workspace:*
-        version: link:../../packages/ui
-      '@acme/utils':
-        specifier: workspace:*
-        version: link:../../packages/utils
       '@aws-sdk/client-s3':
         specifier: ^3.400.0
         version: 3.400.0
@@ -61,6 +43,24 @@ importers:
       '@clerk/nextjs':
         specifier: ^4.23.2
         version: 4.23.2(next@13.4.3)(react-dom@18.2.0)(react@18.2.0)
+      '@gramflow/auth':
+        specifier: workspace:*
+        version: link:../../packages/auth
+      '@gramflow/db':
+        specifier: workspace:*
+        version: link:../../packages/db
+      '@gramflow/email':
+        specifier: workspace:*
+        version: link:../../packages/email
+      '@gramflow/tailwind-config':
+        specifier: workspace:*
+        version: link:../../packages/config/tailwind
+      '@gramflow/ui':
+        specifier: workspace:*
+        version: link:../../packages/ui
+      '@gramflow/utils':
+        specifier: workspace:*
+        version: link:../../packages/utils
       '@headlessui/tailwindcss':
         specifier: ^0.2.0
         version: 0.2.0(tailwindcss@3.3.2)
@@ -200,7 +200,7 @@ importers:
         specifier: ^0.5.4
         version: 0.5.4(prisma@3.15.2)(zod@3.21.4)
     devDependencies:
-      '@acme/eslint-config':
+      '@gramflow/eslint-config':
         specifier: workspace:*
         version: link:../../packages/config/eslint
       '@prisma/nextjs-monorepo-workaround-plugin':
@@ -251,22 +251,22 @@ importers:
 
   apps/web:
     dependencies:
-      '@acme/auth':
+      '@gramflow/auth':
         specifier: workspace:*
         version: link:../../packages/auth
-      '@acme/db':
+      '@gramflow/db':
         specifier: workspace:*
         version: link:../../packages/db
-      '@acme/email':
+      '@gramflow/email':
         specifier: workspace:^
         version: link:../../packages/email
-      '@acme/tailwind-config':
+      '@gramflow/tailwind-config':
         specifier: workspace:*
         version: link:../../packages/config/tailwind
-      '@acme/ui':
+      '@gramflow/ui':
         specifier: workspace:*
         version: link:../../packages/ui
-      '@acme/utils':
+      '@gramflow/utils':
         specifier: workspace:*
         version: link:../../packages/utils
       '@hookform/resolvers':
@@ -345,7 +345,7 @@ importers:
         specifier: ^0.5.4
         version: 0.5.4(prisma@3.15.2)(zod@3.21.4)
     devDependencies:
-      '@acme/eslint-config':
+      '@gramflow/eslint-config':
         specifier: workspace:*
         version: link:../../packages/config/eslint
       '@types/node':
@@ -387,7 +387,7 @@ importers:
 
   packages/auth:
     dependencies:
-      '@acme/db':
+      '@gramflow/db':
         specifier: workspace:*
         version: link:../db
       '@next-auth/prisma-adapter':
@@ -412,7 +412,7 @@ importers:
         specifier: ^3.21.4
         version: 3.21.4
     devDependencies:
-      '@acme/eslint-config':
+      '@gramflow/eslint-config':
         specifier: workspace:*
         version: link:../config/eslint
       eslint:
@@ -474,13 +474,13 @@ importers:
 
   packages/db:
     dependencies:
-      '@acme/tailwind-config':
+      '@gramflow/tailwind-config':
         specifier: workspace:*
         version: link:../config/tailwind
-      '@acme/ui':
+      '@gramflow/ui':
         specifier: workspace:*
         version: link:../ui
-      '@acme/utils':
+      '@gramflow/utils':
         specifier: workspace:*
         version: link:../utils
       '@prisma/client':
@@ -508,10 +508,10 @@ importers:
 
   packages/email:
     dependencies:
-      '@acme/db':
+      '@gramflow/db':
         specifier: workspace:^
         version: link:../db
-      '@acme/utils':
+      '@gramflow/utils':
         specifier: workspace:^
         version: link:../utils
       '@react-email/components':
@@ -529,10 +529,10 @@ importers:
 
   packages/email/.react-email:
     dependencies:
-      '@acme/db':
+      '@gramflow/db':
         specifier: workspace:^
         version: link:../../db
-      '@acme/utils':
+      '@gramflow/utils':
         specifier: workspace:^
         version: link:../../utils
       '@radix-ui/colors':
@@ -632,7 +632,7 @@ importers:
 
   packages/ui:
     dependencies:
-      '@acme/utils':
+      '@gramflow/utils':
         specifier: workspace:*
         version: link:../utils
       '@radix-ui/react-accessible-icon':
@@ -750,7 +750,7 @@ importers:
         specifier: ^1.0.5
         version: 1.0.5(tailwindcss@3.3.2)
     devDependencies:
-      '@acme/eslint-config':
+      '@gramflow/eslint-config':
         specifier: workspace:*
         version: link:../config/eslint
       '@types/node':
@@ -799,7 +799,7 @@ importers:
         specifier: ^1.12.0
         version: 1.12.0
     devDependencies:
-      '@acme/eslint-config':
+      '@gramflow/eslint-config':
         specifier: workspace:*
         version: link:../config/eslint
       '@types/mailgun-js':

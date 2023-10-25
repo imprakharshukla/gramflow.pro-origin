@@ -1,5 +1,5 @@
 import {NextResponse} from "next/server";
-import {getUserData} from "@acme/db/dbHelper";
+import {getUserData} from "@gramflow/db/dbHelper";
 
 
 export async function GET(req: Request) {

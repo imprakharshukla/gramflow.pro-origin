@@ -3,7 +3,7 @@ import { NextResponse } from "next/server";
 import { PrismaClient } from "@prisma/client";
 import { z } from "zod";
 
-import { AppConfig } from "@acme/utils";
+import { AppConfig } from "@gramflow/utils";
 
 import { env } from "~/env.mjs";
 

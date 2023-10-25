@@ -2,7 +2,7 @@ import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import { type DefaultSession, type NextAuthOptions } from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 
-import { db } from "@acme/db";
+import { db } from "@gramflow/db";
 
 const allowedEmails = [
   "imprakharshukla@gmail.com",

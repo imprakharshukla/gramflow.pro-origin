@@ -13,12 +13,12 @@ import { auth, currentUser } from "@clerk/nextjs";
 import { Status } from "@prisma/client";
 import { z } from "zod";
 
-import { AppConfig } from "@acme/utils";
-import { type CSVSchema, type OrderSchemaCSV } from "@acme/utils/src/schema";
+import { AppConfig } from "@gramflow/utils";
+import { type CSVSchema, type OrderSchemaCSV } from "@gramflow/utils/src/schema";
 import {
   sendFileToTelegram,
   sendMessageToSlackWithFileLink,
-} from "@acme/utils/src/slackHelper";
+} from "@gramflow/utils/src/slackHelper";
 
 import { env } from "~/env.mjs";
 import { createShipments, getPostIdAndImageIndex } from "~/lib/shippingHelper";

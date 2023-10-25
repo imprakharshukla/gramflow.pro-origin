@@ -9,7 +9,7 @@ import { useForm } from "react-hook-form";
 import { toast } from "react-hot-toast";
 import * as z from "zod";
 
-import { UsersModel } from "@acme/db/prisma/zod";
+import { UsersModel } from "@gramflow/db/prisma/zod";
 import {
   Button,
   Form,
@@ -20,7 +20,7 @@ import {
   FormMessage,
   Input,
   Separator,
-} from "@acme/ui";
+} from "@gramflow/ui";
 import { motion } from "framer-motion";
 
 const addressFormSchema = z.object({

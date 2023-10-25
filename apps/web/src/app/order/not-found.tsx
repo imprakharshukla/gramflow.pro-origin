@@ -1,8 +1,8 @@
 import App from "next/app";
 import Link from "next/link";
 
-import { Button } from "@acme/ui";
-import { AppConfig } from "@acme/utils";
+import { Button } from "@gramflow/ui";
+import { AppConfig } from "@gramflow/utils";
 
 export default function NotFound() {
   return (

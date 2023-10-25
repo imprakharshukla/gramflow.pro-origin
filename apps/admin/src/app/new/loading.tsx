@@ -1,4 +1,4 @@
-import { Loader } from "@acme/ui";
+import { Loader } from "@gramflow/ui";
 
 export default function Loading() {
   // You can add any UI inside Loading, including a Skeleton.

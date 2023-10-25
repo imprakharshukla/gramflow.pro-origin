@@ -10,7 +10,7 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from "@acme/ui";
+} from "@gramflow/ui";
 import { Dispatch, SetStateAction } from "react";
 import { NullableVoidFunction } from "../data-table";
 

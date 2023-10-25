@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import {Status, db as prisma} from './index'
-import {OrderShippingUpdateSchema} from "@acme/utils";
+import {OrderShippingUpdateSchema} from "@gramflow/utils";
 
 
 export const getOrder = async (id: string) => {

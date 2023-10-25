@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { z } from "zod";
 
-import { Loader } from "@acme/ui";
+import { Loader } from "@gramflow/ui";
 
 import { RecordDisplay } from "~/app/dashboard/components/dashboardOrderDetailSheet";
 

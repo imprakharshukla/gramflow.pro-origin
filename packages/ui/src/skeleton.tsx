@@ -1,4 +1,4 @@
-import { cn } from "@acme/utils";
+import { cn } from "@gramflow/utils";
 
 function Skeleton({
   className,

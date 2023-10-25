@@ -31,7 +31,7 @@ import {
 } from "lucide-react";
 import { z } from "zod";
 
-import { type CompleteOrders } from "@acme/db/prisma/zod";
+import { type CompleteOrders } from "@gramflow/db/prisma/zod";
 import {
   Button,
   Card,
@@ -55,8 +55,8 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@acme/ui";
-import { AppConfig } from "@acme/utils";
+} from "@gramflow/ui";
+import { AppConfig } from "@gramflow/utils";
 
 import DashboardBulkOptionsSelectComponent from "./components/dashboadBulkOptionsSelect";
 import DashboardBulkCsvDownloadButton from "./components/dashboardBulkCsvDownloadButton";

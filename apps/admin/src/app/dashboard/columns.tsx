@@ -2,13 +2,12 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { Status } from "@prisma/client";
 import { type ColumnDef } from "@tanstack/react-table";
 import { Badge as StatusBadge, type Color } from "@tremor/react";
 import { format } from "date-fns";
 import { ArrowUpDown, ExternalLink } from "lucide-react";
 
-import { type CompleteOrders } from "@acme/db/prisma/zod";
+import { type CompleteOrders } from "@gramflow/db/prisma/zod";
 import {
   Badge,
   Button,
@@ -18,8 +17,8 @@ import {
   PopoverTrigger,
   Sheet,
   SheetTrigger,
-} from "@acme/ui";
-import { AppConfig } from "@acme/utils";
+} from "@gramflow/ui";
+import { AppConfig } from "@gramflow/utils";
 
 import {
   DashboardOrderDetailSheet,

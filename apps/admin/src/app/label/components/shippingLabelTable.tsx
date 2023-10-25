@@ -1,7 +1,7 @@
 import Image from "next/image";
 
-import { CompleteOrders } from "@acme/db/prisma/zod";
-import { AppConfig } from "@acme/utils";
+import { CompleteOrders } from "@gramflow/db/prisma/zod";
+import { AppConfig } from "@gramflow/utils";
 
 import { type OrderUserType } from "~/app/label/page";
 

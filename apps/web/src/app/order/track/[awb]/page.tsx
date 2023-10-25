@@ -15,7 +15,7 @@ import {
   CardHeader,
   CardTitle,
   Loader,
-} from "@acme/ui";
+} from "@gramflow/ui";
 
 import {
   trackingImportantDetailsSchema,

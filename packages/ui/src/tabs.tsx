@@ -3,7 +3,7 @@
 import * as React from "react";
 import * as TabsPrimitive from "@radix-ui/react-tabs";
 
-import { cn } from "@acme/utils";
+import { cn } from "@gramflow/utils";
 
 const Tabs = TabsPrimitive.Root;
 

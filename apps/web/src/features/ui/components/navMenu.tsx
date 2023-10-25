@@ -1,4 +1,3 @@
-import { AppConfig } from "@acme/utils";
 
 export default function NavMenu({ className }: { className?: string }) {
   return (

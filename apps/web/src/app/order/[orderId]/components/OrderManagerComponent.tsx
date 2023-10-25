@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { z } from "zod";
 
-import { OrderPageOrderFetchSchema } from "@acme/utils/src/schema";
+import { OrderPageOrderFetchSchema } from "@gramflow/utils/src/schema";
 
 import { DetailForm } from "~/features/ui/components/detailForm";
 import OrderCancelledComponent from "./OrderCancelledComponent";

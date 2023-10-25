@@ -1,5 +1,5 @@
 {
-  "name": "@acme/utils",
+  "name": "@gramflow/utils",
   "version": "0.1.0",
   "main": "./index.ts",
   "types": "./index.ts",
@@ -18,7 +18,7 @@
     "tailwind-merge": "^1.12.0"
   },
   "devDependencies": {
-    "@acme/eslint-config": "workspace:*",
+    "@gramflow/eslint-config": "workspace:*",
     "@types/mailgun-js": "^0.22.13",
     "@types/node": "^18.16.5",
     "eslint": "^8.40.0",

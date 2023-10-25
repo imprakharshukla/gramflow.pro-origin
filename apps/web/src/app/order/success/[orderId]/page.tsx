@@ -3,7 +3,7 @@
 import Link from "next/link";
 import Confetti from 'react-confetti'
 import {useEffect, useState} from "react";
-import {Button} from "@acme/ui";
+import {Button} from "@gramflow/ui";
 
 export default function SuccessPage({params}: { params: { orderId: string } }) {
   const [windowSize, setWindowSize] = useState({

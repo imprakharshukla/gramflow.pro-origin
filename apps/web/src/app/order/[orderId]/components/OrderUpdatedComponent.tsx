@@ -6,8 +6,8 @@ import { Status } from "@prisma/client";
 import { motion } from "framer-motion";
 import { type z } from "zod";
 
-import { Button } from "@acme/ui";
-import { type OrderPageOrderFetchSchema } from "@acme/utils/src/schema";
+import { Button } from "@gramflow/ui";
+import { type OrderPageOrderFetchSchema } from "@gramflow/utils/src/schema";
 
 export const OrderStatusTitleDescription = {
   [Status.ACCEPTED]: {

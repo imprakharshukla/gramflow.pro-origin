@@ -1,6 +1,6 @@
 import { type SiteConfig } from "types";
 
-import { AppConfig } from "@acme/utils";
+import { AppConfig } from "@gramflow/utils";
 
 export const siteConfig: SiteConfig = {
   name: AppConfig.AdminWebsiteDetails.name,

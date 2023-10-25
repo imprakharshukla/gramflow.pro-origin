@@ -1,4 +1,4 @@
-import { AppConfig } from "@acme/utils";
+import { AppConfig } from "@gramflow/utils";
 
 export default function NavMenu() {
   return (

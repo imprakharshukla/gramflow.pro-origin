@@ -6,7 +6,7 @@ import {
   UpdateOrderWeightAndSizePutSchema,
   type AddOrderPostSchema,
   type UserSchema,
-} from "@acme/utils/src/schema";
+} from "@gramflow/utils/src/schema";
 
 import { fetchImageUrls } from "./instagramHelper";
 

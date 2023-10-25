@@ -1,6 +1,6 @@
 import type { Config } from "tailwindcss";
 
-import baseConfig from "@acme/tailwind-config";
+import baseConfig from "@gramflow/tailwind-config";
 
 export default {
   content: [

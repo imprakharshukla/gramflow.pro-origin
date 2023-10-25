@@ -1,6 +1,6 @@
 
-import {TailwindIndicator} from "@acme/ui";
-import {cn} from "@acme/utils";
+import {TailwindIndicator} from "@gramflow/ui";
+import {cn} from "@gramflow/utils";
 
 import {siteConfig} from "~/config/site";
 import {fontSans} from "~/lib/fonts";

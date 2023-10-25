@@ -3,7 +3,7 @@ import { isTriggerError } from "@trigger.dev/sdk";
 import { Slack } from "@trigger.dev/slack";
 import { SupabaseManagement } from "@trigger.dev/supabase";
 
-import { AppConfig } from "@acme/utils";
+import { AppConfig } from "@gramflow/utils";
 
 import { env } from "~/env.mjs";
 import { client } from "~/trigger";

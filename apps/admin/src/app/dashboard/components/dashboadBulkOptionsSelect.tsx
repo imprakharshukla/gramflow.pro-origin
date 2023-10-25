@@ -26,7 +26,7 @@ import {
   DropdownMenuSubContent,
   DropdownMenuSubTrigger,
   DropdownMenuTrigger,
-} from "@acme/ui";
+} from "@gramflow/ui";
 
 import { downloadBulkOrderFiles } from "./dashboardBulkCsvDownloadButton";
 

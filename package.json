@@ -1,5 +1,5 @@
 {
-  "name": "blaze-ai",
+  "name": "gramflow",
   "private": true,
   "engines": {
     "node": ">=v18.16.0"
@@ -25,7 +25,7 @@
     "sync": "git pull public main && pnpm i"
   },
   "dependencies": {
-    "@acme/eslint-config": "workspace:*",
+    "@gramflow/eslint-config": "workspace:*",
     "@ianvs/prettier-plugin-sort-imports": "^3.7.2",
     "@manypkg/cli": "^0.20.0",
     "@types/prettier": "^2.7.3",

@@ -17,8 +17,8 @@ import {
   Text,
 } from "@react-email/components";
 
-import { CompleteOrders } from "@acme/db/prisma/zod";
-import { AppConfig } from "@acme/utils";
+
+import { AppConfig } from "@gramflow/utils";
 
 const defaultOrder = {
   id: "7bd099e6-b463-4698-bed8-56d345sds2e2",

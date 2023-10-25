@@ -5,12 +5,12 @@ import { Status } from "@prisma/client";
 import { Resend } from "resend";
 import { z } from "zod";
 
-import { addOrder, checkIfAnyOrderContainsProducts } from "@acme/db/dbHelper";
-import { fetchImageUrls } from "@acme/db/instagramHelper";
-import { OrderShippedEmail } from "@acme/email";
-import { AppConfig } from "@acme/utils";
-import { AddOrderPostSchema } from "@acme/utils/src/schema";
-import { sendMessageWithSectionsAndImages } from "@acme/utils/src/slackHelper";
+import { addOrder, checkIfAnyOrderContainsProducts } from "@gramflow/db/dbHelper";
+import { fetchImageUrls } from "@gramflow/db/instagramHelper";
+import { OrderShippedEmail } from "@gramflow/email";
+import { AppConfig } from "@gramflow/utils";
+import { AddOrderPostSchema } from "@gramflow/utils/src/schema";
+import { sendMessageWithSectionsAndImages } from "@gramflow/utils/src/slackHelper";
 
 import { env } from "~/env.mjs";
 import { prisma } from "../../../lib/prismaClient";

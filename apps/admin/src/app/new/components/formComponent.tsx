@@ -27,8 +27,8 @@ import {
   Label,
   Loader,
   Separator,
-} from "@acme/ui";
-import { AppConfig, cn } from "@acme/utils";
+} from "@gramflow/ui";
+import { AppConfig, cn } from "@gramflow/utils";
 
 import { RecordDisplay } from "~/app/dashboard/components/dashboardOrderDetailSheet";
 import { GreetingsComponent } from "~/features/ui/components/greetingsComponent";

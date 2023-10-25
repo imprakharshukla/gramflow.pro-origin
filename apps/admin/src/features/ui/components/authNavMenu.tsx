@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { UserButton } from "@clerk/nextjs";
-import { AppConfig } from "@acme/utils";
+import { AppConfig } from "@gramflow/utils";
 import { ThemeToggle } from "./theme-toggle";
 
 export default function AuthNavMenu() {
