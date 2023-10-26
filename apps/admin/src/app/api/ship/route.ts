@@ -411,10 +411,10 @@ export const updateStatusFromDelhivery = async (
       .then((response) => response.json())
       .then((response) => {
         try {
-          console.log({ response });
+          console.log({ response: JSON.stringify(response) });
           if (response && response.ShipmentData) {
             const validated = DelhiveryTrackingSchema.parse(response);
-            console.log({ validated });
+            console.log({ validated: JSON.stringify(validated) });
             const shipments = validated.ShipmentData;
             shipments.map(async (shipment) => {
               const status = shipment.Shipment.Status.Status;
@@ -427,7 +427,7 @@ export const updateStatusFromDelhivery = async (
               } else if (status === "Manifested") {
                 statusToBeUpdated = Status.MANIFESTED;
               } else if (
-                status === "Dispatch" &&
+                status === "Dispatched" &&
                 shipment.Shipment.Status.Instructions === "Out for delivery"
               ) {
                 statusToBeUpdated = Status.OUT_FOR_DELIVERY;

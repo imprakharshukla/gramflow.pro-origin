@@ -223,7 +223,7 @@ export async function OPTIONS(req: Request) {
       const order = orders[i];
       if (order && order.user?.email) {
         const data = await resend.emails.send({
-          from: `${AppConfig.StoreName.replace(" ", "")} <no-reply@${
+          from: `${AppConfig.StoreName} <no-reply@${
             env.RESEND_DOMAIN
           }>`,
           to: [order?.user?.email],

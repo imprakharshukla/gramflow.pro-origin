@@ -64,7 +64,7 @@ client.defineJob({
 
     const order = payload.record;
     const data = await resend.emails.send({
-      from: `${AppConfig.StoreName.replace(" ", "")} <no-reply@${
+      from: `${AppConfig.StoreName} <no-reply@${
         env.RESEND_DOMAIN
       }>`,
       to: [user.email],

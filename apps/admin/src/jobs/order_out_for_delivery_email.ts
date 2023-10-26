@@ -32,10 +32,10 @@ client.defineJob({
     table: "Orders",
     filter: {
       old_record: {
-        status: [{ $ignoreCaseEquals: Status.SHIPPED }],
+        status: [{ $ignoreCaseEquals: "SHIPPED" }],
       },
       record: {
-        status: [{ $ignoreCaseEquals: Status.OUT_FOR_DELIVERY }],
+        status: [{ $ignoreCaseEquals: "OUT_FOR_DELIVERY" }],
       },
     },
   }),
@@ -65,7 +65,7 @@ client.defineJob({
     const order = payload.record;
 
     const data = await resend.emails.send({
-      from: `${AppConfig.StoreName.replace(" ", "")} <no-reply@${
+      from: `${AppConfig.StoreName} <no-reply@${
         env.RESEND_DOMAIN
       }>`,
       to: [user.email],
