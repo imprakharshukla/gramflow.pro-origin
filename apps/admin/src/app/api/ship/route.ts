@@ -14,15 +14,18 @@ import { Status } from "@prisma/client";
 import { z } from "zod";
 
 import { AppConfig } from "@gramflow/utils";
-import { type CSVSchema, type OrderSchemaCSV } from "@gramflow/utils/src/schema";
+import {
+  type CSVSchema,
+  type OrderSchemaCSV,
+} from "@gramflow/utils/src/schema";
 import {
   sendFileToTelegram,
   sendMessageToSlackWithFileLink,
 } from "@gramflow/utils/src/slackHelper";
 
 import { env } from "~/env.mjs";
+import { prisma } from "~/lib/prismaClient";
 import { createShipments, getPostIdAndImageIndex } from "~/lib/shippingHelper";
-import { prisma } from "../../../lib/prismaClient";
 
 const fsp = fs.promises;
 const createCsvWriter = require("csv-writer").createObjectCsvWriter;
@@ -165,10 +168,10 @@ export async function PUT(req: Request) {
         "Item Sku Name": products.join(" & "),
         "Quantity Ordered": "1",
         "Unit Item Price": totalPrice.toString() ?? "100",
-        "Length (cm)": "25",
-        "Breadth (cm)": "20",
-        "Height (cm)": "5",
-        "Weight (gm)": "500",
+        "Length (cm)": order.length ?? "20",
+        "Breadth (cm)": order.breadth ?? "20",
+        "Height (cm)": order.height ?? "10",
+        "Weight (gm)": order.weight ?? "500",
         "Fragile Shipment": "No",
         "Discount Type": "",
         "Discount Value": "",
@@ -247,7 +250,6 @@ export async function PUT(req: Request) {
 
     await csvWriter.writeRecords(csvArray);
     console.log(`CSV file written to ${tempFilePath}`);
-
 
     //upload the file to s3 cloudflare r2
     const S3 = new S3Client({
@@ -424,7 +426,10 @@ export const updateStatusFromDelhivery = async (
                 statusToBeUpdated = Status.SHIPPED;
               } else if (status === "Manifested") {
                 statusToBeUpdated = Status.MANIFESTED;
-              } else if (status === "Out for Delivery") {
+              } else if (
+                status === "Dispatch" &&
+                shipment.Shipment.Status.Instructions === "Out for delivery"
+              ) {
                 statusToBeUpdated = Status.OUT_FOR_DELIVERY;
               }
 

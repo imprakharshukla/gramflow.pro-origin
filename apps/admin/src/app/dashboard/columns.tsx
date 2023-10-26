@@ -96,10 +96,18 @@ export const columns: ColumnDef<CompleteOrders>[] = [
     header: () => <div className={"w-12"}>No. of Items</div>,
     cell: ({ row }) => {
       const height = row.original.height;
+      const length = row.original.length;
+      const weight = row.original.weight;
+      const breadth = row.original.breadth;
       let packageSize = "Custom";
       Object.entries(AppConfig.DefaultPackageDetails).forEach(
         ([key, value]) => {
-          if (value.height === height) {
+          if (
+            value.height === height &&
+            value.length === length &&
+            value.weight === weight &&
+            value.breadth === breadth
+          ) {
             packageSize = key;
           }
         },
