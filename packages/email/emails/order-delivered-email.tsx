@@ -15,16 +15,21 @@ import {
   Section,
   Tailwind,
   Text,
-} from "@react-email/components";
+} from "@jsx-email/all";
+import { COURIER } from "@prisma/client";
+import { z } from "zod";
 
-import { CompleteOrders } from "@gramflow/db/prisma/zod";
 import { AppConfig } from "@gramflow/utils";
 
-import { COURIER } from "@prisma/client";
+import { OrderEmailSchema } from "./schema";
 
+const OrderDeliveredEmailSchema = OrderEmailSchema.extend({
+  id: z.string().default("3532"),
+  awb: z.string().default("355"),
+  courier: z.nativeEnum(COURIER).default("DEFAULT"),
+});
 
 export const OrderDeliveredEmail = ({
-  id,
   awb,
   name,
   house_number,
@@ -35,19 +40,19 @@ export const OrderDeliveredEmail = ({
   courier,
   state,
   country,
-}: {
-  id: string;
-  courier: COURIER;
-  awb: string;
-  name: string;
-  house_number: string;
-  pincode: string;
-  landmark: string;
-  locality: string;
-  city: string;
-  state: string;
-  country: string;
-}) => {
+}: z.infer<typeof OrderDeliveredEmailSchema>) => {
+  const details = OrderDeliveredEmailSchema.parse({
+    awb,
+    name,
+    house_number,
+    pincode,
+    landmark,
+    locality,
+    city,
+    courier,
+    state,
+    country,
+  });
   return (
     <Html>
       <Head />
@@ -78,17 +83,17 @@ export const OrderDeliveredEmail = ({
               <Text className="text-md font-semibold">Delivered At:</Text>
 
               <Text className="-mb-2 text-xs font-semibold">
-                {name}
+                {details.name}
                 {","}
               </Text>
               <Text className="text-xs text-gray-500">
-                {house_number}
-                {landmark ? `, ${landmark}` : ""}
-                {","} {locality}
-                {","} {city}
-                {","} {state}
-                {","} {country}
-                {"-"} {pincode}
+                {details.house_number}
+                {details.landmark ? `, ${details.landmark}` : ""}
+                {","} {details.locality}
+                {","} {details.city}
+                {","} {details.state}
+                {","} {details.country}
+                {"-"} {details.pincode}
               </Text>
 
               <Button
@@ -101,9 +106,9 @@ export const OrderDeliveredEmail = ({
                 Delivered by{","}
               </Text>
               <Text className="text-xs text-gray-500">
-                {courier.slice(0, 1).toUpperCase() +
-                  courier.slice(1).toLowerCase()}
-                - {awb}
+                {details.courier.slice(0, 1).toUpperCase() +
+                  details.courier.slice(1).toLowerCase()}
+                - {details.awb}
               </Text>
             </Section>
             <Hr />

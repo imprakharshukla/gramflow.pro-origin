@@ -15,7 +15,7 @@ import {
   Section,
   Tailwind,
   Text,
-} from "@react-email/components";
+} from "@jsx-email/all";
 
 import { AppConfig } from "@gramflow/utils";
 
@@ -24,7 +24,8 @@ export const OtpEmail = ({ otp = "0000" }: { otp: string }) => {
     <Html>
       <Head />
       <Preview>
-       Your OTP from {AppConfig.StoreName} (@{AppConfig.InstagramUsername}) is {otp}.
+        Your OTP from {AppConfig.StoreName} (@{AppConfig.InstagramUsername}) is{" "}
+        {otp}.
       </Preview>
       <Tailwind>
         <Body className="mx-auto my-auto bg-white font-sans">
@@ -54,7 +55,7 @@ export const OtpEmail = ({ otp = "0000" }: { otp: string }) => {
             <Section>
               <Text className="-mb-2 font-semibold">Not Requested?</Text>
               <Text className="text-sm text-gray-500">
-                If you have not requested the OTP, please let us know at {" "}
+                If you have not requested the OTP, please let us know at{" "}
                 <Link
                   className="text-pink-600 underline"
                   href={`https://instagram.com/${AppConfig.InstagramUsername}`}
@@ -66,11 +67,11 @@ export const OtpEmail = ({ otp = "0000" }: { otp: string }) => {
             </Section>
             <Hr className="-mb-2 mt-6" />
             <Section style={paddingY}>
-                         <Img
+              <Img
                 src={`${AppConfig.BaseOrderUrl}/cl_email_logo.png`}
                 height="80"
                 alt={`${AppConfig.StoreName} Logo`}
-                className="mx-auto my-0 shadow rounded-full"
+                className="mx-auto my-0 rounded-full shadow"
               />
               <Row>
                 <Column align="center">

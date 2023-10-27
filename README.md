@@ -86,7 +86,7 @@ Gramflow Web is a customer facing web-app that enables customers to submit their
   
 We use the following tech stack:  
   
-- NextJS (App. Directory) w Typescript  
+- NextJS 14(App. Directory) w Typescript  
 - Turborepo (Monorepo)  
 - PNPM Workspaces (Managing dependencies and packages within the monorepo)
 - Tailwind CSS  
