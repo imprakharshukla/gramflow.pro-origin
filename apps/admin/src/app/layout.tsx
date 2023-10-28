@@ -1,3 +1,5 @@
+import { GeistSans } from "geist/font";
+
 import { TailwindIndicator } from "@gramflow/ui";
 import { cn } from "@gramflow/utils";
 
@@ -85,13 +87,13 @@ export default async function RootLayout({
           <body
             className={cn(
               "min-h-screen bg-background font-sans antialiased",
-              fontSans.variable,
+              GeistSans.className,
             )}
           >
             <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
               <Toaster />
 
-              <div className="relative flex min-h-screen flex-col">
+              <div className={`relative flex min-h-screen flex-col`}>
                 {children}
               </div>
             </ThemeProvider>

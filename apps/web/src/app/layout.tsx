@@ -10,7 +10,7 @@ import "~/styles/globals.css";
 import QueryProvider from "~/providers/query-provider";
 import {Toaster} from 'react-hot-toast';
 import {Metadata} from "next";
-
+import { GeistSans } from "geist/font";
 
 
 export const metadata:Metadata = {
@@ -71,7 +71,7 @@ export default function RootLayout({
     <body
       className={cn(
         "min-h-screen bg-background font-sans antialiased",
-        fontSans.variable,
+        GeistSans.className,
       )}
     >
     <AuthSessionProvider>

@@ -49,6 +49,7 @@
     "date-fns": "^2.30.0",
     "eslint-config-next": "^14.0.0",
     "framer-motion": "^10.16.4",
+    "geist": "^1.0.0",
     "install": "^0.13.0",
     "jest": "^29.6.4",
     "jest-environment-jsdom": "^29.6.4",
