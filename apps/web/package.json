@@ -20,6 +20,7 @@
     "@gramflow/ui": "workspace:*",
     "@gramflow/utils": "workspace:*",
     "@hookform/resolvers": "^3.2.0",
+    "@jsx-email/render": "^1.1.1",
     "@prisma/nextjs-monorepo-workaround-plugin": "^5.4.2",
     "@t3-oss/env-nextjs": "^0.3.1",
     "@tanstack/react-query": "^4.32.6",
@@ -40,7 +41,6 @@
     "react-dom": "18.2.0",
     "react-hook-form": "^7.45.4",
     "react-hot-toast": "^2.4.1",
-    "resend": "^1.1.0",
     "superjson": "1.9.1",
     "zod": "^3.21.4",
     "zod-prisma": "^0.5.4"

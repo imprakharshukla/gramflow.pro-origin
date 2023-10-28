@@ -15,8 +15,8 @@ import {
   Section,
   Tailwind,
   Text,
+  render
 } from "@jsx-email/all";
-import { COURIER } from "@prisma/client";
 import { z } from "zod";
 
 import { AppConfig } from "@gramflow/utils";
@@ -161,6 +161,7 @@ export const OrderAcceptedEmail = ({
   );
 };
 export default OrderAcceptedEmail;
+
 
 const paddingX = {
   paddingLeft: "40px",

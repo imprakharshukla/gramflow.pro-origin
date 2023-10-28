@@ -1,9 +1,9 @@
-import { COURIER, Status } from "@prisma/client";
+import { render } from "@jsx-email/render";
+import { Status } from "@prisma/client";
 import { Slack } from "@trigger.dev/slack";
 import { SupabaseManagement } from "@trigger.dev/supabase";
-import { Resend } from "resend";
 
-import { OrderAcceptedEmail } from "@gramflow/email";
+import { OrderDeliveredEmail, SendEmailViaResend } from "@gramflow/email";
 import { AppConfig } from "@gramflow/utils";
 
 import { env } from "~/env.mjs";
@@ -11,7 +11,6 @@ import { client } from "~/trigger";
 import { type Database } from "../../types/supabase";
 import { prisma } from "../lib/prismaClient";
 
-const resend = new Resend(env.RESEND_API_KEY);
 const slack = new Slack({
   id: "slack",
 });
@@ -24,18 +23,18 @@ const supabaseManagement = new SupabaseManagement({
 const supabaseTriggers = supabaseManagement.db<Database>(env.SUPABASE_URL);
 
 client.defineJob({
-  id: "order-placed-email",
-  name: "Order Placed Email",
+  id: "order-delivered-email",
+  name: "Order Delivered Email",
   version: "1.0.0",
   trigger: supabaseTriggers.onUpdated({
     schema: "public",
     table: "Orders",
     filter: {
       old_record: {
-        status: [{ $ignoreCaseEquals: Status.PENDING }],
+        status: [{ $ignoreCaseEquals: Status.OUT_FOR_DELIVERY }],
       },
       record: {
-        status: [{ $ignoreCaseEquals: Status.ACCEPTED }],
+        status: [{ $ignoreCaseEquals: Status.DELIVERED }],
       },
     },
   }),
@@ -63,31 +62,36 @@ client.defineJob({
     }
 
     const order = payload.record;
-    const data = await resend.emails.send({
+    const html = render(
+      <OrderDeliveredEmail
+        awb={order.awb ?? ""}
+        courier={order.courier}
+        id={order.id}
+        name={user.name}
+        house_number={user.house_number}
+        pincode={user.pincode}
+        landmark={user.landmark ?? ""}
+        locality={user.locality}
+        city={user.city}
+        state={user.state}
+        country={user.country}
+      />,
+    );
+    const data = await SendEmailViaResend({
       from: `${AppConfig.StoreName.replace(" ", "")} <no-reply@${
         env.RESEND_DOMAIN
       }>`,
       to: [user.email],
-      subject: "Order Placed",
-      react: OrderAcceptedEmail({
-        id: order.id,
-        awb: order.awb ?? "",
-        name: user.name,
-        house_number: user.house_number,
-        pincode: user.pincode,
-        landmark: user.landmark ?? "",
-        locality: user.locality,
-        city: user.city,
-        state: user.state,
-        country: user.country,
-      }),
+      subject: "Order Delivered",
+      RESEND_API_KEY: env.RESEND_API_KEY,
+      html,
     });
     console.log({ data });
     console.log(`Email sent to ${user.email}`);
 
     await io.slack.postMessage("post message", {
       channel: "C05PJ1T8CE7",
-      text: `Sent email to ${user.email} for placed order ${payload.record.id}! ✅`,
+      text: `Sent email to ${user.email} for delivered order ${payload.record.id}! ✅`,
     });
     await io.logger.info(`Email sent to ${user.email}`);
     return { status: "success" };

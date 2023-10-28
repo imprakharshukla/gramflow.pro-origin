@@ -28,7 +28,7 @@
     "@headlessui/tailwindcss": "^0.2.0",
     "@heroicons/react": "1.0.6",
     "@hookform/resolvers": "^3.2.0",
-
+    "@jsx-email/render": "^1.1.1",
     "@supabase/auth-helpers-nextjs": "^0.7.4",
     "@supabase/supabase-js": "^2.33.1",
     "@t3-oss/env-nextjs": "^0.3.1",
@@ -63,7 +63,6 @@
     "react-dom": "18.2.0",
     "react-hook-form": "^7.45.4",
     "react-intersection-observer": "^9.5.2",
-    "resend": "^1.1.0",
     "supabase": "^1.88.0",
     "superjson": "1.9.1",
     "web": "^0.0.2",
