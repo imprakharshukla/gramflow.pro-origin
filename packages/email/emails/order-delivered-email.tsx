@@ -16,7 +16,7 @@ import {
   Tailwind,
   Text,
 } from "@jsx-email/all";
-import { COURIER } from "@prisma/client";
+import { Courier as COURIER } from "@gramflow/db";
 import { z } from "zod";
 
 import { AppConfig } from "@gramflow/utils";

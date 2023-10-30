@@ -1,6 +1,6 @@
 import * as React from "react";
 import { Body, Button, Column, Container, Head, Heading, Hr, Html, Img, Link, Preview, Row, Section, Tailwind, Text } from "@jsx-email/all";
-import { COURIER, Orders, Users } from "@prisma/client";
+import { Courier as COURIER } from "@gramflow/db";
 import { z } from "zod";
 
 
