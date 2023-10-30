@@ -25,7 +25,7 @@ export const SendEmailViaResend = async ({
         html,
       }),
     })
-      .then((res) => res.json())
+      .then((res) => resolve(res.json()))
       .catch((err) => reject(err));
   });
 };
