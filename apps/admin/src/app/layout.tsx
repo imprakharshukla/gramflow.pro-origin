@@ -1,4 +1,5 @@
 import { GeistSans } from "geist/font";
+import { AppProgressBar as ProgressBar } from "next-nprogress-bar";
 
 import { TailwindIndicator } from "@gramflow/ui";
 import { cn } from "@gramflow/utils";
@@ -11,6 +12,7 @@ import { Metadata } from "next";
 import { ClerkProvider } from "@clerk/nextjs";
 import { Toaster } from "react-hot-toast";
 
+import { PageLoaderProvider } from "~/providers/page-loader-provider";
 import QueryProvider from "~/providers/query-provider";
 
 export const metadata: Metadata = {
@@ -92,10 +94,11 @@ export default async function RootLayout({
           >
             <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
               <Toaster />
-
-              <div className={`relative flex min-h-screen flex-col`}>
-                {children}
-              </div>
+              <PageLoaderProvider>
+                <div className={`relative flex min-h-screen flex-col`}>
+                  {children}
+                </div>
+              </PageLoaderProvider>
             </ThemeProvider>
 
             <TailwindIndicator />
