@@ -64,7 +64,7 @@ export interface SelectedPostsPropType {
 }
 
 function extractPricesFromCaption(inputString: string): number[] {
-  const regex = /\d+/g;
+  const regex = /\d{3}/g;
   const matches = inputString.match(regex);
   if (matches) {
     return matches.map((match) => parseInt(match, 10));
