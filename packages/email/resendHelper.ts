@@ -11,8 +11,8 @@ export const SendEmailViaResend = async ({
   subject: string;
   RESEND_API_KEY: string;
 }) => {
-  return new Promise(async (resolve, reject) => {
-    await fetch("https://api.resend.com/emails", {
+  try {
+    const response = await fetch("https://api.resend.com/emails", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -24,8 +24,15 @@ export const SendEmailViaResend = async ({
         subject,
         html,
       }),
-    })
-      .then((res) => resolve(res.json()))
-      .catch((err) => reject(err));
-  });
+    });
+    if (response.ok) {
+      return response.json();
+    } else {
+      console.error("Error sending email:", response.statusText);
+      throw new Error("Error sending email");
+    }
+  } catch (error) {
+    console.error("Error sending email:", error);
+    throw new Error("Error sending email");
+  }
 };
