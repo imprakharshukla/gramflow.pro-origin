@@ -1,6 +1,4 @@
-import {PrismaClient} from "@prisma/client";
-import {OrdersModel, UsersModel} from "./prisma/zod";
-import {z} from "zod";
+import {COURIER, PrismaClient, Status} from "@prisma/client";
 
 export * from "@prisma/client";
 
@@ -16,7 +14,9 @@ export const db =
   });
 
 export {
-  PrismaClient as PrismaClientSingleton
+  PrismaClient as PrismaClientSingleton,
+  COURIER as Courier,
+  Status as Status
 }
 
 if (process.env.NODE_ENV !== "production") globalForPrisma.prisma = db;
