@@ -3,6 +3,7 @@
 import { use, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { Title } from "@tremor/react";
 import { ca } from "date-fns/locale";
 import { motion } from "framer-motion";
 import { HomeIcon, Loader2 } from "lucide-react";
@@ -21,6 +22,8 @@ import {
   Input,
   Separator,
 } from "@gramflow/ui";
+
+import { GreetingsComponent } from "./greetingsComponent";
 
 const addressFormSchema = z.object({
   name: z.string().min(2, {
@@ -143,6 +146,8 @@ export function DetailForm({ orderId }: { orderId: string }) {
     },
   });
 
+  const [fetchLoading, setFetchLoading] = useState(false);
+
   useEffect(() => {
     console.log(currentStep);
   }, [currentStep]);
@@ -200,6 +205,40 @@ export function DetailForm({ orderId }: { orderId: string }) {
         });
       });
   };
+  const fetchUserDetails = async () => {
+    setFetchLoading(true);
+    console.log(addressHookForm.getValues("email"));
+    try {
+      const res = await fetch(
+        `/api/user?email=${addressHookForm.getValues("email")}`,
+        { method: "GET" },
+      );
+      if (!res.ok) {
+        toast.error("Error fetching user details");
+      }
+      const jsonRes = await res.json();
+      console.log({ jsonRes });
+
+      //checking if the token is present in the request
+      if (jsonRes.user) {
+        // iterate the object and use the key value to set the form value in a loop
+        console.log({ userJson: jsonRes.user });
+        for (const [key, value] of Object.entries(jsonRes.user)) {
+          // @ts-ignore
+          if (value && !(value instanceof Date) && value.length > 0)
+            console.log(key, value);
+          // @ts-ignore
+          addressHookForm.setValue(key, value);
+        }
+      } else {
+        toast.error("User not found");
+      }
+    } catch (e) {
+      console.log(e);
+    } finally {
+      setFetchLoading(false);
+    }
+  };
 
   useEffect(() => {
     const subscription = addressHookForm.watch((value, { name, type }) => {
@@ -219,21 +258,37 @@ export function DetailForm({ orderId }: { orderId: string }) {
           onSubmit={addressHookForm.handleSubmit(onSubmit)}
           className="w-5/6 space-y-8 animate-in fade-in duration-200 md:max-w-sm"
         >
-          <FormField
-            control={addressHookForm.control}
-            name="email"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>
-                  Email <span className={"text-pink-400"}>*</span>
-                </FormLabel>
-                <FormControl>
-                  <Input placeholder="Email" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+          <div className="flex items-center gap-2">
+            <FormField
+              control={addressHookForm.control}
+              name="email"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>
+                    Email <span className={"text-pink-400"}>*</span>
+                  </FormLabel>
+                  <FormControl>
+                    <Input placeholder="Email" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <div className="mt-8">
+              <Button
+                type="button"
+                onClick={() => {
+                  fetchUserDetails();
+                }}
+                variant={"outline"}
+              >
+                {fetchLoading && (
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                )}
+                Fetch Details
+              </Button>
+            </div>
+          </div>
           <FormField
             control={addressHookForm.control}
             name="name"
@@ -407,27 +462,29 @@ export function DetailForm({ orderId }: { orderId: string }) {
     );
   };
   return (
-    <div className={"mt-32"}>
-      <Button onClick={() => router.push(`/`)} variant={"outline"}>
-        <HomeIcon className="h-4 w-4" />
-      </Button>
+    <div className={"flex w-full items-center justify-center"}>
+      <div className="px-4 py-2">
+        <div className="sticky top-0 z-10 flex flex-wrap items-center justify-between gap-3 bg-background py-4 dark:bg-background">
+          <div>
+            <Title>Accept Order</Title>
+            <GreetingsComponent text="Please add the following details or fetch details via Email." />
+          </div>
 
-      <h1 className="text-center text-lg font-semibold md:text-xl">
-        Order- {orderId}
-      </h1>
-      <p className={"text-center text-sm text-muted-foreground md:text-base"}>
-        {
-          // @ts-ignore
-          description[currentStep.valueOf()]
-        }
-      </p>
-      <motion.div
-        initial={{ x: -300, opacity: 0 }}
-        animate={{ x: 0, opacity: 1 }}
-        className={"my-12 flex w-full items-center justify-center"}
-      >
-        {currentStep === FormState.ADDRESS && AddressForm()}
-      </motion.div>
+          <div className="">
+            <Button onClick={() => router.push(`/`)} variant={"outline"}>
+              <HomeIcon className="h-4 w-4" />
+            </Button>
+          </div>
+        </div>
+
+        <motion.div
+          initial={{ x: -300, opacity: 0 }}
+          animate={{ x: 0, opacity: 1 }}
+          className={"my-12 flex w-full items-center justify-center"}
+        >
+          {currentStep === FormState.ADDRESS && AddressForm()}
+        </motion.div>
+      </div>
     </div>
   );
 }
