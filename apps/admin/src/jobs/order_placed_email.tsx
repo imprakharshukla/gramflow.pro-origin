@@ -1,7 +1,7 @@
-import { render } from "@jsx-email/render";
-import { COURIER, Status } from "@prisma/client";
+import { Status } from "@prisma/client";
 import { Slack } from "@trigger.dev/slack";
 import { SupabaseManagement } from "@trigger.dev/supabase";
+import { Resend } from "resend";
 
 import { OrderAcceptedEmail, SendEmailViaResend } from "@gramflow/email";
 import { AppConfig } from "@gramflow/utils";
@@ -14,6 +14,8 @@ import { prisma } from "../lib/prismaClient";
 const slack = new Slack({
   id: "slack",
 });
+
+const resend = new Resend(env.RESEND_API_KEY);
 
 // Use OAuth to authenticate with Supabase Management API
 const supabaseManagement = new SupabaseManagement({
@@ -63,27 +65,21 @@ client.defineJob({
 
     const order = payload.record;
 
-    const html = render(
-      <OrderAcceptedEmail
-        id={order.id}
-        name={user.name}
-        house_number={user.house_number}
-        pincode={user.pincode}
-        landmark={user.landmark ?? ""}
-        locality={user.locality}
-        city={user.city}
-        state={user.state}
-        country={user.country}
-      />,
-    );
-    const data = await SendEmailViaResend({
-      from: `${AppConfig.StoreName.replace(" ", "")} <no-reply@${
-        env.RESEND_DOMAIN
-      }>`,
+    const data = await resend.emails.send({
+      from: `${AppConfig.StoreName} <no-reply@${env.RESEND_DOMAIN}>`,
       to: [user.email],
       subject: "Order Placed",
-      RESEND_API_KEY: env.RESEND_API_KEY,
-      html,
+      react: OrderAcceptedEmail({
+        id: order.id,
+        name: user.name,
+        house_number: user.house_number,
+        pincode: user.pincode,
+        landmark: user.landmark ?? "",
+        locality: user.locality,
+        city: user.city,
+        state: user.state,
+        country: user.country,
+      }),
     });
     console.log({ data });
     console.log(`Email sent to ${user.email}`);

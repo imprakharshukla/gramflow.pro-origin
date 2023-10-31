@@ -2,6 +2,7 @@ import { render } from "@jsx-email/render";
 import { Status } from "@prisma/client";
 import { Slack } from "@trigger.dev/slack";
 import { SupabaseManagement } from "@trigger.dev/supabase";
+import { Resend } from "resend";
 
 import { OrderShippedEmail, SendEmailViaResend } from "@gramflow/email";
 import { AppConfig } from "@gramflow/utils";
@@ -11,6 +12,7 @@ import { client } from "~/trigger";
 import { Database } from "../../types/supabase";
 import { prisma } from "../lib/prismaClient";
 
+const resend = new Resend(env.RESEND_API_KEY);
 // Use OAuth to authenticate with Supabase Management API
 const supabaseManagement = new SupabaseManagement({
   id: env.TRIGGER_SUPABASE_ID ?? "",
@@ -66,28 +68,22 @@ client.defineJob({
 
     const order = payload.record;
 
-    const html = render(
-      <OrderShippedEmail
-        awb={order.awb ?? ""}
-        courier={order.courier ?? ""}
-        name={user.name}
-        house_number={user.house_number}
-        pincode={user.pincode}
-        landmark={user.landmark ?? ""}
-        locality={user.locality}
-        city={user.city}
-        state={user.state}
-        country={user.country}
-      />,
-    );
-    const data = await SendEmailViaResend({
-      from: `${AppConfig.StoreName.replace(" ", "")} <no-reply@${
-        env.RESEND_DOMAIN
-      }>`,
-      subject: "Order Shipped",
+    const data = await resend.emails.send({
+      from: `${AppConfig.StoreName} <no-reply@${env.RESEND_DOMAIN}>`,
       to: [user.email],
-      RESEND_API_KEY: env.RESEND_API_KEY,
-      html,
+      subject: "Order Shipped",
+      react: OrderShippedEmail({
+        awb: order.awb ?? "",
+        name: user.name,
+        courier: order.courier ?? "",
+        house_number: user.house_number,
+        pincode: user.pincode,
+        landmark: user.landmark ?? "",
+        locality: user.locality,
+        city: user.city,
+        state: user.state,
+        country: user.country,
+      }),
     });
     console.log({ data });
     console.log(`Email sent to ${user.email}`);

@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { render } from "@jsx-email/render";
+import { Resend } from "resend";
 import { z } from "zod";
 
 import { OtpEmail, SendEmailViaResend } from "@gramflow/email";
@@ -8,8 +9,8 @@ import { AppConfig } from "@gramflow/utils";
 import { env } from "~/env.mjs";
 import { prisma } from "../../../lib/prismaClient";
 
-
 export async function GET(req: Request) {
+  const resend = new Resend(env.RESEND_API_KEY);
   try {
     const { searchParams } = new URL(req.url);
     const email = searchParams.get("email") ?? "";
@@ -35,16 +36,14 @@ export async function GET(req: Request) {
       },
     });
 
-    const html = render(<OtpEmail otp={otp} />);
-
-    const data = await SendEmailViaResend({
+    const data = await resend.emails.send({
       from: `${AppConfig.StoreName.replace(" ", "")} <no-reply@${
         env.RESEND_DOMAIN
       }>`,
       to: [email],
       subject: `${AppConfig.StoreName} OTP is ${otp}`,
-      RESEND_API_KEY: env.RESEND_API_KEY,
-      html,
+      //@ts-ignore
+      react: OtpEmail({ otp: otp }),
     });
     console.log({ data });
     console.log(`Email sent to ${email}`);
