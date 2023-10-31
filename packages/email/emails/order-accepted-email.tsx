@@ -15,20 +15,53 @@ import {
   Section,
   Tailwind,
   Text,
-  render
-} from "@jsx-email/all";
-import { z } from "zod";
+} from "@react-email/components";
+
 
 import { AppConfig } from "@gramflow/utils";
 
-import { OrderEmailSchema } from "./schema";
-
-const OrderAcceptedEmailSchema = OrderEmailSchema.extend({
-  id: z.string().default("3532"),
-});
+const defaultOrder = {
+  id: "7bd099e6-b463-4698-bed8-56d345sds2e2",
+  instagram_post_urls: [
+    "https://www.instagram.com/p/CyTQHfjvtDE/?img_index=2&price=850",
+    "https://www.instagram.com/p/CyTQHfjvtDE/?img_index=2&price=850",
+  ],
+  user_id: "cbbe5b5b-4466-4c9d-a6d3-2c687faedabe",
+  price: 850,
+  status: "DELIVERED",
+  courier: "DEFAULT",
+  images: [
+    `https://${AppConfig.ImageBaseUrl}/clnn8az1h0002lc0fcvvj789s_0.jpg`,
+    `https://${AppConfig.ImageBaseUrl}/clnn8az1h0002lc0fcvvj789s_0.jpg`,
+  ],
+  awb: "24478913501013",
+  created_at: "2023-10-14T14:58:33.385Z",
+  updated_at: "2023-10-18T06:48:03.961Z",
+  length: "0",
+  breadth: "0",
+  height: "0",
+  weight: "0",
+  user: {
+    id: "cbbe5b5b-4466-4c9d-a6d3-2c687fsddabe",
+    name: "John Doe",
+    email: "johndoe@gmail.com",
+    house_number: "John Residence",
+    pincode: "131029",
+    landmark: "Ashoka University",
+    locality: "Rajiv Gandhi Educational City",
+    instagram_username: "john_doe",
+    city: "Sonipat",
+    state: "Haryana",
+    country: "India",
+    phone_no: "9999999999",
+    created_at: "2023-10-14T15:01:15.460Z",
+    updated_at: "2023-10-14T15:01:15.460Z",
+  },
+};
 
 export const OrderAcceptedEmail = ({
   id,
+  awb,
   name,
   house_number,
   pincode,
@@ -37,18 +70,18 @@ export const OrderAcceptedEmail = ({
   city,
   state,
   country,
-}: z.infer<typeof OrderAcceptedEmailSchema>) => {
-  const details = OrderAcceptedEmailSchema.parse({
-    id,
-    name,
-    house_number,
-    pincode,
-    landmark,
-    locality,
-    city,
-    state,
-    country,
-  });
+}: {
+  id: string;
+  awb: string;
+  name: string;
+  house_number: string;
+  pincode: string;
+  landmark: string;
+  locality: string;
+  city: string;
+  state: string;
+  country: string;
+}) => {
   return (
     <Html>
       <Head />
@@ -78,27 +111,27 @@ export const OrderAcceptedEmail = ({
             <Section className="flex flex-col gap-2">
               <Text className="text-md font-semibold">Shipping To:</Text>
               <Text className="-mb-2 text-xs font-semibold">
-                {details.name}
+                {name}
                 {","}
               </Text>
               <Text className="text-xs text-gray-500">
-                {details.house_number}
-                {details.landmark ? `, ${details.landmark}` : ""}
-                {","} {details.locality}
-                {","} {details.city}
-                {","} {details.state}
-                {","} {details.country}
-                {"-"} {details.pincode}
+                {house_number}
+                {landmark ? `, ${landmark}` : ""}
+                {","} {locality}
+                {","} {city}
+                {","} {state}
+                {","} {country}
+                {"-"} {pincode}
               </Text>
 
               <Button
                 className="-mb-2 mb-4 rounded bg-pink-600 px-3 py-2 text-center text-sm font-medium text-white no-underline"
-                href={`${AppConfig.BaseOrderUrl}/order/${details.id}}`}
+                href={`${AppConfig.BaseOrderUrl}/order/${id}}`}
               >
                 View Order
               </Button>
               <Text className="-mb-2 text-xs font-semibold">Order ID{":"}</Text>
-              <Text className="text-xs text-gray-500">{details.id}</Text>
+              <Text className="text-xs text-gray-500">{id}</Text>
             </Section>
             <Hr />
 
@@ -161,7 +194,6 @@ export const OrderAcceptedEmail = ({
   );
 };
 export default OrderAcceptedEmail;
-
 
 const paddingX = {
   paddingLeft: "40px",
