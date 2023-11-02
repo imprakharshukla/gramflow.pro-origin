@@ -10,7 +10,6 @@ export const env = createEnv({
     //prisma
     DATABASE_URL: z.string().url(),
     DIRECT_URL: z.string().url(),
-    SHADOW_DATABASE_URL: z.string().url(),
 
     //misc
     ENV: z.string(),
@@ -40,7 +39,6 @@ export const env = createEnv({
     //prisma
     DATABASE_URL: process.env.DATABASE_URL,
     DIRECT_URL: process.env.DIRECT_URL,
-    SHADOW_DATABASE_URL: process.env.SHADOW_DATABASE_URL,
 
     //misc
     ENV: process.env.ENV,
