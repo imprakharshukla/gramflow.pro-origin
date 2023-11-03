@@ -5,6 +5,8 @@ import {
 
 export const fontSans = FontSans({
   subsets: ["latin"],
+  display: "swap",
+  adjustFontFallback: false,
   variable: "--font-sans",
 });
 

@@ -364,7 +364,7 @@ export default function DashboardBulkOptionsSelectComponent({
         </CommandList>
       </CommandDialog>
       <DropdownMenuTrigger>
-        <Button variant={"secondary"}>Bulk Actions</Button>
+        <Button variant={"outline"}>Bulk Actions</Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent>
         <DropdownMenuLabel>Bulk Actions</DropdownMenuLabel>

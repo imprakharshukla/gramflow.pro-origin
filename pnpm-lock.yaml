@@ -295,7 +295,7 @@ importers:
         version: 4.32.6(@tanstack/react-query@4.32.6)(react-dom@18.2.0)(react@18.2.0)
       '@trigger.dev/nextjs':
         specifier: ^2.0.8
-        version: 2.0.11(@trigger.dev/sdk@2.0.11)(next@13.4.3)
+        version: 2.0.11(@trigger.dev/sdk@2.0.11)(next@13.5.4)
       '@trigger.dev/sdk':
         specifier: ^2.0.8
         version: 2.0.11
@@ -306,8 +306,8 @@ importers:
         specifier: ^2.30.0
         version: 2.30.0
       eslint-config-next:
-        specifier: 13.5.2
-        version: 13.5.2(eslint@8.47.0)(typescript@5.1.6)
+        specifier: 13.5.4
+        version: 13.5.4(eslint@8.47.0)(typescript@5.1.6)
       framer-motion:
         specifier: ^10.16.4
         version: 10.16.4(react-dom@18.2.0)(react@18.2.0)
@@ -318,28 +318,28 @@ importers:
         specifier: ^0.216.0
         version: 0.216.0(react@18.2.0)
       next:
-        specifier: ^13.4.3
-        version: 13.4.3(@babel/core@7.22.11)(react-dom@18.2.0)(react@18.2.0)
+        specifier: ^13.5.4
+        version: 13.5.4(@babel/core@7.22.11)(react-dom@18.2.0)(react@18.2.0)
       next-auth:
         specifier: ^4.23.1
-        version: 4.23.1(next@13.4.3)(react-dom@18.2.0)(react@18.2.0)
+        version: 4.23.1(next@13.5.4)(react-dom@18.2.0)(react@18.2.0)
       next-themes:
         specifier: ^0.2.1
-        version: 0.2.1(next@13.4.3)(react-dom@18.2.0)(react@18.2.0)
+        version: 0.2.1(next@13.5.4)(react-dom@18.2.0)(react@18.2.0)
       nextjs-redirect:
         specifier: ^6.0.1
-        version: 6.0.1(next@13.4.3)(react@18.2.0)
+        version: 6.0.1(next@13.5.4)(react@18.2.0)
       node-telegram-bot-api:
         specifier: ^0.61.0
         version: 0.61.0
       react:
-        specifier: 18.2.0
+        specifier: '18'
         version: 18.2.0
       react-confetti:
         specifier: ^6.1.0
         version: 6.1.0(react@18.2.0)
       react-dom:
-        specifier: 18.2.0
+        specifier: '18'
         version: 18.2.0(react@18.2.0)
       react-hook-form:
         specifier: ^7.45.4
@@ -2826,12 +2826,6 @@ packages:
       glob: 7.1.7
     dev: false
 
-  /@next/eslint-plugin-next@13.5.2:
-    resolution: {integrity: sha512-Ew8DOUerJYGRo8pI84SVwn9wxxx8sH92AanCXSkkLJM2W0RJEWy+BqWSCfrlA/3ZIczEl4l4o4lOeTGBPYfBJg==}
-    dependencies:
-      glob: 7.1.7
-    dev: false
-
   /@next/eslint-plugin-next@13.5.4:
     resolution: {integrity: sha512-vI94U+D7RNgX6XypSyjeFrOzxGlZyxOplU0dVE5norIfZGn/LDjJYPHdvdsR5vN1eRtl6PDAsOHmycFEOljK5A==}
     dependencies:
@@ -5225,7 +5219,7 @@ packages:
       uuid: 9.0.0
     dev: false
 
-  /@trigger.dev/nextjs@2.0.11(@trigger.dev/sdk@2.0.11)(next@13.4.3):
+  /@trigger.dev/nextjs@2.0.11(@trigger.dev/sdk@2.0.11)(next@13.5.4):
     resolution: {integrity: sha512-wc6d1pSxDAEsxmSv6knp6P/CNKgpavF598QG8w32jmhKlMjjvor3gWtpInN6idIzhx1juu7Nt7ydjjQyx9mZng==}
     engines: {node: '>=16.8.0'}
     peerDependencies:
@@ -5234,7 +5228,7 @@ packages:
     dependencies:
       '@trigger.dev/sdk': 2.0.11
       debug: 4.3.4
-      next: 13.4.3(@babel/core@7.22.11)(react-dom@18.2.0)(react@18.2.0)
+      next: 13.5.4(@babel/core@7.22.11)(react-dom@18.2.0)(react@18.2.0)
     transitivePeerDependencies:
       - supports-color
     dev: false
@@ -7806,31 +7800,6 @@ packages:
       eslint-plugin-import: 2.28.1(@typescript-eslint/parser@5.59.2)(eslint-import-resolver-typescript@3.6.0)(eslint@8.47.0)
       eslint-plugin-jsx-a11y: 6.7.1(eslint@8.47.0)
       eslint-plugin-react: 7.32.2(eslint@8.47.0)
-      eslint-plugin-react-hooks: 4.6.0(eslint@8.47.0)
-      typescript: 5.1.6
-    transitivePeerDependencies:
-      - eslint-import-resolver-webpack
-      - supports-color
-    dev: false
-
-  /eslint-config-next@13.5.2(eslint@8.47.0)(typescript@5.1.6):
-    resolution: {integrity: sha512-kCF7k7fHBtFtxfP6J6AP6Mo0vW3CrFeoIuoZ7NHGIvLFc/RUaIspJ6inO/R33zE1o9t/lbJgTnsqnRB++sxCUQ==}
-    peerDependencies:
-      eslint: ^7.23.0 || ^8.0.0
-      typescript: '>=3.3.1'
-    peerDependenciesMeta:
-      typescript:
-        optional: true
-    dependencies:
-      '@next/eslint-plugin-next': 13.5.2
-      '@rushstack/eslint-patch': 1.5.1
-      '@typescript-eslint/parser': 5.59.2(eslint@8.47.0)(typescript@5.1.6)
-      eslint: 8.47.0
-      eslint-import-resolver-node: 0.3.9
-      eslint-import-resolver-typescript: 3.6.1(@typescript-eslint/parser@5.59.2)(eslint-import-resolver-node@0.3.9)(eslint-plugin-import@2.29.0)(eslint@8.47.0)
-      eslint-plugin-import: 2.29.0(@typescript-eslint/parser@5.59.2)(eslint-import-resolver-typescript@3.6.1)(eslint@8.47.0)
-      eslint-plugin-jsx-a11y: 6.7.1(eslint@8.47.0)
-      eslint-plugin-react: 7.33.2(eslint@8.47.0)
       eslint-plugin-react-hooks: 4.6.0(eslint@8.47.0)
       typescript: 5.1.6
     transitivePeerDependencies:
@@ -10713,18 +10682,6 @@ packages:
       - encoding
     dev: true
 
-  /next-themes@0.2.1(next@13.4.3)(react-dom@18.2.0)(react@18.2.0):
-    resolution: {integrity: sha512-B+AKNfYNIzh0vqQQKqQItTS8evEouKD7H5Hj3kmuPERwddR2TxvDSFZuTj6T7Jfn1oyeUyJMydPl1Bkxkh0W7A==}
-    peerDependencies:
-      next: '*'
-      react: '*'
-      react-dom: '*'
-    dependencies:
-      next: 13.4.3(@babel/core@7.22.11)(react-dom@18.2.0)(react@18.2.0)
-      react: 18.2.0
-      react-dom: 18.2.0(react@18.2.0)
-    dev: false
-
   /next-themes@0.2.1(next@13.5.4)(react-dom@18.2.0)(react@18.2.0):
     resolution: {integrity: sha512-B+AKNfYNIzh0vqQQKqQItTS8evEouKD7H5Hj3kmuPERwddR2TxvDSFZuTj6T7Jfn1oyeUyJMydPl1Bkxkh0W7A==}
     peerDependencies:
@@ -10786,6 +10743,45 @@ packages:
       - babel-plugin-macros
     dev: false
 
+  /next@13.5.4(@babel/core@7.22.11)(react-dom@18.2.0)(react@18.2.0):
+    resolution: {integrity: sha512-+93un5S779gho8y9ASQhb/bTkQF17FNQOtXLKAj3lsNgltEcF0C5PMLLncDmH+8X1EnJH1kbqAERa29nRXqhjA==}
+    engines: {node: '>=16.14.0'}
+    hasBin: true
+    peerDependencies:
+      '@opentelemetry/api': ^1.1.0
+      react: ^18.2.0
+      react-dom: ^18.2.0
+      sass: ^1.3.0
+    peerDependenciesMeta:
+      '@opentelemetry/api':
+        optional: true
+      sass:
+        optional: true
+    dependencies:
+      '@next/env': 13.5.4
+      '@swc/helpers': 0.5.2
+      busboy: 1.6.0
+      caniuse-lite: 1.0.30001554
+      postcss: 8.4.31
+      react: 18.2.0
+      react-dom: 18.2.0(react@18.2.0)
+      styled-jsx: 5.1.1(@babel/core@7.22.11)(react@18.2.0)
+      watchpack: 2.4.0
+    optionalDependencies:
+      '@next/swc-darwin-arm64': 13.5.4
+      '@next/swc-darwin-x64': 13.5.4
+      '@next/swc-linux-arm64-gnu': 13.5.4
+      '@next/swc-linux-arm64-musl': 13.5.4
+      '@next/swc-linux-x64-gnu': 13.5.4
+      '@next/swc-linux-x64-musl': 13.5.4
+      '@next/swc-win32-arm64-msvc': 13.5.4
+      '@next/swc-win32-ia32-msvc': 13.5.4
+      '@next/swc-win32-x64-msvc': 13.5.4
+    transitivePeerDependencies:
+      - '@babel/core'
+      - babel-plugin-macros
+    dev: false
+
   /next@13.5.4(@babel/core@7.23.0)(react-dom@18.2.0)(react@18.2.0):
     resolution: {integrity: sha512-+93un5S779gho8y9ASQhb/bTkQF17FNQOtXLKAj3lsNgltEcF0C5PMLLncDmH+8X1EnJH1kbqAERa29nRXqhjA==}
     engines: {node: '>=16.14.0'}
@@ -10824,13 +10820,13 @@ packages:
       - '@babel/core'
       - babel-plugin-macros
 
-  /nextjs-redirect@6.0.1(next@13.4.3)(react@18.2.0):
+  /nextjs-redirect@6.0.1(next@13.5.4)(react@18.2.0):
     resolution: {integrity: sha512-SScRdqhGwbD9HbATM+6KMoRyW5QdsPtBBknPPUBxeItnv3wOrhII4pW+0TrvglWNxeRUwI2GsnrDHCV/6juBtQ==}
     peerDependencies:
       next: '*'
       react: '*'
     dependencies:
-      next: 13.4.3(@babel/core@7.22.11)(react-dom@18.2.0)(react@18.2.0)
+      next: 13.5.4(@babel/core@7.22.11)(react-dom@18.2.0)(react@18.2.0)
       react: 18.2.0
     dev: false
 
