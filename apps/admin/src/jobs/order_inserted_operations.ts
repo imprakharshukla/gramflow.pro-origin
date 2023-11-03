@@ -65,14 +65,13 @@ client.defineJob({
           secretAccessKey: env.CF_SECRET_ACCESS_KEY ?? "",
         },
       });
-
       const image_urls = payload.record.images;
 
       if (image_urls) {
         const newS3Urls = [...image_urls];
         for (const [index, url] of image_urls.entries()) {
           // Check if the image URL is from Instagram CDN
-          if (!url.includes("cdninstagram.com")) {
+          if (!url.includes("cdninstagram.com") || !url.includes("utfs.io")) {
             continue;
           }
           // This line extracts the file name from the URL by splitting the URL string at each "/" character and then taking the last element of the resulting array.
