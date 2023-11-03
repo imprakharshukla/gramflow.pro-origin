@@ -1,8 +1,6 @@
 import { type Metadata } from "next";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
-  Button,
   Card,
   Grid,
   Tab,
@@ -13,14 +11,13 @@ import {
   Text,
   Title,
 } from "@tremor/react";
-import { Plus } from "lucide-react";
 
-import { Button as UiButton } from "@gramflow/ui";
 
 import { OrderTable } from "~/app/dashboard/components/orderTableComponent";
 import KpiCards from "./components/analytics/kpiCards";
 import NumberOfOrdersChart from "./components/analytics/numberOfOrderChart";
 import RevenueChart from "./components/analytics/revenueChart";
+import { DashboardNavigation } from "./components/dashboardNavigation";
 
 export const metadata: Metadata = {
   title: "Dashboard",
@@ -35,18 +32,7 @@ export default function Dashboard() {
           <Text>Here is all the information about your orders</Text>
         </div>
 
-        <div className="flex space-x-3">
-          <Button>
-            <Link href="/new" rel="noopener noreferrer" target="_blank">
-              Create Order
-            </Link>
-          </Button>
-          <UiButton variant="outline">
-            <Link href="/order" rel="noopener noreferrer" target="_blank">
-              <Plus className="h-4 w-4" />
-            </Link>
-          </UiButton>
-        </div>
+        <DashboardNavigation/>
       </div>
 
       <TabGroup className="mt-6" defaultIndex={1}>

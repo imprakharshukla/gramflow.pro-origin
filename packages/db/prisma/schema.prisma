@@ -58,6 +58,7 @@ model Orders {
   user_id             String?
   price               Int      @default(0)
   status              Status   @default(PENDING)
+  prebook             Boolean  @default(false)
   courier             COURIER  @default(DEFAULT)
   images              String[]
   awb                 String?

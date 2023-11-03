@@ -23,6 +23,9 @@ const config = {
       {
         protocol: "https",
         hostname: `**.${AppConfig.Domain}}`,
+      }, {
+        protocol: "https",
+        hostname: `utfs.io`,
       },
       {
         protocol: "https",
@@ -33,7 +36,7 @@ const config = {
   },
   reactStrictMode: true,
   /** Enables hot reloading for local packages without a build step */
-  transpilePackages: ["@gramflow/auth", "@gramflow/db", "@gramflow/utils", "@gramflow/ui"],
+  transpilePackages: [ "@gramflow/db", "@gramflow/utils", "@gramflow/ui"],
   /** We already do linting and typechecking as separate tasks in CI */
   eslint: { ignoreDuringBuilds: true },
   typescript: { ignoreBuildErrors: true },

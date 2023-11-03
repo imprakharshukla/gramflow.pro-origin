@@ -93,7 +93,7 @@ export const columns: ColumnDef<CompleteOrders>[] = [
   },
   {
     accessorKey: "number_of_items",
-    header: () => <div className={"w-12"}>No. of Items</div>,
+    header: () => <div className={"w-12"}>Items</div>,
     cell: ({ row }) => {
       const height = row.original.height;
       const length = row.original.length;
@@ -162,13 +162,24 @@ export const columns: ColumnDef<CompleteOrders>[] = [
     header: "Status",
     cell: ({ row }) => {
       return (
-        <div className={"flex items-center justify-center text-xs"}>
+        <div
+          className={"flex flex-col items-center justify-center gap-2 text-xs"}
+        >
+          {row.original.prebook && (
+            <StatusBadge
+              size="xs"
+              // color={"fuchsia" as Color}
+              className={"text-xs font-medium"}
+            >
+              Prebook
+            </StatusBadge>
+          )}
           <StatusBadge
             size="xs"
             color={pillColors[row.original.status] as Color}
             className={"text-xs font-medium"}
           >
-            {row.original.status}
+            {row.original.status.slice(0,1) + row.original.status.slice(1).toLowerCase()}
           </StatusBadge>
         </div>
       );

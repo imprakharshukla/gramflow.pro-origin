@@ -8,6 +8,7 @@ export const OrdersModel = z.object({
   user_id: z.string().nullish(),
   price: z.number().int(),
   status: z.nativeEnum(Status),
+  prebook: z.boolean(),
   courier: z.nativeEnum(COURIER),
   images: z.string().array(),
   awb: z.string().nullish(),

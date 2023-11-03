@@ -3,6 +3,7 @@ import { z } from "zod";
 
 export const AddOrderPostSchema = z.object({
   instagram_post_urls: z.string().array(),
+  prebook: z.boolean().default(false),
   images: z.string().array().optional(),
   size: z.object({
     length: z.string(),
@@ -11,6 +12,8 @@ export const AddOrderPostSchema = z.object({
     weight: z.string(),
   }),
 });
+
+
 
 export const OrderPageOrderFetchSchema = z.object({
   id: z.string().uuid(),

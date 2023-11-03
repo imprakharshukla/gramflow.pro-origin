@@ -125,6 +125,7 @@ export const checkIfAnyOrderContainsProducts = async (
     },
   });
 };
+
 export const addOrder = async (
   order: z.infer<typeof AddOrderPostSchema>,
   images: string[],
@@ -138,6 +139,7 @@ export const addOrder = async (
   const size = order.size;
   return prisma.orders.create({
     data: {
+      prebook: order.prebook,
       instagram_post_urls: order.instagram_post_urls,
       images: mediaUrls,
       length: size.length,
