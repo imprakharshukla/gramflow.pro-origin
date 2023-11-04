@@ -1,8 +1,8 @@
 "use client";
 
 import { useState, type Dispatch, type SetStateAction } from "react";
-import { FileDown, Loader } from "lucide-react";
-import { toast } from "react-hot-toast";
+import { FileDown, Loader2 } from "lucide-react";
+import { toast } from "sonner";
 import { z } from "zod";
 
 import { Button } from "@gramflow/ui";
@@ -13,8 +13,10 @@ export const downloadBulkOrderFiles = async (
   order_ids: string[],
   setLoading: Dispatch<SetStateAction<boolean>>,
 ) => {
+  const toastId = toast.loading("Downloading CSV file...");
   try {
     setLoading(true);
+
     const res = await fetch(`/api/ship`, {
       method: "PUT",
       body: JSON.stringify({ order_ids }),
@@ -34,6 +36,7 @@ export const downloadBulkOrderFiles = async (
   } catch (e) {
     toast.error(e);
   } finally {
+    toast.dismiss(toastId);
     setLoading(false);
   }
 };
@@ -83,7 +86,7 @@ export default function DashboardBulkCsvDownloadButton({
       }}
       variant="outline"
     >
-      {loading && <Loader className="h-4 w-4 animate-spin" />}
+      {loading && <Loader2 className="h-4 w-4 animate-spin" />}
       {!loading && <FileDown className="h-4 w-4" />}
     </Button>
   );

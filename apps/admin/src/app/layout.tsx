@@ -1,6 +1,3 @@
-import { GeistSans } from "geist/font";
-import { AppProgressBar as ProgressBar } from "next-nprogress-bar";
-
 import { TailwindIndicator } from "@gramflow/ui";
 import { cn } from "@gramflow/utils";
 
@@ -10,7 +7,7 @@ import { ThemeProvider } from "~/providers/theme-provider";
 import "~/styles/globals.css";
 import { Metadata } from "next";
 import { ClerkProvider } from "@clerk/nextjs";
-import { Toaster } from "react-hot-toast";
+import { Toaster } from "sonner";
 
 import { PageLoaderProvider } from "~/providers/page-loader-provider";
 import QueryProvider from "~/providers/query-provider";
@@ -93,7 +90,7 @@ export default async function RootLayout({
             )}
           >
             <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
-              <Toaster />
+              <Toaster theme="dark" />
               <PageLoaderProvider>
                 <div className={`relative flex min-h-screen flex-col`}>
                   {children}

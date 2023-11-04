@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { Status } from "@prisma/client";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useTheme } from "next-themes";
-import { toast } from "react-hot-toast";
+import { toast } from "sonner";
 
 import {
   Button,

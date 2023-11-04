@@ -11,17 +11,13 @@ import { Badge as StatusBadge, type Color } from "@tremor/react";
 import { format } from "date-fns";
 import { Loader2, ShareIcon, X } from "lucide-react";
 import { useForm } from "react-hook-form";
-import { toast } from "react-hot-toast";
+import { toast } from "sonner";
 import { type z } from "zod";
 
 import { type CompleteOrders } from "@gramflow/db/prisma/zod";
 import {
-  Badge,
   Button,
   Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
   Form,
   FormControl,
   FormField,
