@@ -30,6 +30,7 @@ import {
   ChevronsRight,
   RefreshCcw,
 } from "lucide-react";
+import { toast } from "react-hot-toast";
 import { z } from "zod";
 
 import { type CompleteOrders } from "@gramflow/db/prisma/zod";
@@ -64,6 +65,14 @@ import DashboardBulkCsvDownloadButton from "./components/dashboardBulkCsvDownloa
 import DashboardConfirmModal from "./components/dashboardConfirmModal";
 import DashboardSelectedRowDisplayCard from "./components/dashboardSelectedRowDisplayCard";
 
+export enum SearchParams {
+  Order_ID = "order_id",
+  Awb = "awb",
+  Email = "email",
+  Name = "name",
+  Username = "username",
+  Phone_Number = "phone_number",
+}
 interface DataTablePaginationProps<TData> {
   table: TsTable<TData>;
 }
@@ -104,14 +113,18 @@ export function DataTable<TData, TValue>({
   const fetchDataOptions = {
     pageIndex,
     pageSize,
+    search: "",
   };
+  const [searchTerm, setSearchTerm] = useState("");
+  const [searchParam, setSearchParam] = useState(SearchParams.Order_ID);
 
   const fetchData = async (options: {
     pageIndex: number;
     pageSize: number;
+    search: string;
   }) => {
     const response = await fetch(
-      `/api/admin?page=${pageIndex}&pageSize=${pageSize}`,
+      `/api/admin?page=${pageIndex}&pageSize=${pageSize}&search=${options.search}`,
     );
     if (response.ok) {
       const data = (await response.json()) as ResponseType;
@@ -130,6 +143,15 @@ export function DataTable<TData, TValue>({
     { keepPreviousData: true },
   );
 
+  useEffect(() => {
+    if (searchTerm === "") {
+      setPagination({ pageIndex: 0, pageSize: 20 });
+      dataQuery.refetch();
+    } else {
+      fetchDataOptions.search = searchTerm;
+      dataQuery.refetch();
+    }
+  }, [searchTerm]);
   const pagination = useMemo(
     () => ({
       pageIndex,
@@ -203,9 +225,10 @@ export function DataTable<TData, TValue>({
         <Input
           placeholder="Filter Order IDs..."
           value={(table.getColumn("id")?.getFilterValue() as string) ?? ""}
-          onChange={(event) =>
-            table.getColumn("id")?.setFilterValue(event.target.value)
-          }
+          onChange={(event) => {
+            setSearchTerm(event.target.value);
+            table.getColumn("id")?.setFilterValue(event.target.value);
+          }}
           className="order-2 max-w-sm md:order-1"
         />
         <div
