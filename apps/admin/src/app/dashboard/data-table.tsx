@@ -28,6 +28,7 @@ import {
   ChevronRightIcon,
   ChevronsLeft,
   ChevronsRight,
+  RefreshCcw,
 } from "lucide-react";
 import { z } from "zod";
 
@@ -97,7 +98,7 @@ export function DataTable<TData, TValue>({
 
   const [{ pageIndex, pageSize }, setPagination] = useState<PaginationState>({
     pageIndex: 0,
-    pageSize: 10,
+    pageSize: 20,
   });
 
   const fetchDataOptions = {
@@ -124,7 +125,7 @@ export function DataTable<TData, TValue>({
   };
 
   const dataQuery = useQuery(
-    ["data", fetchDataOptions],
+    ["allOrders", fetchDataOptions],
     () => fetchData(fetchDataOptions),
     { keepPreviousData: true },
   );
@@ -215,6 +216,19 @@ export function DataTable<TData, TValue>({
           {(loading || dataQuery.isLoading || dataQuery.isFetching) && (
             <Loader />
           )}
+
+          <Button
+            // eslint-disable-next-line @typescript-eslint/no-misused-promises
+            disabled={dataQuery.isLoading || dataQuery.isFetching}
+            onClick={async () => {
+              setLoading(true);
+              await dataQuery.refetch();
+              setLoading(false);
+            }}
+            variant="outline"
+          >
+            {<RefreshCcw className="h-4 w-4" />}
+          </Button>
 
           <>
             <Card className={"hidden items-center justify-center lg:flex "}>
@@ -328,7 +342,7 @@ export function DataTablePagination<TData>({
               <SelectValue placeholder={table.getState().pagination.pageSize} />
             </SelectTrigger>
             <SelectContent side="top">
-              {[10, 20, 30, 40, 50].map((pageSize) => (
+              {[10, 20, 30, 40, 50, 100, 200].map((pageSize) => (
                 <SelectItem key={pageSize} value={`${pageSize}`}>
                   {pageSize}
                 </SelectItem>
