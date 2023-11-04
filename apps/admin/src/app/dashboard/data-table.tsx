@@ -1,16 +1,11 @@
 "use client";
 
-import {
-  useEffect,
-  useMemo,
-  useState,
-  type Dispatch,
-  type SetStateAction,
-} from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useUser } from "@clerk/nextjs";
 import { Status } from "@prisma/client";
 import { useQuery } from "@tanstack/react-query";
 import {
+  VisibilityState,
   flexRender,
   getCoreRowModel,
   getFilteredRowModel,
@@ -28,22 +23,14 @@ import {
   ChevronRightIcon,
   ChevronsLeft,
   ChevronsRight,
+  Loader2,
   RefreshCcw,
 } from "lucide-react";
-import { toast } from "react-hot-toast";
-import { z } from "zod";
 
 import { type CompleteOrders } from "@gramflow/db/prisma/zod";
 import {
   Button,
   Card,
-  CommandDialog,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-  CommandList,
-  CommandSeparator,
   Input,
   Loader,
   Select,
@@ -65,14 +52,16 @@ import DashboardBulkCsvDownloadButton from "./components/dashboardBulkCsvDownloa
 import DashboardConfirmModal from "./components/dashboardConfirmModal";
 import DashboardSelectedRowDisplayCard from "./components/dashboardSelectedRowDisplayCard";
 
-export enum SearchParams {
-  Order_ID = "order_id",
-  Awb = "awb",
-  Email = "email",
-  Name = "name",
-  Username = "username",
-  Phone_Number = "phone_number",
-}
+type SearchParamKey = keyof typeof SearchParams;
+
+export const SearchParams = {
+  Order_ID: "id",
+  AWB: "awb",
+  Email: "user.email",
+  Name: "user.name",
+  Username: "user.instagram_username",
+  Phone_Number: "user.phone_number",
+};
 interface DataTablePaginationProps<TData> {
   table: TsTable<TData>;
 }
@@ -116,6 +105,7 @@ export function DataTable<TData, TValue>({
     search: "",
   };
   const [searchTerm, setSearchTerm] = useState("");
+  const [selectedStatus, setSelectedStatus] = useState<Status | "All">("All");
   const [searchParam, setSearchParam] = useState(SearchParams.Order_ID);
 
   const fetchData = async (options: {
@@ -142,6 +132,8 @@ export function DataTable<TData, TValue>({
     () => fetchData(fetchDataOptions),
     { keepPreviousData: true },
   );
+
+  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
 
   useEffect(() => {
     if (searchTerm === "") {
@@ -173,8 +165,10 @@ export function DataTable<TData, TValue>({
     pageCount: dataQuery.data?.pageCount ?? -1,
     manualPagination: true,
     onPaginationChange: setPagination,
+    onColumnVisibilityChange: setColumnVisibility,
     state: {
       sorting,
+      columnVisibility,
       pagination,
       columnFilters,
       rowSelection,
@@ -193,6 +187,24 @@ export function DataTable<TData, TValue>({
     }
   }, [user]);
 
+  useEffect(() => {
+    if (selectedStatus !== "All") {
+      table
+        .getAllColumns()
+        .filter((column) => column.id === "status")
+        .map((column) => {
+          column.setFilterValue(selectedStatus);
+        });
+    } else {
+      table
+        .getAllColumns()
+        .filter((column) => column.id === "status")
+        .map((column) => {
+          column.setFilterValue("");
+        });
+    }
+  }, [selectedStatus]);
+
   const getSelectedOrderIds = () => {
     //select the order_ids from the selected rows
     const order_ids_index = Object.keys(rowSelection).filter(() => {
@@ -205,6 +217,20 @@ export function DataTable<TData, TValue>({
     });
     return order_ids;
   };
+
+  useEffect(() => {
+    table
+      .getAllColumns()
+      .filter(
+        (column) =>
+          column.id === "awb" ||
+          column.id === "user.phone_number" ||
+          column.id === "user.email",
+      )
+      .map((column) => {
+        column.toggleVisibility(false);
+      });
+  }, [table]);
 
   return (
     <div>
@@ -221,25 +247,67 @@ export function DataTable<TData, TValue>({
         />
       </Card>
 
-      <div className="flex flex-col py-4 md:flex-row md:items-center md:justify-between">
-        <Input
-          placeholder="Filter Order IDs..."
-          value={(table.getColumn("id")?.getFilterValue() as string) ?? ""}
-          onChange={(event) => {
-            setSearchTerm(event.target.value);
-            table.getColumn("id")?.setFilterValue(event.target.value);
-          }}
-          className="order-2 max-w-sm md:order-1"
-        />
+      <div className="flex flex-col gap-2 py-4 md:flex-row md:items-center md:justify-between">
+        <div className="flex flex-wrap gap-2">
+          <div className="flex w-full items-center gap-2">
+            <Select
+              onValueChange={(value) => {
+                setSearchParam(value);
+              }}
+            >
+              <SelectTrigger className="w-1/2">
+                <SelectValue placeholder="Search by" />
+              </SelectTrigger>
+              <SelectContent>
+                {Object.keys(SearchParams).map(
+                  (searchParam: SearchParamKey) => (
+                    <SelectItem
+                      key={searchParam}
+                      value={SearchParams[searchParam]}
+                    >
+                      {searchParam.replace("_", " ")}
+                    </SelectItem>
+                  ),
+                )}
+              </SelectContent>
+            </Select>
+            <Select
+              onValueChange={(value: Status|"All") => {
+                setSelectedStatus(value);
+              }}
+            >
+              <SelectTrigger className="w-1/2">
+                <SelectValue placeholder="Filter Status" />
+              </SelectTrigger>
+              <SelectContent>
+                {Object.keys(Status).map((status) => (
+                  <SelectItem key={status} value={status}>
+                    {status.slice(0,1).toUpperCase() + status.slice(1).toLowerCase()}
+                  </SelectItem>
+                ))}
+                <SelectItem key={"All"} value={"All"}>
+                  All
+                </SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          <Input
+            placeholder={`Search with ${Object.keys(SearchParams)
+              .find((key) => SearchParams[key] === searchParam)
+              ?.replace("_", " ")}`}
+            value={
+              (table.getColumn(searchParam)?.getFilterValue() as string) ?? ""
+            }
+            onChange={(event) => {
+              setSearchTerm(event.target.value);
+              table.getColumn(searchParam)?.setFilterValue(event.target.value);
+            }}
+            className="order-2 w-full md:order-1"
+          />
+        </div>
         <div
-          className={
-            "order-1 mb-4 flex items-center gap-x-3 md:order-2 md:mb-0"
-          }
+          className={"order-1 mb-4 flex items-center gap-1 md:order-2 md:mb-0"}
         >
-          {(loading || dataQuery.isLoading || dataQuery.isFetching) && (
-            <Loader />
-          )}
-
           <Button
             // eslint-disable-next-line @typescript-eslint/no-misused-promises
             disabled={dataQuery.isLoading || dataQuery.isFetching}
@@ -250,7 +318,11 @@ export function DataTable<TData, TValue>({
             }}
             variant="outline"
           >
-            {<RefreshCcw className="h-4 w-4" />}
+            {!(loading || dataQuery.isLoading || dataQuery.isFetching) ? (
+              <RefreshCcw className={"text-sm"} size={18} />
+            ) : (
+              <Loader />
+            )}
           </Button>
 
           <>

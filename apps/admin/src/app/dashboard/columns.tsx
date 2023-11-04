@@ -29,6 +29,7 @@ import {
 export const columns: ColumnDef<CompleteOrders>[] = [
   {
     accessorKey: "image",
+    id: "image",
     header: ({ table }) => (
       <div className={"flex w-40 items-center space-x-4"}>
         <Checkbox
@@ -93,6 +94,7 @@ export const columns: ColumnDef<CompleteOrders>[] = [
   },
   {
     accessorKey: "number_of_items",
+    id: "number_of_items",
     header: () => <div className={"w-12"}>Items</div>,
     cell: ({ row }) => {
       const height = row.original.height;
@@ -155,6 +157,7 @@ export const columns: ColumnDef<CompleteOrders>[] = [
         </div>
       );
     },
+    id: "created_at",
     accessorKey: "createdAt",
   },
   {
@@ -179,7 +182,8 @@ export const columns: ColumnDef<CompleteOrders>[] = [
             color={pillColors[row.original.status] as Color}
             className={"text-xs font-medium"}
           >
-            {row.original.status.slice(0,1) + row.original.status.slice(1).toLowerCase()}
+            {row.original.status.slice(0, 1) +
+              row.original.status.slice(1).toLowerCase()}
           </StatusBadge>
         </div>
       );
@@ -198,6 +202,40 @@ export const columns: ColumnDef<CompleteOrders>[] = [
     },
   },
   {
+    id: "awb",
+    header: "AWB",
+    accessorKey: "awb",
+    cell: ({ row }) => {
+      return (
+        <div className={"flex items-center justify-center text-sm"}>
+          {row.original.awb}
+        </div>
+      );
+    },
+  },
+  {
+    id: "user.phone_number",
+    accessorKey: "phone_number",
+    cell: ({ row }) => {
+      return (
+        <div className={"flex items-center justify-center text-sm"}>
+          {row.original.user?.phone_no}
+        </div>
+      );
+    },
+  },{
+    id: "user.email",
+    accessorKey: "email",
+    cell: ({ row }) => {
+      return (
+        <div className={"flex items-center justify-center text-sm"}>
+          {row.original.user?.email}
+        </div>
+      );
+    },
+  },
+  {
+    id: "user.name",
     accessorKey: "user.name",
     cell: ({ row }) => {
       return (
@@ -241,7 +279,7 @@ export const columns: ColumnDef<CompleteOrders>[] = [
   },
   {
     accessorKey: "user.instagram_username",
-    id: "instagram_username",
+    id: "user.instagram_username",
     header: () => <div className={"w-32"}>Instagram User</div>,
     cell: ({ row }) => {
       const instagram_user_id = row.original.user?.instagram_username;
