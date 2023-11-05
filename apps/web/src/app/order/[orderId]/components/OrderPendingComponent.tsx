@@ -24,7 +24,7 @@ export default function functionOrderPendingComponent({
       animate={{ x: 0, opacity: 1 }}
       className={""}
     >
-      <h1 className="bg-gradient-to-br from-black via-[#171717] to-[#4b4b4b] bg-clip-text pb-3 pt-4 text-center text-4xl font-medium tracking-tight text-transparent md:text-5xl">
+      <h1 className="bg-gradient-to-br from-black via-[#171717] to-[#4b4b4b] bg-clip-text pb-3 pt-4 text-center text-4xl font-medium tracking-tight text-transparent dark:text-white md:text-5xl">
         Confirm Your Order
       </h1>
       <p className={"text-center text-sm text-muted-foreground"}>
@@ -50,10 +50,10 @@ export default function functionOrderPendingComponent({
       <div className={"flex items-center justify-center"}>
         <Link
           href="#"
-          className="group mt-5 flex w-fit space-x-1 rounded-full bg-white/30 px-5 py-2 text-center text-sm text-gray-600 shadow-sm ring-1 ring-gray-900/5 transition-all hover:shadow-lg active:shadow-sm sm:mt-0 md:mt-5"
+          className="dark:bg-gray-700/50 dark: group mt-5 flex w-fit space-x-1 rounded-full bg-white/30 px-5 py-2 text-center text-sm text-gray-600 shadow-sm ring-1 ring-gray-900/5 transition-all hover:shadow-lg active:shadow-sm sm:mt-0 md:mt-5"
         >
-          <p>
-            Order ID- <span className={"font-medium"}>{order.id}</span>
+          <p className={"dark:text-white"}>
+            Order ID- <span className={"font-medium "}>{order.id}</span>
           </p>
         </Link>
       </div>

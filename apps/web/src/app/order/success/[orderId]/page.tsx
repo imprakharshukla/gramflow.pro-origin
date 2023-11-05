@@ -60,14 +60,13 @@ export default function SuccessPage({params}: { params: { orderId: string } }) {
       <div
         className=" animate-in fade-in duration-200 flex mx-8 max-w-md min-h-screen flex-col items-center justify-center">
 
-        <Link
-          href=""
-          className="group mt-5 md:mt-10 sm:mt-0 rounded-full flex space-x-1 text-center bg-white/30 shadow-sm ring-1 ring-gray-900/5 text-gray-600 text-sm px-5 py-2 hover:shadow-lg active:shadow-sm transition-all"
+<Link
+          href="#"
+          className="dark:bg-gray-700/50 dark: group mt-5 flex w-fit space-x-1 rounded-full bg-white/30 px-5 py-2 text-center text-sm text-gray-600 shadow-sm ring-1 ring-gray-900/5 transition-all hover:shadow-lg active:shadow-sm sm:mt-0 md:mt-5 dark:text-white"
         >
           <p>Order ID- <span className={"font-medium"}>{params.orderId}</span></p>
         </Link>
-        <h1
-          className="pt-4 pb-4 bg-gradient-to-br from-black via-[#171717] to-[#4b4b4b] bg-clip-text text-center text-4xl font-semibold mt-4 tracking-tight text-transparent pinkmd:text-6xl">
+        <h1 className="bg-gradient-to-br from-black via-[#171717] to-[#4b4b4b] bg-clip-text pb-3 pt-4 text-center text-4xl font-medium tracking-tight text-transparent dark:text-white md:text-5xl ">
           Order Confirmed
         </h1>
         <p className={"text-center text-muted-foreground text-sm md:text-base"}>Thank you for your purchase.

@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { useMutation } from "@tanstack/react-query";
 import { ArrowLeft, Loader2, RefreshCcw } from "lucide-react";
 import { useFieldArray, useForm } from "react-hook-form";
-import toast from "react-hot-toast";
+import toast from "sonner";
 import * as z from "zod";
 
 import { Button, Input, Loader } from "@gramflow/ui";

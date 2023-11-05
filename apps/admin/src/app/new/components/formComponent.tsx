@@ -12,7 +12,7 @@ import { useMutation } from "@tanstack/react-query";
 import { Title } from "@tremor/react";
 import { DeleteIcon, Trash2Icon } from "lucide-react";
 import { Controller, useForm } from "react-hook-form";
-import { toast } from "react-hot-toast";
+import { toast } from "sonner";
 
 import {
   Badge,

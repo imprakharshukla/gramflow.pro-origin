@@ -28,96 +28,96 @@ export const GetOtp = async (id: string) => {
   });
 };
 
-export const getOrdersWithSearchParams = async ({
-  searchTerm,
-  searchParam,
-}: {
-  searchTerm: string;
-  searchParam: SearchParams;
-}) => {
-  switch (searchTerm) {
-    case SearchParams.Order_ID:
-      return prisma.orders.findMany({
-        where: {
-          id: searchParam,
-        },
-        include: {
-          user: true,
-        },
-        orderBy: {
-          created_at: "desc",
-        },
-      });
-    case SearchParams.Phone_Number:
-      return prisma.orders.findMany({
-        where: {
-          user: {
-            phone_no: searchParam,
-          },
-        },
-        include: {
-          user: true,
-        },
-        orderBy: {
-          created_at: "desc",
-        },
-      });
-    case SearchParams.Email:
-      return prisma.orders.findMany({
-        where: {
-          user: {
-            email: searchParam,
-          },
-        },
-        include: {
-          user: true,
-        },
-        orderBy: {
-          created_at: "desc",
-        },
-      });
-    case SearchParams.Name:
-      return prisma.orders.findMany({
-        where: {
-          user: {
-            name: searchParam,
-          },
-        },
-        include: {
-          user: true,
-        },
-        orderBy: {
-          created_at: "desc",
-        },
-      });
-    case SearchParams.Awb:
-      return prisma.orders.findMany({
-        where: {
-          awb: searchParam,
-        },
-        include: {
-          user: true,
-        },
-        orderBy: {
-          created_at: "desc",
-        },
-      });
-    case SearchParams.Username:
-      return prisma.orders.findMany({
-        where: {
-          user: {
-            instagram_username: searchParam,
-          },
-        },
-        include: {
-          user: true,
-        },
-        orderBy: {
-          created_at: "desc",
-        },
-      });
-  }
-};
+// export const getOrdersWithSearchParams = async ({
+//   searchTerm,
+//   searchParam,
+// }: {
+//   searchTerm: string;
+//   searchParam: SearchParams;
+// }) => {
+//   switch (searchTerm) {
+//     case SearchParams.Order_ID:
+//       return prisma.orders.findMany({
+//         where: {
+//           id: searchParam,
+//         },
+//         include: {
+//           user: true,
+//         },
+//         orderBy: {
+//           created_at: "desc",
+//         },
+//       });
+//     case SearchParams.Phone_Number:
+//       return prisma.orders.findMany({
+//         where: {
+//           user: {
+//             phone_no: searchParam,
+//           },
+//         },
+//         include: {
+//           user: true,
+//         },
+//         orderBy: {
+//           created_at: "desc",
+//         },
+//       });
+//     case SearchParams.Email:
+//       return prisma.orders.findMany({
+//         where: {
+//           user: {
+//             email: searchParam,
+//           },
+//         },
+//         include: {
+//           user: true,
+//         },
+//         orderBy: {
+//           created_at: "desc",
+//         },
+//       });
+//     case SearchParams.Name:
+//       return prisma.orders.findMany({
+//         where: {
+//           user: {
+//             name: searchParam,
+//           },
+//         },
+//         include: {
+//           user: true,
+//         },
+//         orderBy: {
+//           created_at: "desc",
+//         },
+//       });
+//     case SearchParams.Awb:
+//       return prisma.orders.findMany({
+//         where: {
+//           awb: searchParam,
+//         },
+//         include: {
+//           user: true,
+//         },
+//         orderBy: {
+//           created_at: "desc",
+//         },
+//       });
+//     case SearchParams.Username:
+//       return prisma.orders.findMany({
+//         where: {
+//           user: {
+//             instagram_username: searchParam,
+//           },
+//         },
+//         include: {
+//           user: true,
+//         },
+//         orderBy: {
+//           created_at: "desc",
+//         },
+//       });
+//   }
+// };
 
 export const getAllOrdersWithPagination = async ({
   page,

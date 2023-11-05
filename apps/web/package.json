@@ -42,8 +42,8 @@
     "react-confetti": "^6.1.0",
     "react-dom": "18",
     "react-hook-form": "^7.45.4",
-    "react-hot-toast": "^2.4.1",
     "resend": "^1.1.0",
+    "sonner": "^1.1.0",
     "superjson": "1.9.1",
     "zod": "^3.21.4",
     "zod-prisma": "^0.5.4"

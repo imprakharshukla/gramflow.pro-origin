@@ -8,7 +8,7 @@ import { ca } from "date-fns/locale";
 import { motion } from "framer-motion";
 import { HomeIcon, Loader2 } from "lucide-react";
 import { useForm } from "react-hook-form";
-import { toast } from "react-hot-toast";
+import { toast } from "sonner";
 import * as z from "zod";
 
 import {

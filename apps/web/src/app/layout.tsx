@@ -8,7 +8,7 @@ import { ThemeProvider } from "~/providers/theme-provider";
 import "~/styles/globals.css";
 import { Metadata } from "next";
 import { GeistSans } from "geist/font";
-import { Toaster } from "react-hot-toast";
+import { Toaster } from "sonner";
 
 import QueryProvider from "~/providers/query-provider";
 
@@ -73,9 +73,8 @@ export default function RootLayout({
       >
         <AuthSessionProvider>
           <QueryProvider>
-            <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
+            <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
               <Toaster />
-
               <div className={"relative flex min-h-screen flex-col " +fontSans.className }>
                 {children}
               </div>
