@@ -93,9 +93,12 @@ export async function GET(req: Request) {
     console.log({ response: JSON.stringify(response) });
     console.log({ response: JSON.stringify(response.body) });
     if (!response.ok) {
+      console.log("Error while requesting shipping data from Delhivery.", {
+        response: JSON.stringify(response),
+      });
       return NextResponse.json(
         { error: "Error generating shipping cost." },
-        { status: 404 },
+        { status: 400 },
       );
     }
     const json = await response.json();
@@ -103,17 +106,20 @@ export async function GET(req: Request) {
     const validated = shippingCostResponseSchema.parse(json);
 
     if (!validated[0] || !validated[0]?.total_amount) {
+      console.log("Error while validating shipping response from Delhivery.", {
+        response: JSON.stringify(response),
+      });
       return NextResponse.json(
         { error: "Error validating shipping cost" },
-        { status: 404 },
+        { status: 400 },
       );
     }
     return NextResponse.json({ cost: validated[0]?.total_amount });
   } catch (e) {
-    console.log(e);
+    console.log({ e });
     return NextResponse.json(
       { error: "Error generating shipping cost." },
-      { status: 404 },
+      { status: 400 },
     );
   }
 }

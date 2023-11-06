@@ -115,7 +115,7 @@ const UpdateForm = ({ order }: { order: CompleteOrders }) => {
       if (req.ok) {
         console.log({ req });
         console.log("Updated!");
-        await queryClient.invalidateQueries(["allOrders"]);
+        await queryClient.invalidateQueries(["allOrders", "shippingCost"]);
         toast.success("Order updated successfully!");
       }
     } catch (e) {
