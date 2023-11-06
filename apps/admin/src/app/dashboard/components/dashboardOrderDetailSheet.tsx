@@ -6,13 +6,13 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { COURIER, Status } from "@prisma/client";
-import { useQueryClient } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Badge as StatusBadge, type Color } from "@tremor/react";
 import { format } from "date-fns";
 import { Loader2, ShareIcon, X } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
-import { type z } from "zod";
+import { z } from "zod";
 
 import { type CompleteOrders } from "@gramflow/db/prisma/zod";
 import {
@@ -72,7 +72,6 @@ export const pillColors: { [key: string]: Color } = {
   [Status.HOLD]: "yellow",
   [Status.OUT_FOR_DELIVERY]: "purple",
 };
-
 
 const UpdateForm = ({ order }: { order: CompleteOrders }) => {
   const queryClient = useQueryClient();
@@ -314,6 +313,48 @@ export function DashboardOrderDetailSheet({
 }: {
   order: CompleteOrders;
 }) {
+  const fetchApproxShippingCost = ({
+    originPincode,
+    deliveryPincode,
+    packageWeight,
+  }: {
+    originPincode: string;
+    deliveryPincode: string;
+    packageWeight: string;
+  }) => {
+    return fetch(
+      `/api/cost?delivery_pincode=${deliveryPincode}&origin_pincode=${originPincode}&weight=${packageWeight}`,
+    );
+  };
+  //use react-query to fetch the shipping cost
+  const shippingCostSchema = z.object({
+    cost: z.string(),
+  });
+  const {
+    isLoading: isShippingCostLoading,
+    isError: isShippingCostError,
+    data: shippingCostData,
+    error: shippingCostError,
+  } = useQuery<z.infer<typeof shippingCostSchema>>(
+    ["shippingCost", order.user?.pincode, order.weight],
+    async () => {
+      const response = await fetchApproxShippingCost({
+        originPincode: AppConfig.WarehouseDetails.pincode,
+        deliveryPincode: order.user?.pincode ?? "",
+        packageWeight: order.weight ?? "",
+      });
+      return await response.json();
+    },
+
+    {
+      onError: (error) => {
+        console.log({ error });
+        toast.error("Error fetching the shipping cost.");
+      },
+      enabled: !!order.user?.pincode && !!order.weight,
+    },
+  );
+
   const handleShareButton = async () => {
     const text = `Thank you for your order love 🥰. Please fill up the details by clicking the link below. ${AppConfig.BaseOrderUrl}/order/${order.id}. This is a one time process and the details will be saved for future orders. You can visit the link anytime to track your order.`;
     if (navigator.share) {
@@ -427,6 +468,18 @@ export function DashboardOrderDetailSheet({
             new Date(order.created_at ?? new Date()),
             "dd/MM/yy, hh:mm a",
           )}
+        />
+
+        <RecordDisplay
+          label="Shipping Cost"
+          value={
+            isShippingCostLoading
+              ? "Loading..."
+              : isShippingCostError
+              ? "Error"
+              : `₹ ${shippingCostData?.cost}`
+              
+          }
         />
         <>
           {order.user && (
