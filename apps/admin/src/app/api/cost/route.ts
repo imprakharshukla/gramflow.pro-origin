@@ -59,7 +59,6 @@ export async function GET(req: Request) {
     }
 
     const { searchParams } = new URL(req.url);
-    console.log(req.url);
     const schema = z.object({
       delivery_pincode: z.string().length(6),
       origin_pincode: z.string().length(6),
@@ -82,16 +81,9 @@ export async function GET(req: Request) {
       },
     };
 
-    console.log({
-      validate,
-    });
-
     const url = `https://track.delhivery.com//api/kinko/v1/invoice/charges/.json?md=S&ss=Delivered&d_pin=${validate.delivery_pincode}&o_pin=${validate.origin_pincode}&cgm=${validate.weight}&pt=Pre-paid&cod=0`;
-    console.log({ url });
+  
     const response = await fetch(url, options);
-
-    console.log({ response: JSON.stringify(response) });
-    console.log({ response: JSON.stringify(response.body) });
     if (!response.ok) {
       console.log("Error while requesting shipping data from Delhivery.", {
         response: JSON.stringify(response),
@@ -102,7 +94,6 @@ export async function GET(req: Request) {
       );
     }
     const json = await response.json();
-    console.log({ json });
     const validated = shippingCostResponseSchema.parse(json);
 
     if (!validated[0] || !validated[0]?.total_amount) {

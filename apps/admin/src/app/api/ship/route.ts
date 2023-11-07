@@ -19,7 +19,6 @@ import {
   type OrderSchemaCSV,
 } from "@gramflow/utils/src/schema";
 import {
-  sendFileToTelegram,
   sendMessageToSlackWithFileLink,
 } from "@gramflow/utils/src/slackHelper";
 
@@ -435,7 +434,7 @@ export const updateStatusFromDelhivery = async (
 
               console.log({ order_ids });
 
-              //check if the order alrteady has the status
+              //check if the order already has the status
               if (
                 statusToBeUpdated ===
                 order_ids.find((order) => order.id === order_id)?.status
