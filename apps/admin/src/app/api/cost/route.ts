@@ -81,7 +81,7 @@ export async function GET(req: Request) {
       },
     };
 
-    const url = `https://track.delhivery.com//api/kinko/v1/invoice/charges/.json?md=S&ss=Delivered&d_pin=${validate.delivery_pincode}&o_pin=${validate.origin_pincode}&cgm=${validate.weight}&pt=Pre-paid&cod=0`;
+    const url = `https://track.delhivery.com/api/kinko/v1/invoice/charges/.json?md=S&ss=Delivered&d_pin=${validate.delivery_pincode}&o_pin=${validate.origin_pincode}&cgm=${validate.weight}&pt=Pre-paid&cod=0`;
   
     const response = await fetch(url, options);
     if (!response.ok) {

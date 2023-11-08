@@ -150,7 +150,7 @@ async function createShipmentWithApi(
   console.log({ requestOptions });
 
   const response = await fetch(
-    "https://staging-express.delhivery.com/api/cmu/create.json",
+    env.ENV ===  "dev" ? "https://staging-express.delhivery.com/api/cmu/create.json" : "https://track.delhivery.com/api/cmu/create.json",
     requestOptions,
   );
 
