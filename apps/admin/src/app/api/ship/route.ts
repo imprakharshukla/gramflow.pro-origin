@@ -18,9 +18,7 @@ import {
   type CSVSchema,
   type OrderSchemaCSV,
 } from "@gramflow/utils/src/schema";
-import {
-  sendMessageToSlackWithFileLink,
-} from "@gramflow/utils/src/slackHelper";
+import { sendMessageToSlackWithFileLink } from "@gramflow/utils/src/slackHelper";
 
 import { env } from "~/env.mjs";
 import { prisma } from "~/lib/prismaClient";
@@ -393,6 +391,7 @@ export const updateStatusFromDelhivery = async (
   }[],
 ) => {
   return new Promise((resolve, reject) => {
+    console.log("Order IDs to be fetched: ", order_ids);
     const options = {
       method: "GET",
       headers: {
@@ -435,7 +434,11 @@ export const updateStatusFromDelhivery = async (
               console.log({ order_ids });
 
               //check if the order already has the status
-              if (
+              if (!statusToBeUpdated) {
+                console.log(
+                  `The order ${order_id} has no status to be updated`,
+                );
+              } else if (
                 statusToBeUpdated ===
                 order_ids.find((order) => order.id === order_id)?.status
               ) {

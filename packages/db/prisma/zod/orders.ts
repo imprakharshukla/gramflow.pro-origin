@@ -18,6 +18,7 @@ export const OrdersModel = z.object({
   breadth: z.string().nullish(),
   height: z.string().nullish(),
   weight: z.string().nullish(),
+  shipping_cost: z.number().int().nullish(),
 })
 
 export interface CompleteOrders extends z.infer<typeof OrdersModel> {

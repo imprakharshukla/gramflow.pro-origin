@@ -68,9 +68,13 @@ export default function DashboardBulkOptionsSelectComponent({
       return res.json();
     },
     {
-      onSuccess: () => {
+      onSuccess: async () => {
         console.log("Success");
         toast.success("Shipment Created");
+        await syncOrdersMutate({ order_ids: getSelectedOrderIds() });
+        await queryClient.invalidateQueries({
+          queryKey: ["allOrders"],
+        });
       },
       onError: (e) => {
         console.log("Error");
@@ -151,7 +155,7 @@ export default function DashboardBulkOptionsSelectComponent({
     error: syncOrdersError,
   } = useMutation(
     async (params: { order_ids: string[] }) => {
-      toast("Syncing...");
+      toast.loading("Syncing...");
       const { order_ids } = params;
       const res = await fetch(`/api/ship?order_ids=${order_ids.join(",")}`, {
         method: "OPTIONS",

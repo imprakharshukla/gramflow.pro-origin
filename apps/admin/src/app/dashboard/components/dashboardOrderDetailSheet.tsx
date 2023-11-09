@@ -313,6 +313,7 @@ export function DashboardOrderDetailSheet({
 }: {
   order: CompleteOrders;
 }) {
+  const [isComponentVisible, setIsComponentVisible] = useState(false);
   const fetchApproxShippingCost = ({
     originPincode,
     deliveryPincode,
@@ -351,9 +352,13 @@ export function DashboardOrderDetailSheet({
         console.log({ error });
         toast.error("Error fetching the shipping cost.");
       },
-      enabled: !!order.user?.pincode && !!order.weight,
+      enabled: !!order.user?.pincode && !!order.weight && isComponentVisible,
     },
   );
+  //detect if the component is visible
+  useEffect(() => {
+    setIsComponentVisible(true);
+  });
 
   const handleShareButton = async () => {
     const text = `Thank you for your order love 🥰. Please fill up the details by clicking the link below. ${AppConfig.BaseOrderUrl}/order/${order.id}. This is a one time process and the details will be saved for future orders. You can visit the link anytime to track your order.`;
@@ -469,18 +474,12 @@ export function DashboardOrderDetailSheet({
             "dd/MM/yy, hh:mm a",
           )}
         />
-
-        <RecordDisplay
-          label="Shipping Cost"
-          value={
-            isShippingCostLoading
-              ? "Loading..."
-              : isShippingCostError
-              ? "Error"
-              : `₹ ${shippingCostData?.cost}`
-              
-          }
-        />
+        {order.user && (
+          <RecordDisplay
+            label="Shipping Cost"
+            value={order.shipping_cost?.toString()}
+          />
+        )}
         <>
           {order.user && (
             <div className="grid gap-4 py-4">

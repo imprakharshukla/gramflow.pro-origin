@@ -68,7 +68,7 @@ model Orders {
   breadth             String?  @default("0")
   height              String?  @default("0")
   weight              String?  @default("0")
-
+  shipping_cost       Int?     @default(0)
   @@index([user_id, id])
 }
 
