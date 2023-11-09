@@ -115,7 +115,7 @@ const UpdateForm = ({ order }: { order: CompleteOrders }) => {
       if (req.ok) {
         console.log({ req });
         console.log("Updated!");
-        await queryClient.invalidateQueries(["allOrders", "shippingCost"]);
+        await queryClient.invalidateQueries(["allOrders"]);
         toast.success("Order updated successfully!");
       }
     } catch (e) {
@@ -313,53 +313,6 @@ export function DashboardOrderDetailSheet({
 }: {
   order: CompleteOrders;
 }) {
-  const [isComponentVisible, setIsComponentVisible] = useState(false);
-  const fetchApproxShippingCost = ({
-    originPincode,
-    deliveryPincode,
-    packageWeight,
-  }: {
-    originPincode: string;
-    deliveryPincode: string;
-    packageWeight: string;
-  }) => {
-    return fetch(
-      `/api/cost?delivery_pincode=${deliveryPincode}&origin_pincode=${originPincode}&weight=${packageWeight}`,
-    );
-  };
-  //use react-query to fetch the shipping cost
-  const shippingCostSchema = z.object({
-    cost: z.string(),
-  });
-  const {
-    isLoading: isShippingCostLoading,
-    isError: isShippingCostError,
-    data: shippingCostData,
-    error: shippingCostError,
-  } = useQuery<z.infer<typeof shippingCostSchema>>(
-    ["shippingCost", order.user?.pincode, order.weight],
-    async () => {
-      const response = await fetchApproxShippingCost({
-        originPincode: AppConfig.WarehouseDetails.pincode,
-        deliveryPincode: order.user?.pincode ?? "",
-        packageWeight: order.weight ?? "",
-      });
-      return await response.json();
-    },
-
-    {
-      onError: (error) => {
-        console.log({ error });
-        toast.error("Error fetching the shipping cost.");
-      },
-      enabled: !!order.user?.pincode && !!order.weight && isComponentVisible,
-    },
-  );
-  //detect if the component is visible
-  useEffect(() => {
-    setIsComponentVisible(true);
-  });
-
   const handleShareButton = async () => {
     const text = `Thank you for your order love 🥰. Please fill up the details by clicking the link below. ${AppConfig.BaseOrderUrl}/order/${order.id}. This is a one time process and the details will be saved for future orders. You can visit the link anytime to track your order.`;
     if (navigator.share) {
@@ -477,7 +430,7 @@ export function DashboardOrderDetailSheet({
         {order.user && (
           <RecordDisplay
             label="Shipping Cost"
-            value={order.shipping_cost?.toString()}
+            value={"₹ " + order.shipping_cost?.toString()}
           />
         )}
         <>
@@ -493,7 +446,6 @@ export function DashboardOrderDetailSheet({
                 value={`+91 ${order.user?.phone_no}`}
               />
               <RecordDisplay label="Email" value={order.user?.email} />
-
               <RecordDisplay
                 label={"Buyer's Username"}
                 value={`${order.user?.instagram_username}`}

@@ -224,6 +224,15 @@ export default function DashboardBulkOptionsSelectComponent({
     }
   };
 
+  const getShippingCostForOrder = () => {
+    let shippingCost = 0;
+    for (let i = 0; i < data.length; i++) {
+      const order = data[i];
+      shippingCost += order.shipping_cost;
+    }
+    return shippingCost;
+  };
+
   const updateOrders = ({
     order_ids,
     status,
@@ -328,8 +337,16 @@ export default function DashboardBulkOptionsSelectComponent({
           <CommandGroup heading="Shipping">
             <CommandItem
               onSelect={() => {
-                const selected = getSelectedOrderIds();
-                createShipmentMutate(selected);
+                const totalShippingCost = getShippingCostForOrder();
+                toast(`The total shipping cost is ₹${totalShippingCost}`, {
+                  action: {
+                    label: "Create",
+                    onClick: () => {
+                      const selected = getSelectedOrderIds();
+                      createShipmentMutate(selected);
+                    },
+                  },
+                });
                 setOpen(false);
               }}
             >

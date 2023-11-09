@@ -6,9 +6,9 @@ generator client {
 }
 
 datasource db {
-  provider          = "postgresql"
-  url               = env("DATABASE_URL")
-  directUrl         = env("DIRECT_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
 
 model Posts {
@@ -68,7 +68,8 @@ model Orders {
   breadth             String?  @default("0")
   height              String?  @default("0")
   weight              String?  @default("0")
-  shipping_cost       Int?     @default(0)
+  shipping_cost       Float?   @default(0.0)
+
   @@index([user_id, id])
 }
 
