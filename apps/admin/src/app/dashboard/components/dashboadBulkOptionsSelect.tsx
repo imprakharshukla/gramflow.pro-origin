@@ -147,7 +147,7 @@ export default function DashboardBulkOptionsSelectComponent({
         toast.error(`Error ${e}`);
       },
     },
-  );
+  );  
 
   const {
     mutate: syncOrdersMutate,

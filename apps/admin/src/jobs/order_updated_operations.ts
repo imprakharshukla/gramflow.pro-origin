@@ -24,6 +24,14 @@ client.defineJob({
   trigger: supabaseTriggers.onUpdated({
     schema: "public",
     table: "Orders",
+    filter: {
+      old_record: {
+        user_id: [{ $isNull: true }],
+      },
+      record: {
+        user_id: [{ $isNull: false }],
+      },
+    },
   }),
   run: async (payload, io, ctx) => {
     try {
@@ -36,10 +44,6 @@ client.defineJob({
       if (!order || !order.user_id) {
         await io.logger.error(`Order ${payload.record.id} not found.`);
         return { status: "failed" };
-      }
-      if (order.weight == payload.old_record.weight) {
-        io.logger.info(`Order ${payload.record.id} weight not changed.`);
-        return { status: "success" };
       }
       const user = await prisma.users.findUnique({
         where: {

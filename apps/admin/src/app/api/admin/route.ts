@@ -5,7 +5,6 @@ import {
   OrderShippingUpdateSchemaWithOrderId,
   getAllOrders,
   getAllOrdersWithPagination,
-  getOrdersWithSearchParams,
   updateOrderStatus,
 } from "@gramflow/db/dbHelper";
 
