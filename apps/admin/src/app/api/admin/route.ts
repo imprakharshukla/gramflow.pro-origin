@@ -6,6 +6,7 @@ import {
   getAllOrders,
   getAllOrdersWithPagination,
   updateOrderStatus,
+  updateShippingCharges,
 } from "@gramflow/db/dbHelper";
 
 import { SearchParams } from "~/app/dashboard/data-table";
@@ -59,6 +60,11 @@ export async function PUT(req: Request) {
     console.log({ body });
     const validated = OrderShippingUpdateSchemaWithOrderId.parse(body);
     await updateOrderStatus(validated);
+    if (validated.weight && validated.weight !== "")
+      await updateShippingCharges({
+        id: validated.id,
+        weight: validated.weight,
+      });
     return NextResponse.json({ message: "Order updated" });
   } catch (e) {
     console.log(e);
