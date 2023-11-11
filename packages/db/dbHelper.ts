@@ -9,8 +9,7 @@ import {
   type UserSchema,
 } from "@gramflow/utils/src/schema";
 
-import { shippingCostResponseSchema } from "~/app/api/cost/route";
-import { SearchParams } from "~/app/dashboard/data-table";
+import {ShippingCostResponseSchema} from "@gramflow/utils/src/schema";
 import { env } from "~/env.mjs";
 import { fetchImageUrls } from "./instagramHelper";
 
@@ -223,7 +222,7 @@ export const updateShippingCharges = async ({
     return { status: "failed" };
   }
   const json = await response.json();
-  const validated = shippingCostResponseSchema.parse(json);
+  const validated = ShippingCostResponseSchema.parse(json);
   console.log(
     `Updating the shipping cost for order ${id} to ${validated[0]?.total_amount}`,
   );

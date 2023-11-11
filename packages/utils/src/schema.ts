@@ -113,3 +113,51 @@ export const OrderSchemaCSV = z.object({
 });
 
 export const CSVSchema = z.array(OrderSchemaCSV);
+
+
+export const ShippingCostResponseSchema = z.array(
+  z.object({
+    charge_ROV: z.number(),
+    charge_REATTEMPT: z.number(),
+    charge_RTO: z.number(),
+    charge_MPS: z.number(),
+    charge_pickup: z.number(),
+    charge_CWH: z.number(),
+    tax_data: z.object({
+      swacch_bharat_tax: z.number(),
+      IGST: z.number(),
+      SGST: z.number(),
+      service_tax: z.number(),
+      krishi_kalyan_cess: z.number(),
+      CGST: z.number(),
+    }),
+    charge_DEMUR: z.number(),
+    charge_AWB: z.number(),
+    zone: z.string(),
+    wt_rule_id: z.null(),
+    charge_AIR: z.number(),
+    charge_FSC: z.number(),
+    charge_LABEL: z.number(),
+    charge_COD: z.number(),
+    status: z.string(),
+    charge_POD: z.number(),
+    adhoc_data: z.object({}),
+    charge_CCOD: z.number(),
+    gross_amount: z.number(),
+    charge_DTO: z.number(),
+    charge_COVID: z.number(),
+    zonal_cl: z.null(),
+    charge_DL: z.number(),
+    total_amount: z.number(),
+    charge_DPH: z.number(),
+    charge_FOD: z.number(),
+    charge_DOCUMENT: z.number(),
+    charge_WOD: z.number(),
+    charge_INS: z.number(),
+    charge_FS: z.number(),
+    charge_CNC: z.number(),
+    charge_FOV: z.number(),
+    charge_QC: z.number(),
+    charged_weight: z.number(),
+  }),
+);

@@ -3,11 +3,12 @@ import { SupabaseManagement } from "@trigger.dev/supabase";
 
 import { AppConfig } from "@gramflow/utils";
 
-import { shippingCostResponseSchema } from "~/app/api/cost/route";
+
 import { env } from "~/env.mjs";
 import { client } from "~/trigger";
 import { type Database } from "../../types/supabase";
 import { prisma } from "../lib/prismaClient";
+import { ShippingCostResponseSchema } from "@gramflow/utils/src/schema";
 
 // Use OAuth to authenticate with Supabase Management API
 const supabaseManagement = new SupabaseManagement({
@@ -85,7 +86,7 @@ client.defineJob({
         return { status: "failed" };
       }
       const json = await response.json();
-      const validated = shippingCostResponseSchema.parse(json);
+      const validated = ShippingCostResponseSchema.parse(json);
       io.logger.info(
         `Updating the shipping cost for order ${payload.record.id} to ${validated[0]?.total_amount}`,
       );
