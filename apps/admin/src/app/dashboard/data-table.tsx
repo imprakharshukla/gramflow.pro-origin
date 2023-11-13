@@ -18,7 +18,7 @@ import {
   type SortingState,
   type Table as TsTable,
 } from "@tanstack/react-table";
-import { format, set, subDays } from "date-fns";
+import { addDays, format, set, subDays } from "date-fns";
 import {
   CalendarIcon,
   ChevronLeftIcon,
@@ -429,8 +429,13 @@ export function DataTable<TData, TValue>({
                         <Calendar
                           mode="single"
                           disabled={[
-                            { before: new Date() },
-                            new Date().getHours() >= 14,
+                            {
+                              before: new Date(),
+                              after: new Date(
+                                new Date().getTime() + 7 * 24 * 60 * 60 * 1000,
+                              ),
+                            },
+                            new Date().getHours() >= 14 ? new Date() : null,
                           ]}
                           selected={date}
                           onSelect={setDate}
