@@ -41,7 +41,7 @@ export default function Dashboard() {
   return (
     <>
       {pickupToday && (
-        <div className="-mt-16 mb-12 w-full bg-blue-600 px-4 py-2 text-sm font-medium">
+        <div className="-mt-16 mb-12 text-white w-full bg-blue-600 px-4 py-2 text-sm font-medium">
           Pickup today on {format(new Date(), "dd MMMM yyyy")}
         </div>
       )}
