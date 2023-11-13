@@ -5,7 +5,7 @@ export const PickupsModel = z.object({
   id: z.string(),
   pickup_id: z.number().int(),
   pickup_location: z.string(),
-  pickup_date: z.date(),
+  pickup_date: z.string(),
   order_id: z.string().array(),
   ordersId: z.string().nullish(),
 })

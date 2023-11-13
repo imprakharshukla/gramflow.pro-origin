@@ -78,11 +78,11 @@ model Pickups {
   id              String   @id @default(uuid())
   pickup_id       Int      @unique
   pickup_location String
-  pickup_date     DateTime
-  order_id        String[] // Changed this to an array
+  pickup_date     String
+  order_id        String[]
   Orders          Orders?  @relation(fields: [ordersId], references: [id])
   ordersId        String?
-
+  
   @@index([id, pickup_date])
 }
 

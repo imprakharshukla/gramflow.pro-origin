@@ -37,18 +37,7 @@ export const PickupRequestSchema = z.object({
 export async function POST(req: Request) {
   try {
     const body = await req.json();
-    console.log({ body });
     const validated = PickupRequestSchema.parse(body);
-    console.log({ validated });
-    console.log({
-      pickup_location: AppConfig.WarehouseDetails.name,
-      expected_package_count: validated.expected_package_count.toString(),
-      pickup_date: format(
-        new Date(validated.pickup_date),
-        "yyyy-MM-dd",
-      ).toString(),
-      pickup_time: validated.pickup_time,
-    });
     const options = {
       method: "POST",
       headers: {
@@ -82,26 +71,38 @@ export async function POST(req: Request) {
     }
     const json = await response.json();
     console.log({ json });
-    if (json.success === false) {
-      //already exists
-      return NextResponse.json({
+
+    await prisma.pickups.upsert({
+      where: {
         pickup_id: json.pickup_id,
+      },
+      update: {
         pickup_location: validated.pickup_location,
-        pickup_date: validated.pickup_date,
-      });
-    }
-    await prisma.pickups.create({
-      data: {
+        order_id: validated.order_ids,
+        pickup_date: format(
+          new Date(validated.pickup_date),
+          "yyyy-MM-dd",
+        ).toString(),
+      },
+      create: {
         pickup_id: json.pickup_id,
         pickup_location: validated.pickup_location,
         order_id: validated.order_ids,
-        pickup_date: validated.pickup_date,
+        ordersId: validated.order_ids,
+        pickup_date: format(
+          new Date(validated.pickup_date),
+          "yyyy-MM-dd",
+        ).toString(),
       },
     });
     return NextResponse.json({
       pickup_id: json.pickup_id,
+
       pickup_location: validated.pickup_location,
-      pickup_date: validated.pickup_date,
+      pickup_date: format(
+        new Date(validated.pickup_date),
+        "yyyy-MM-dd",
+      ).toString(),
     });
   } catch (e) {
     console.log(e);
