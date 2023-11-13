@@ -22,6 +22,7 @@ export async function GET(req: Request) {
         post_created_at: "desc",
       },
     });
+  
     return NextResponse.json(posts);
   } catch (e) {
     console.log(e);

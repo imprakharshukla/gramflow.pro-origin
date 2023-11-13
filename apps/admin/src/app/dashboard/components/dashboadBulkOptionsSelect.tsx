@@ -39,6 +39,7 @@ export default function DashboardBulkOptionsSelectComponent({
   setRowSelection,
   data,
   setLoading,
+  setPickupDialogOpen,
 }: {
   advancedDisabled: boolean;
   getSelectedOrderIds: () => string[];
@@ -48,6 +49,7 @@ export default function DashboardBulkOptionsSelectComponent({
   setRowSelection: Dispatch<SetStateAction<{}>>;
   data: any;
   setLoading: Dispatch<SetStateAction<boolean>>;
+  setPickupDialogOpen: Dispatch<SetStateAction<boolean>>;
 }) {
   const { setTheme } = useTheme();
   const router = useRouter();
@@ -147,7 +149,7 @@ export default function DashboardBulkOptionsSelectComponent({
         toast.error(`Error ${e}`);
       },
     },
-  );  
+  );
 
   const {
     mutate: syncOrdersMutate,
@@ -335,6 +337,15 @@ export default function DashboardBulkOptionsSelectComponent({
             </CommandItem>
           </CommandGroup>
           <CommandGroup heading="Shipping">
+            <CommandItem
+              onSelect={() => {
+                const selected = getSelectedOrderIds();
+                setPickupDialogOpen(true);
+                setOpen(false);
+              }}
+            >
+              Create Pickup
+            </CommandItem>
             <CommandItem
               onSelect={() => {
                 const totalShippingCost = getShippingCostForOrder();

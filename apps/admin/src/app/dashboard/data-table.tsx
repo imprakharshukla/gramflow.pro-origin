@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useUser } from "@clerk/nextjs";
 import { Status } from "@prisma/client";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import {
   VisibilityState,
   flexRender,
@@ -18,7 +18,9 @@ import {
   type SortingState,
   type Table as TsTable,
 } from "@tanstack/react-table";
+import { format, set, subDays } from "date-fns";
 import {
+  CalendarIcon,
   ChevronLeftIcon,
   ChevronRightIcon,
   ChevronsLeft,
@@ -26,13 +28,27 @@ import {
   Loader2,
   RefreshCcw,
 } from "lucide-react";
+import { toast } from "sonner";
+import { date } from "zod";
 
 import { type CompleteOrders } from "@gramflow/db/prisma/zod";
 import {
   Button,
+  Calendar,
   Card,
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
   Input,
+  Label,
   Loader,
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
   Select,
   SelectContent,
   SelectItem,
@@ -45,7 +61,7 @@ import {
   TableHeader,
   TableRow,
 } from "@gramflow/ui";
-import { AppConfig } from "@gramflow/utils";
+import { AppConfig, cn } from "@gramflow/utils";
 
 import DashboardBulkOptionsSelectComponent from "./components/dashboadBulkOptionsSelect";
 import DashboardBulkCsvDownloadButton from "./components/dashboardBulkCsvDownloadButton";
@@ -94,6 +110,10 @@ export function DataTable<TData, TValue>({
     useState<NullableVoidFunction>(null);
   const [confirmMessage, setConfirmMessage] = useState("");
 
+  useEffect(() => {
+    setEstimatedPackageCount(getSelectedOrderIds().length);
+  }, [rowSelection]);
+
   const [{ pageIndex, pageSize }, setPagination] = useState<PaginationState>({
     pageIndex: 0,
     pageSize: 20,
@@ -107,6 +127,36 @@ export function DataTable<TData, TValue>({
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedStatus, setSelectedStatus] = useState<Status | "All">("All");
   const [searchParam, setSearchParam] = useState(SearchParams.Order_ID);
+
+  const { mutate: createPickupMutation, isLoading: createPickupLoading } =
+    useMutation(
+      async (data: { pickup_date: Date; expected_package_count: number }) => {
+        const response = await fetch("/api/pickup", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ order_ids: getSelectedOrderIds(), ...data }),
+        });
+
+        if (response.ok) {
+          return response.json();
+        } else {
+          const error = await response.json();
+          console.log(error);
+          throw new Error(error.error);
+        }
+      },
+      {
+        onSuccess: (data) => {
+          toast.success("Pickup request created successfully");
+          setPickupDialogOpen(false);
+        },
+        onError: (error: any) => {
+          toast.error("" + error);
+        },
+      },
+    );
 
   const fetchData = async (options: {
     pageIndex: number;
@@ -218,6 +268,12 @@ export function DataTable<TData, TValue>({
     return order_ids;
   };
 
+  const [pickupDialogOpen, setPickupDialogOpen] = useState(false);
+  const [date, setDate] = useState<Date>(new Date());
+  const [estimatedPackageCount, setEstimatedPackageCount] = useState(
+    getSelectedOrderIds().length,
+  );
+
   useEffect(() => {
     table
       .getAllColumns()
@@ -231,7 +287,6 @@ export function DataTable<TData, TValue>({
         column.toggleVisibility(false);
       });
   }, [table]);
-
   return (
     <div>
       <DashboardConfirmModal
@@ -272,7 +327,7 @@ export function DataTable<TData, TValue>({
               </SelectContent>
             </Select>
             <Select
-              onValueChange={(value: Status|"All") => {
+              onValueChange={(value: Status | "All") => {
                 setSelectedStatus(value);
               }}
             >
@@ -282,7 +337,8 @@ export function DataTable<TData, TValue>({
               <SelectContent>
                 {Object.keys(Status).map((status) => (
                   <SelectItem key={status} value={status}>
-                    {status.slice(0,1).toUpperCase() + status.slice(1).toLowerCase()}
+                    {status.slice(0, 1).toUpperCase() +
+                      status.slice(1).toLowerCase()}
                   </SelectItem>
                 ))}
                 <SelectItem key={"All"} value={"All"}>
@@ -340,8 +396,86 @@ export function DataTable<TData, TValue>({
               setShowConfirmation={setShowConfirmation}
               setRowSelection={setRowSelection}
               data={dataQuery.data?.rows}
+              setPickupDialogOpen={setPickupDialogOpen}
               setLoading={setLoading}
             ></DashboardBulkOptionsSelectComponent>
+            <Dialog onOpenChange={setPickupDialogOpen} open={pickupDialogOpen}>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>Create a Pickup Request</DialogTitle>
+                  <DialogDescription>
+                    Select a date on which you want to pickup the orders.
+                  </DialogDescription>
+                  <div className="grid gap-4 py-4">
+                    <Label>Pickup Date</Label>
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <Button
+                          variant={"outline"}
+                          className={cn(
+                            "w-[280px] justify-start text-left font-normal",
+                            !date && "text-muted-foreground",
+                          )}
+                        >
+                          <CalendarIcon className="mr-2 h-4 w-4" />
+                          {date ? (
+                            format(date, "PPP")
+                          ) : (
+                            <span>Pick a date</span>
+                          )}
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-auto p-0">
+                        <Calendar
+                          mode="single"
+                          disabled={[
+                            { before: new Date() },
+                            new Date().getHours() >= 14,
+                          ]}
+                          selected={date}
+                          onSelect={setDate}
+                          initialFocus
+                        />
+                      </PopoverContent>
+                    </Popover>
+                    <Label>Estimated Package Count</Label>
+                    <Input
+                      className={cn(
+                        "w-[280px] justify-start text-left font-normal",
+                        !date && "text-muted-foreground",
+                      )}
+                      type="number"
+                      value={estimatedPackageCount}
+                      onChange={(event) => {
+                        const value = event.target.value;
+                        if (value !== "0") {
+                          setEstimatedPackageCount(Number(value));
+                          // Update the state or perform any other necessary actions
+                        }
+                      }}
+                      placeholder="Estimated Package Count"
+                    />
+                  </div>
+                </DialogHeader>
+                <DialogFooter>
+                  <Button
+                    onClick={() => {
+                      createPickupMutation({
+                        pickup_date: date,
+                        expected_package_count: estimatedPackageCount,
+                      });
+                    }}
+                  >
+                    {createPickupLoading ? (
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                    ) : (
+                      "Create Pickup"
+                    )}
+                  </Button>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
+
             {table.getFilteredSelectedRowModel().rows.length > 0 && (
               <DashboardBulkCsvDownloadButton
                 advandcedDisabled={advancedDisabled}

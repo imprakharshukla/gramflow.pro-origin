@@ -52,25 +52,38 @@ model Users {
 }
 
 model Orders {
-  id                  String   @id @default(uuid()) /// @zod.uuid()
-  instagram_post_urls String[] @unique
-  user                Users?   @relation(fields: [user_id], references: [id])
+  id                  String    @id @default(uuid()) /// @zod.uuid()
+  instagram_post_urls String[]  @unique
+  user                Users?    @relation(fields: [user_id], references: [id])
   user_id             String?
-  price               Int      @default(0)
-  status              Status   @default(PENDING)
-  prebook             Boolean  @default(false)
-  courier             COURIER  @default(DEFAULT)
+  price               Int       @default(0)
+  status              Status    @default(PENDING)
+  prebook             Boolean   @default(false)
+  courier             COURIER   @default(DEFAULT)
   images              String[]
   awb                 String?
-  created_at          DateTime @default(now())
-  updated_at          DateTime @updatedAt
-  length              String?  @default("0")
-  breadth             String?  @default("0")
-  height              String?  @default("0")
-  weight              String?  @default("0")
-  shipping_cost       Float?   @default(0.0)
+  created_at          DateTime  @default(now())
+  updated_at          DateTime  @updatedAt
+  length              String?   @default("0")
+  breadth             String?   @default("0")
+  height              String?   @default("0")
+  weight              String?   @default("0")
+  shipping_cost       Float?    @default(0.0)
+  pickup              Pickups[]
 
   @@index([user_id, id])
+}
+
+model Pickups {
+  id              String   @id @default(uuid())
+  pickup_id       Int      @unique
+  pickup_location String
+  pickup_date     DateTime
+  order_id        String[] // Changed this to an array
+  Orders          Orders?  @relation(fields: [ordersId], references: [id])
+  ordersId        String?
+
+  @@index([id, pickup_date])
 }
 
 enum Size {

@@ -41,7 +41,6 @@ export default function DashboardSelectedRowDisplayCard({
                       },
                       0,
                     );
-                    console.log({ price });
                     return acc + price;
                   }, 0)}
             </p>
