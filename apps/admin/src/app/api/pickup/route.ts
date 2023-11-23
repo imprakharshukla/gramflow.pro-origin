@@ -88,7 +88,6 @@ export async function POST(req: Request) {
         pickup_id: json.pickup_id,
         pickup_location: validated.pickup_location,
         order_id: validated.order_ids,
-        ordersId: validated.order_ids,
         pickup_date: format(
           new Date(validated.pickup_date),
           "yyyy-MM-dd",
