@@ -71,7 +71,7 @@ client.defineJob({
         const newS3Urls = [...image_urls];
         for (const [index, url] of image_urls.entries()) {
           // Check if the image URL is from Instagram CDN
-          if (!url.includes("cdninstagram.com") || !url.includes("utfs.io")) {
+          if (!url.includes("cdninstagram.com") && !url.includes("utfs.io")) {
             continue;
           }
           // This line extracts the file name from the URL by splitting the URL string at each "/" character and then taking the last element of the resulting array.
