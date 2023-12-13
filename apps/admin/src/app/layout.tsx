@@ -13,6 +13,7 @@ import { PageLoaderProvider } from "~/providers/page-loader-provider";
 import QueryProvider from "~/providers/query-provider";
 
 export const metadata: Metadata = {
+  viewport: "width=device-width, initial-scale=1, maximum-scale=1",
   title: {
     default: siteConfig.name,
     template: `%s | ${siteConfig.name}`,
