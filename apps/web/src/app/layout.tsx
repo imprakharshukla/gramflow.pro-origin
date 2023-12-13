@@ -76,7 +76,11 @@ export default function RootLayout({
           <QueryProvider>
             <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
               <Toaster />
-              <div className={"relative flex min-h-screen flex-col " +fontSans.className }>
+              <div
+                className={
+                  "relative flex min-h-screen flex-col " + fontSans.className
+                }
+              >
                 {children}
               </div>
             </ThemeProvider>
