@@ -228,9 +228,13 @@ export default function DashboardBulkOptionsSelectComponent({
 
   const getShippingCostForOrder = () => {
     let shippingCost = 0;
+    //get selected orders
+    const selectedOrders = getSelectedOrderIds();
+    //filter all the orders by status and select them
     for (let i = 0; i < data.length; i++) {
-      const order = data[i];
-      shippingCost += order.shipping_cost;
+      if (selectedOrders.includes(data[i].id)) {
+        shippingCost += data[i].shipping_cost;
+      }
     }
     return shippingCost;
   };
@@ -415,7 +419,18 @@ export default function DashboardBulkOptionsSelectComponent({
               `Are you sure you want to create shipments for ${selected.length} orders?`,
             );
             setOnConfirmFunction(
-              wrapConfirmFunction(() => createShipmentMutate(selected)),
+              wrapConfirmFunction(() => {
+                const totalShippingCost = getShippingCostForOrder();
+                toast(`The total shipping cost is ₹${totalShippingCost}`, {
+                  action: {
+                    label: "Create",
+                    onClick: () => {
+                      const selected = getSelectedOrderIds();
+                      createShipmentMutate(selected);
+                    },
+                  },
+                });
+              }),
             );
             setShowConfirmation(true);
           }}
