@@ -88,6 +88,39 @@ export default async function KpiCards() {
     };
   };
 
+  // const fetchPrebookingRevenue = async () => {
+  //   const currentMonthPrebookings = await prisma.orders.aggregate({
+  //     _sum: {
+  //       price: true,
+  //     },
+  //     where: {
+  //       prebook: true,
+  //       created_at: {
+  //         lte: new Date(),
+  //         gte: new Date(new Date().getFullYear(), new Date().getMonth(), 1),
+  //       },
+  //     },
+  //   });
+
+  //   const previousMonthPrebookings = await prisma.orders.aggregate({
+  //     _sum: {
+  //       price: true,
+  //     },
+  //     where: {
+  //       prebook: true,
+  //       created_at: {
+  //         lte: new Date(new Date().getFullYear(), new Date().getMonth(), 1),
+  //         gte: new Date(new Date().getFullYear(), new Date().getMonth() - 1, 1),
+  //       },
+  //     },
+  //   });
+
+  //   return {
+  //     currentMonthPrebookings,
+  //     previousMonthPrebookings,
+  //   };
+  // };
+
   const fetchDeliveries = async () => {
     const currentMonthDeliveries = await prisma.orders.count({
       where: {
@@ -173,6 +206,14 @@ export default async function KpiCards() {
     ((currentMonthRevenue - previousMonthRevenue) / previousMonthRevenue) * 100,
   );
 
+  // const { currentMonthPrebookings, previousMonthPrebookings } =
+  //   await fetchPrebookingRevenue();
+  // const prebookingDelta = Math.round(
+  //   ((currentMonthPrebookings - previousMonthPrebookings) /
+  //     previousMonthPrebookings) *
+  //     100,
+  // );
+
   const categories: {
     title: string;
     metric: string;
@@ -208,6 +249,13 @@ export default async function KpiCards() {
       delta: deliveryDelta.toString() + "%",
       deltaType: getDeltaType(deliveryDelta),
     },
+    // }, {
+    //   title: "Prebookings",
+    //   metric: currentMonthPrebookings.toString(),
+    //   metricPrev: previousMonthPrebookings.toString(),
+    //   delta: deliveryDelta.toString() + "%",
+    //   deltaType: getDeltaType(deliveryDelta),
+    // },
   ];
 
   return (

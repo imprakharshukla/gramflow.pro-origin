@@ -1,9 +1,9 @@
-import { Status } from "@prisma/client";
+
 import { Slack } from "@trigger.dev/slack";
 import { SupabaseManagement } from "@trigger.dev/supabase";
 import { Resend } from "resend";
 
-import { OrderDeliveredEmail } from "@gramflow/email";
+import { OrderDeliveredEmail, SendEmailViaResend } from "@gramflow/email";
 import { AppConfig } from "@gramflow/utils";
 
 import { env } from "~/env.mjs";
@@ -11,11 +11,10 @@ import { client } from "~/trigger";
 import { type Database } from "../../types/supabase";
 import { prisma } from "../lib/prismaClient";
 
-const resend = new Resend(env.RESEND_API_KEY);
 const slack = new Slack({
   id: "slack",
 });
-
+const resend = new Resend(env.RESEND_API_KEY);
 // Use OAuth to authenticate with Supabase Management API
 const supabaseManagement = new SupabaseManagement({
   id: env.TRIGGER_SUPABASE_ID,

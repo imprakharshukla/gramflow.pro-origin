@@ -1,13 +1,17 @@
 import { NextResponse } from "next/server";
 import { PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
 import { auth } from "@clerk/nextjs";
+import { render } from "@jsx-email/render";
 import { Status } from "@prisma/client";
 import { Resend } from "resend";
 import { z } from "zod";
 
-import { addOrder, checkIfAnyOrderContainsProducts } from "@gramflow/db/dbHelper";
+import {
+  addOrder,
+  checkIfAnyOrderContainsProducts,
+} from "@gramflow/db/dbHelper";
 import { fetchImageUrls } from "@gramflow/db/instagramHelper";
-import { OrderShippedEmail } from "@gramflow/email";
+import { OrderShippedEmail, SendEmailViaResend } from "@gramflow/email";
 import { AppConfig } from "@gramflow/utils";
 import { AddOrderPostSchema } from "@gramflow/utils/src/schema";
 import { sendMessageWithSectionsAndImages } from "@gramflow/utils/src/slackHelper";
@@ -16,7 +20,6 @@ import { env } from "~/env.mjs";
 import { prisma } from "../../../lib/prismaClient";
 
 const resend = new Resend(env.RESEND_API_KEY);
-
 export async function GET(req: Request) {
   const { userId }: { userId: string | null } = auth();
   if (!userId) {
@@ -223,13 +226,10 @@ export async function OPTIONS(req: Request) {
       const order = orders[i];
       if (order && order.user?.email) {
         const data = await resend.emails.send({
-          from: `${AppConfig.StoreName} <no-reply@${
-            env.RESEND_DOMAIN
-          }>`,
+          from: `${AppConfig.StoreName} <no-reply@${env.RESEND_DOMAIN}>`,
           to: [order?.user?.email],
           subject: "Order Shipped",
           react: OrderShippedEmail({
-            id: order.id,
             awb: order.awb ?? "",
             name: order.user.name,
             house_number: order.user.house_number,

@@ -7,11 +7,13 @@ import { ThemeProvider } from "~/providers/theme-provider";
 import "~/styles/globals.css";
 import { Metadata } from "next";
 import { ClerkProvider } from "@clerk/nextjs";
-import { Toaster } from "react-hot-toast";
+import { Toaster } from "sonner";
 
+import { PageLoaderProvider } from "~/providers/page-loader-provider";
 import QueryProvider from "~/providers/query-provider";
 
 export const metadata: Metadata = {
+  viewport: "width=device-width, initial-scale=1, maximum-scale=1",
   title: {
     default: siteConfig.name,
     template: `%s | ${siteConfig.name}`,
@@ -85,15 +87,16 @@ export default async function RootLayout({
           <body
             className={cn(
               "min-h-screen bg-background font-sans antialiased",
-              fontSans.variable,
+              fontSans.className,
             )}
           >
             <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
-              <Toaster />
-
-              <div className="relative flex min-h-screen flex-col">
-                {children}
-              </div>
+              <Toaster theme="dark" />
+              <PageLoaderProvider>
+                <div className={`relative flex min-h-screen flex-col`}>
+                  {children}
+                </div>
+              </PageLoaderProvider>
             </ThemeProvider>
 
             <TailwindIndicator />

@@ -1,6 +1,7 @@
 import { PrismaClient, Status } from "@prisma/client";
 import { z } from "zod";
 
+import { AppConfig } from "@gramflow/utils";
 import {
   OrderShippingUpdateSchema,
   UpdateOrderWeightAndSizePutSchema,
@@ -8,6 +9,8 @@ import {
   type UserSchema,
 } from "@gramflow/utils/src/schema";
 
+import {ShippingCostResponseSchema} from "@gramflow/utils/src/schema";
+import { env } from "~/env.mjs";
 import { fetchImageUrls } from "./instagramHelper";
 
 const prisma = new PrismaClient();
@@ -26,6 +29,97 @@ export const GetOtp = async (id: string) => {
     },
   });
 };
+
+// export const getOrdersWithSearchParams = async ({
+//   searchTerm,
+//   searchParam,
+// }: {
+//   searchTerm: string;
+//   searchParam: SearchParams;
+// }) => {
+//   switch (searchTerm) {
+//     case SearchParams.Order_ID:
+//       return prisma.orders.findMany({
+//         where: {
+//           id: searchParam,
+//         },
+//         include: {
+//           user: true,
+//         },
+//         orderBy: {
+//           created_at: "desc",
+//         },
+//       });
+//     case SearchParams.Phone_Number:
+//       return prisma.orders.findMany({
+//         where: {
+//           user: {
+//             phone_no: searchParam,
+//           },
+//         },
+//         include: {
+//           user: true,
+//         },
+//         orderBy: {
+//           created_at: "desc",
+//         },
+//       });
+//     case SearchParams.Email:
+//       return prisma.orders.findMany({
+//         where: {
+//           user: {
+//             email: searchParam,
+//           },
+//         },
+//         include: {
+//           user: true,
+//         },
+//         orderBy: {
+//           created_at: "desc",
+//         },
+//       });
+//     case SearchParams.Name:
+//       return prisma.orders.findMany({
+//         where: {
+//           user: {
+//             name: searchParam,
+//           },
+//         },
+//         include: {
+//           user: true,
+//         },
+//         orderBy: {
+//           created_at: "desc",
+//         },
+//       });
+//     case SearchParams.Awb:
+//       return prisma.orders.findMany({
+//         where: {
+//           awb: searchParam,
+//         },
+//         include: {
+//           user: true,
+//         },
+//         orderBy: {
+//           created_at: "desc",
+//         },
+//       });
+//     case SearchParams.Username:
+//       return prisma.orders.findMany({
+//         where: {
+//           user: {
+//             instagram_username: searchParam,
+//           },
+//         },
+//         include: {
+//           user: true,
+//         },
+//         orderBy: {
+//           created_at: "desc",
+//         },
+//       });
+//   }
+// };
 
 export const getAllOrdersWithPagination = async ({
   page,
@@ -94,6 +188,54 @@ export const OrderShippingUpdateSchemaWithOrderId =
     id: z.string().uuid(),
   });
 
+export const updateShippingCharges = async ({
+  id,
+  weight,
+}: {
+  id: string;
+  weight: string;
+}) => {
+  const order = await prisma.orders.findUnique({
+    where: {
+      id: id,
+    },
+    include: {
+      user: true,
+    },
+  });
+  const options = {
+    method: "GET",
+    headers: {
+      Accept: "application/json",
+      Authorization: `Token ${env.DELHIVERY_API_KEY}`,
+    },
+  };
+
+  const url = `https://track.delhivery.com/api/kinko/v1/invoice/charges/.json?md=S&ss=Delivered&d_pin=${order?.user?.pincode}&o_pin=${AppConfig.WarehouseDetails.pincode}&cgm=${weight}&pt=Pre-paid&cod=0`;
+
+  const response = await fetch(url, options);
+  if (!response.ok) {
+    console.log("Error while requesting shipping data from Delhivery.", {
+      response: JSON.stringify(response),
+    });
+    await console.log(`Error while requesting shipping data from Delhivery.`);
+    return { status: "failed" };
+  }
+  const json = await response.json();
+  const validated = ShippingCostResponseSchema.parse(json);
+  console.log(
+    `Updating the shipping cost for order ${id} to ${validated[0]?.total_amount}`,
+  );
+  await prisma.orders.update({
+    where: {
+      id: id,
+    },
+    data: {
+      shipping_cost: validated[0]?.total_amount,
+    },
+  });
+};
+
 export const updateOrderStatus = async (
   order: z.infer<typeof OrderShippingUpdateSchemaWithOrderId>,
 ) => {
@@ -125,6 +267,7 @@ export const checkIfAnyOrderContainsProducts = async (
     },
   });
 };
+
 export const addOrder = async (
   order: z.infer<typeof AddOrderPostSchema>,
   images: string[],
@@ -138,6 +281,7 @@ export const addOrder = async (
   const size = order.size;
   return prisma.orders.create({
     data: {
+      prebook: order.prebook,
       instagram_post_urls: order.instagram_post_urls,
       images: mediaUrls,
       length: size.length,

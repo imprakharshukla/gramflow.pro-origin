@@ -22,6 +22,7 @@
     "lint:fix": "turbo lint:fix && manypkg fix",
     "type-check": "turbo type-check",
     "test": "turbo test",
+    "email-dev": "email preview ./emails",
     "sync": "git pull public main && pnpm i"
   },
   "dependencies": {

@@ -2,7 +2,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Title } from "@tremor/react";
 import { HomeIcon, RefreshCcw } from "lucide-react";
-import { toast } from "react-hot-toast";
+import { toast } from "sonner";
 import { AppConfig } from "@gramflow/utils";
 import { Button } from "@gramflow/ui";
 

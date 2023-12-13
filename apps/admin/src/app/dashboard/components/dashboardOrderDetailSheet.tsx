@@ -6,22 +6,18 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { COURIER, Status } from "@prisma/client";
-import { useQueryClient } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Badge as StatusBadge, type Color } from "@tremor/react";
 import { format } from "date-fns";
 import { Loader2, ShareIcon, X } from "lucide-react";
 import { useForm } from "react-hook-form";
-import { toast } from "react-hot-toast";
-import { type z } from "zod";
+import { toast } from "sonner";
+import { z } from "zod";
 
 import { type CompleteOrders } from "@gramflow/db/prisma/zod";
 import {
-  Badge,
   Button,
   Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
   Form,
   FormControl,
   FormField,
@@ -76,7 +72,6 @@ export const pillColors: { [key: string]: Color } = {
   [Status.HOLD]: "yellow",
   [Status.OUT_FOR_DELIVERY]: "purple",
 };
-
 
 const UpdateForm = ({ order }: { order: CompleteOrders }) => {
   const queryClient = useQueryClient();
@@ -432,6 +427,12 @@ export function DashboardOrderDetailSheet({
             "dd/MM/yy, hh:mm a",
           )}
         />
+        {order.user && (
+          <RecordDisplay
+            label="Shipping Cost"
+            value={"₹ " + order.shipping_cost?.toString()}
+          />
+        )}
         <>
           {order.user && (
             <div className="grid gap-4 py-4">
@@ -445,7 +446,6 @@ export function DashboardOrderDetailSheet({
                 value={`+91 ${order.user?.phone_no}`}
               />
               <RecordDisplay label="Email" value={order.user?.email} />
-
               <RecordDisplay
                 label={"Buyer's Username"}
                 value={`${order.user?.instagram_username}`}

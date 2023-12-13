@@ -12,7 +12,7 @@ import { useMutation } from "@tanstack/react-query";
 import { Title } from "@tremor/react";
 import { DeleteIcon, Trash2Icon } from "lucide-react";
 import { Controller, useForm } from "react-hook-form";
-import { toast } from "react-hot-toast";
+import { toast } from "sonner";
 
 import {
   Badge,
@@ -64,7 +64,7 @@ export interface SelectedPostsPropType {
 }
 
 function extractPricesFromCaption(inputString: string): number[] {
-  const regex = /\d+/g;
+  const regex = /\d{3,}/g;
   const matches = inputString.match(regex);
   if (matches) {
     return matches.map((match) => parseInt(match, 10));
@@ -138,7 +138,7 @@ export const OrderFormComponent = ({
         const shippingPrice =
           AppConfig.DefaultPackageDetails[
             packageSize as keyof typeof AppConfig.DefaultPackageDetails
-          ].charge;
+          ]?.charge ?? "0";
         if (index === values.product.length - 1) {
           return `${selectedPosts[index]?.parent}?img_index=${
             Number(selectedPosts[index]?.index) + 1

@@ -1,27 +1,27 @@
+import { TailwindIndicator } from "@gramflow/ui";
+import { cn } from "@gramflow/utils";
 
-import {TailwindIndicator} from "@gramflow/ui";
-import {cn} from "@gramflow/utils";
-
-import {siteConfig} from "~/config/site";
-import {fontSans} from "~/lib/fonts";
-import {AuthSessionProvider} from "~/providers/auth-session-provider";
-import {ThemeProvider} from "~/providers/theme-provider";
+import { siteConfig } from "~/config/site";
+import { fontSans } from "~/lib/fonts";
+import { AuthSessionProvider } from "~/providers/auth-session-provider";
+import { ThemeProvider } from "~/providers/theme-provider";
 import "~/styles/globals.css";
+import { Metadata } from "next";
+import { GeistSans } from "geist/font";
+import { Toaster } from "sonner";
+
 import QueryProvider from "~/providers/query-provider";
-import {Toaster} from 'react-hot-toast';
-import {Metadata} from "next";
 
-
-
-export const metadata:Metadata = {
+export const metadata: Metadata = {
+  viewport: "width=device-width, initial-scale=1, maximum-scale=1",
   title: {
     default: siteConfig.name,
     template: `%s | ${siteConfig.name}`,
   },
   description: siteConfig.description,
   themeColor: [
-    {media: "(prefers-color-scheme: light)", color: "white"},
-    {media: "(prefers-color-scheme: dark)", color: "black"},
+    { media: "(prefers-color-scheme: light)", color: "white" },
+    { media: "(prefers-color-scheme: dark)", color: "black" },
   ],
   openGraph: {
     type: "website",
@@ -59,36 +59,36 @@ export const metadata:Metadata = {
 };
 
 export default function RootLayout({
-                                     children,
-                                   }: {
+  children,
+}: {
   children: React.ReactNode;
 }) {
-
-
   return (
     <html lang="en" suppressHydrationWarning>
-    <head/>
-    <body
-      className={cn(
-        "min-h-screen bg-background font-sans antialiased",
-        fontSans.variable,
-      )}
-    >
-    <AuthSessionProvider>
-      <QueryProvider>
-        <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
-          <Toaster/>
+      <head />
+      <body
+        className={cn(
+          "min-h-screen bg-background font-sans antialiased",
+          fontSans.className,
+        )}
+      >
+        <AuthSessionProvider>
+          <QueryProvider>
+            <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+              <Toaster />
+              <div
+                className={
+                  "relative flex min-h-screen flex-col " + fontSans.className
+                }
+              >
+                {children}
+              </div>
+            </ThemeProvider>
 
-          <div className="relative flex min-h-screen flex-col">
-            {children}
-          </div>
-
-        </ThemeProvider>
-
-        <TailwindIndicator/>
-      </QueryProvider>
-    </AuthSessionProvider>
-    </body>
+            <TailwindIndicator />
+          </QueryProvider>
+        </AuthSessionProvider>
+      </body>
     </html>
   );
 }

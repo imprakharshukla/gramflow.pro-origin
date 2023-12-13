@@ -53,7 +53,7 @@ export default function OrderUpdatedComponent({
         animate={{ x: 0, opacity: 1 }}
         className={""}
       >
-        <h1 className="bg-gradient-to-br from-black via-[#171717] to-[#4b4b4b] bg-clip-text pb-3 pt-4 text-center text-4xl font-medium tracking-tight text-transparent md:text-5xl">
+        <h1 className="bg-gradient-to-br from-black via-[#171717] to-[#4b4b4b] bg-clip-text pb-3 pt-4 text-center text-4xl font-medium tracking-tight text-transparent dark:text-white md:text-5xl">
           {OrderStatusTitleDescription[order.status].title}
         </h1>
         <p className={"text-center text-sm text-muted-foreground"}>
@@ -83,7 +83,7 @@ export default function OrderUpdatedComponent({
         >
           <Link
             href="#"
-            className="group mt-5 flex w-fit space-x-1 rounded-full bg-white/30 px-5 py-2 text-center text-sm text-gray-600 shadow-sm ring-1 ring-gray-900/5 transition-all hover:shadow-lg active:shadow-sm sm:mt-0 md:mt-5"
+            className="dark: group mt-5 flex w-fit space-x-1 rounded-full bg-white/30 px-5 py-2 text-center text-sm text-gray-600 shadow-sm ring-1 ring-gray-900/5 transition-all hover:shadow-lg active:shadow-sm dark:bg-gray-700/50 dark:text-white sm:mt-0 md:mt-5"
           >
             <p>
               Order ID- <span className={"font-medium"}>{order.id}</span>

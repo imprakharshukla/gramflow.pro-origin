@@ -1,12 +1,12 @@
 "use client";
 
-import { use, useEffect, useState } from "react";
+import {  useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ca } from "date-fns/locale";
 import { Loader2 } from "lucide-react";
 import { useForm } from "react-hook-form";
-import { toast } from "react-hot-toast";
+import { toast } from "sonner";
 import * as z from "zod";
 
 import { UsersModel } from "@gramflow/db/prisma/zod";
@@ -625,7 +625,7 @@ export function DetailForm({ orderId }: { orderId: string }) {
 
   return (
     <div className={"mt-32"}>
-      <h1 className="pinkmd:text-6xl mt-4 bg-gradient-to-br from-black via-[#171717] to-[#4b4b4b] bg-clip-text pb-4 pt-4 text-center text-4xl font-semibold tracking-tight text-transparent">
+      <h1 className="bg-gradient-to-br from-black via-[#171717] to-[#4b4b4b] bg-clip-text pb-3 pt-4 text-center text-4xl font-medium tracking-tight text-transparent dark:text-white md:text-5xl">
         {currentStep === FormState.OTP ? "Verify OTP" : "Details Required"}
       </h1>
       <p className={"text-center text-sm text-muted-foreground md:text-base"}>

@@ -5,10 +5,10 @@ import { useRouter } from "next/navigation";
 import { useMutation } from "@tanstack/react-query";
 import { ArrowLeft, Loader2, RefreshCcw } from "lucide-react";
 import { useFieldArray, useForm } from "react-hook-form";
-import toast from "react-hot-toast";
+import { toast } from "sonner";
 import * as z from "zod";
 
-import { Button, Input, Loader } from "@gramflow/ui";
+import { Button, Checkbox, Input, Loader } from "@gramflow/ui";
 import { AppConfig, cn } from "@gramflow/utils";
 
 import { RecordDisplay } from "~/app/dashboard/components/dashboardOrderDetailSheet";
@@ -28,38 +28,34 @@ const formSchema = z.object({
   ),
 });
 
-export const SizeSelection = ({
-  setPackageSize,
-  packageSize,
-}: {
+interface SizeSelectionProps {
   setPackageSize: Dispatch<SetStateAction<string>>;
   packageSize: string;
+}
+
+export const SizeSelection: React.FC<SizeSelectionProps> = ({
+  setPackageSize,
+  packageSize,
 }) => {
   return (
-    <>
-      <div className="grid w-fit grid-cols-1 gap-3 ">
-        {Object.keys(AppConfig.DefaultPackageDetails).map((size) => {
-          console.log(packageSize);
-          //@ts-ignore
-          const order = AppConfig.DefaultPackageDetails[size];
-          return (
-            <RecordDisplay
-              onClick={() => setPackageSize(size)}
-              className={cn(
-                "cursor-pointer",
-                packageSize === size && "border-blue-500",
-              )}
-              label={size}
-              value={`${order.length} cm x ${order.breadth} cm x ${order.height} cm @ ${order.weight} gm`}
-            />
-          );
-        }) || []}
-      </div>
-    </>
+    <div className="grid w-fit grid-cols-1 gap-3">
+      {Object.entries(AppConfig.DefaultPackageDetails).map(([size, pack]) => {
+        return (
+          <RecordDisplay
+            onClick={() => setPackageSize(size)}
+            className={packageSize === size ? "border-blue-500" : ""}
+            label={size}
+            value={`${pack.length} cm x ${pack.breadth} cm x ${pack.height} cm x ${pack.weight} gm @  ₹${pack.charge}`}
+          />
+        );
+      })}
+    </div>
   );
 };
+
 export default function OrderForm() {
   const [packageSize, setPackageSize] = useState("MEDIUM");
+  const [shippingChecked, setShippingChecked] = useState(true);
   const router = useRouter();
   const form = useForm({
     resolver: async (values) => {
@@ -207,17 +203,28 @@ export default function OrderForm() {
   function onSubmit(values: { product: Product[] }, e: React.FormEvent) {
     console.log({ values });
     e.preventDefault();
-    const dataToSend = values.product.map(
-      (product) =>
-        `${product.link}?img_index=${product.slideNumber}&price=${product.price}`,
-    );
+    const dataToSend = values.product.map((product, index) => {
+      if (shippingChecked) {
+        //add shipping to the last product
+        const shippingPrice =
+          AppConfig.DefaultPackageDetails[
+            packageSize as keyof typeof AppConfig.DefaultPackageDetails
+          ]?.charge ?? "0";
+        if (index === values.product.length - 1) {
+          return `${product.link}?img_index=${product.slideNumber}&price=${
+            Number(product.price) + parseInt(shippingPrice)
+          }`;
+        }
+      }
+      return `${product.link}?img_index=${product.slideNumber}&price=${product.price}`;
+    });
     createOrderMutate(dataToSend);
     console.log({ dataToSend });
     return;
   }
 
   const handleShareButton = async () => {
-    const text = `Thank you for your order love 🥰. Please fill up the details by clicking the following link- ${generatedOrderId}. This is a one time process and the details will be saved for future orders. You can visit the link anytime to track your order.`;
+    const text = `Thank you for your order love 🥰. Please fill up the details by clicking the following link- ${AppConfig.BaseOrderUrl}/order/${generatedOrderId}. This is a one time process and the details will be saved for future orders. You can visit the link anytime to track your order.`;
     if (navigator.share) {
       try {
         await navigator
@@ -361,12 +368,31 @@ export default function OrderForm() {
             />
           </div>
           {fields.length > 0 && (
-            <Button disabled={createOrderLoading} type="submit">
-              {createOrderLoading && (
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              )}
-              Generate Order
-            </Button>
+            <>
+              <div className="mt-5 flex items-center space-x-2">
+                <Checkbox
+                  id="shipping"
+                  defaultChecked={shippingChecked}
+                  onCheckedChange={() => setShippingChecked((state) => !state)}
+                />
+                <label
+                  htmlFor="shipping"
+                  className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                >
+                  Add ₹
+                  {AppConfig.DefaultPackageDetails[
+                    packageSize as keyof typeof AppConfig.DefaultPackageDetails
+                  ].charge ?? "0"}{" "}
+                  in shipping
+                </label>
+              </div>
+              <Button disabled={createOrderLoading} type="submit">
+                {createOrderLoading && (
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                )}
+                Generate Order
+              </Button>
+            </>
           )}
         </form>
       )}

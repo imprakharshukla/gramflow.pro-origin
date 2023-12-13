@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { Status } from "@prisma/client";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useTheme } from "next-themes";
-import { toast } from "react-hot-toast";
+import { toast } from "sonner";
 
 import {
   Button,
@@ -39,6 +39,7 @@ export default function DashboardBulkOptionsSelectComponent({
   setRowSelection,
   data,
   setLoading,
+  setPickupDialogOpen,
 }: {
   advancedDisabled: boolean;
   getSelectedOrderIds: () => string[];
@@ -48,6 +49,7 @@ export default function DashboardBulkOptionsSelectComponent({
   setRowSelection: Dispatch<SetStateAction<{}>>;
   data: any;
   setLoading: Dispatch<SetStateAction<boolean>>;
+  setPickupDialogOpen: Dispatch<SetStateAction<boolean>>;
 }) {
   const { setTheme } = useTheme();
   const router = useRouter();
@@ -68,9 +70,13 @@ export default function DashboardBulkOptionsSelectComponent({
       return res.json();
     },
     {
-      onSuccess: () => {
+      onSuccess: async () => {
         console.log("Success");
         toast.success("Shipment Created");
+        await syncOrdersMutate({ order_ids: getSelectedOrderIds() });
+        await queryClient.invalidateQueries({
+          queryKey: ["allOrders"],
+        });
       },
       onError: (e) => {
         console.log("Error");
@@ -151,7 +157,7 @@ export default function DashboardBulkOptionsSelectComponent({
     error: syncOrdersError,
   } = useMutation(
     async (params: { order_ids: string[] }) => {
-      toast("Syncing...");
+      toast.loading("Syncing...");
       const { order_ids } = params;
       const res = await fetch(`/api/ship?order_ids=${order_ids.join(",")}`, {
         method: "OPTIONS",
@@ -218,6 +224,19 @@ export default function DashboardBulkOptionsSelectComponent({
         });
       }
     }
+  };
+
+  const getShippingCostForOrder = () => {
+    let shippingCost = 0;
+    //get selected orders
+    const selectedOrders = getSelectedOrderIds();
+    //filter all the orders by status and select them
+    for (let i = 0; i < data.length; i++) {
+      if (selectedOrders.includes(data[i].id)) {
+        shippingCost += data[i].shipping_cost;
+      }
+    }
+    return shippingCost;
   };
 
   const updateOrders = ({
@@ -325,7 +344,24 @@ export default function DashboardBulkOptionsSelectComponent({
             <CommandItem
               onSelect={() => {
                 const selected = getSelectedOrderIds();
-                createShipmentMutate(selected);
+                setPickupDialogOpen(true);
+                setOpen(false);
+              }}
+            >
+              Create Pickup
+            </CommandItem>
+            <CommandItem
+              onSelect={() => {
+                const totalShippingCost = getShippingCostForOrder();
+                toast(`The total shipping cost is ₹${totalShippingCost}`, {
+                  action: {
+                    label: "Create",
+                    onClick: () => {
+                      const selected = getSelectedOrderIds();
+                      createShipmentMutate(selected);
+                    },
+                  },
+                });
                 setOpen(false);
               }}
             >
@@ -364,7 +400,7 @@ export default function DashboardBulkOptionsSelectComponent({
         </CommandList>
       </CommandDialog>
       <DropdownMenuTrigger>
-        <Button variant={"secondary"}>Bulk Actions</Button>
+        <Button variant={"outline"}>Bulk Actions</Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent>
         <DropdownMenuLabel>Bulk Actions</DropdownMenuLabel>
@@ -383,7 +419,18 @@ export default function DashboardBulkOptionsSelectComponent({
               `Are you sure you want to create shipments for ${selected.length} orders?`,
             );
             setOnConfirmFunction(
-              wrapConfirmFunction(() => createShipmentMutate(selected)),
+              wrapConfirmFunction(() => {
+                const totalShippingCost = getShippingCostForOrder();
+                toast(`The total shipping cost is ₹${totalShippingCost}`, {
+                  action: {
+                    label: "Create",
+                    onClick: () => {
+                      const selected = getSelectedOrderIds();
+                      createShipmentMutate(selected);
+                    },
+                  },
+                });
+              }),
             );
             setShowConfirmation(true);
           }}

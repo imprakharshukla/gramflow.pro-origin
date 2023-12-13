@@ -10,7 +10,7 @@ export default function OrderCancelledComponent() {
         "mx-auto flex max-w-md flex-col space-y-4 animate-in fade-in duration-200"
       }
     >
-      <h1 className="bg-gradient-to-br from-black via-[#171717] to-[#4b4b4b] bg-clip-text pt-4 text-center text-4xl font-medium tracking-tight text-transparent md:text-5xl">
+      <h1 className="bg-gradient-to-br from-black via-[#171717] to-[#4b4b4b] bg-clip-text pb-3 pt-4 text-center text-4xl font-medium tracking-tight text-transparent dark:text-white md:text-5xl">
         Reach Out To Us
       </h1>
       <p className={"text-center text-sm text-muted-foreground"}>

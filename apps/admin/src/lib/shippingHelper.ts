@@ -1,13 +1,12 @@
 import process from "process";
 import { NextResponse } from "next/server";
-import { PrismaClient } from "@prisma/client";
 import { z } from "zod";
 
 import { AppConfig } from "@gramflow/utils";
 
 import { env } from "~/env.mjs";
+import { prisma } from "~/lib/prismaClient";
 
-const prisma = new PrismaClient();
 export const pincodePriceRequestSchema = z.object({
   from_pincode: z.string().default("201305"),
   to_pincode: z.string().min(6).max(6),
@@ -115,7 +114,6 @@ const delhiveryResponseSchema = z.object({
   pickups_count: z.number(),
   prepaid_count: z.number(),
   replacement_count: z.number(),
-  rmk: z.string(),
   success: z.boolean(),
   upload_wbn: z.string(),
 });
@@ -152,7 +150,7 @@ async function createShipmentWithApi(
   console.log({ requestOptions });
 
   const response = await fetch(
-    "https://staging-express.delhivery.com/api/cmu/create.json ",
+    env.ENV ===  "dev" ? "https://staging-express.delhivery.com/api/cmu/create.json" : "https://track.delhivery.com/api/cmu/create.json",
     requestOptions,
   );
 
@@ -198,7 +196,11 @@ export async function createShipments(orderIds: string[]) {
       try {
         // shipments array of shipmentSchema
         const shipments: z.infer<typeof delhiveryShipmentSchema>[] = [];
-        orders.map(async (order, index) => {
+        for (let index = 0; index < orders.length; index++) {
+          const order = orders[index];
+          if (!order) {
+            continue;
+          }
           const products: string[] = [];
           let totalPrice = 0;
           order.instagram_post_urls.map((url) => {
@@ -221,7 +223,7 @@ export async function createShipments(orderIds: string[]) {
             state: order.user?.state,
             city: order.user?.city,
             cod_amount: "",
-            total_amount: totalPrice.toString(),
+            total_amount: order.price.toString(),
             phone: order.user?.phone_no,
             payment_mode: AppConfig.DefaultPaymentMode,
             return_pin: "",
@@ -237,6 +239,7 @@ export async function createShipments(orderIds: string[]) {
             seller_inv: "",
             quantity: "",
             waybill: "",
+            //todo make this stable as prisma does not fetch the breadth, length and weight of the order at times
             shipment_width: order.breadth,
             shipment_length: order.length,
             shipment_height: order.height,
@@ -247,7 +250,7 @@ export async function createShipments(orderIds: string[]) {
           });
           console.log({ shipment: JSON.stringify(shipment) });
           shipments.push(shipment);
-        });
+        }
 
         //remove
 
@@ -274,6 +277,9 @@ export async function createShipments(orderIds: string[]) {
           const shipmentResponse = delhiveryResponseSchema.parse(response);
 
           shipmentResponse.packages.map(async (packageData) => {
+            if (packageData.status !== "Success") {
+              return;
+            }
             const orderId = packageData.refnum;
             const trackingId = packageData.waybill;
             await prisma.orders.update({
@@ -281,10 +287,14 @@ export async function createShipments(orderIds: string[]) {
                 id: orderId,
               },
               data: {
+                status: "MANIFESTED",
                 awb: trackingId,
                 courier: "DELHIVERY",
               },
             });
+            console.log(
+              `Updated order ${orderId} with tracking id ${trackingId} 🚚 ✅`,
+            );
           });
           resolve({
             status: "success",

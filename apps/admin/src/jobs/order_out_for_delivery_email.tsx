@@ -1,9 +1,9 @@
-import { Status } from "@prisma/client";
+
 import { Slack } from "@trigger.dev/slack";
 import { SupabaseManagement } from "@trigger.dev/supabase";
 import { Resend } from "resend";
 
-import { OrderAcceptedEmail, OrderOutForDeliveryEmail } from "@gramflow/email";
+import { OrderOutForDeliveryEmail, SendEmailViaResend } from "@gramflow/email";
 import { AppConfig } from "@gramflow/utils";
 
 import { env } from "~/env.mjs";
@@ -12,6 +12,7 @@ import { type Database } from "../../types/supabase";
 import { prisma } from "../lib/prismaClient";
 
 const resend = new Resend(env.RESEND_API_KEY);
+
 const slack = new Slack({
   id: "slack",
 });
@@ -70,7 +71,6 @@ client.defineJob({
       }>`,
       to: [user.email],
       subject: "Order Out For Delivery",
-      //@ts-ignore
       react: OrderOutForDeliveryEmail({
         id: order.id,
         awb: order.awb ?? "",

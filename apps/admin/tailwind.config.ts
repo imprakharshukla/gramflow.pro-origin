@@ -1,8 +1,9 @@
 import type { Config } from "tailwindcss";
+import { withUt } from "uploadthing/tw";
 
 import baseConfig from "@gramflow/tailwind-config";
 
-export default {
+export default withUt({
   content: [
     "./src/**/*.{js,ts,jsx,tsx}",
     "../../packages/ui/**/*.{js,ts,jsx,tsx}",
@@ -132,4 +133,4 @@ export default {
   ],
   plugins: [require("@headlessui/tailwindcss")],
   presets: [baseConfig],
-} satisfies Config;
+}) satisfies Config;

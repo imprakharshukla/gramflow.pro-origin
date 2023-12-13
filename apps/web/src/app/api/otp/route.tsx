@@ -1,16 +1,16 @@
 import { NextResponse } from "next/server";
+import { render } from "@jsx-email/render";
 import { Resend } from "resend";
 import { z } from "zod";
 
-import { OtpEmail } from "@gramflow/email";
+import { OtpEmail, SendEmailViaResend } from "@gramflow/email";
 import { AppConfig } from "@gramflow/utils";
 
 import { env } from "~/env.mjs";
 import { prisma } from "../../../lib/prismaClient";
 
-const resend = new Resend(env.RESEND_API_KEY);
-
 export async function GET(req: Request) {
+  const resend = new Resend(env.RESEND_API_KEY);
   try {
     const { searchParams } = new URL(req.url);
     const email = searchParams.get("email") ?? "";
