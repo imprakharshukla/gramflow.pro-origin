@@ -138,7 +138,7 @@ export const OrderFormComponent = ({
         const shippingPrice =
           AppConfig.DefaultPackageDetails[
             packageSize as keyof typeof AppConfig.DefaultPackageDetails
-          ].charge;
+          ]?.charge ?? "0";
         if (index === values.product.length - 1) {
           return `${selectedPosts[index]?.parent}?img_index=${
             Number(selectedPosts[index]?.index) + 1
