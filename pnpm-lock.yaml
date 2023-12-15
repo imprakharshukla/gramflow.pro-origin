@@ -101,11 +101,14 @@ importers:
         specifier: ^3.7.9
         version: 3.7.9(prop-types@15.8.1)(react-dom@18.2.0)(react@18.2.0)(tailwindcss@3.3.2)
       '@trigger.dev/nextjs':
-        specifier: ^2.2.1
-        version: 2.2.1(@trigger.dev/sdk@2.2.1)(next@13.5.4)
+        specifier: ^2.3.6
+        version: 2.3.6(@trigger.dev/sdk@2.3.6)(next@13.5.4)
+      '@trigger.dev/react':
+        specifier: ^2.3.6
+        version: 2.3.6(react-dom@18.2.0)(react@18.2.0)
       '@trigger.dev/sdk':
-        specifier: ^2.2.1
-        version: 2.2.1
+        specifier: ^2.3.6
+        version: 2.3.6
       '@trigger.dev/slack':
         specifier: ^2.2.1
         version: 2.2.1
@@ -5053,6 +5056,10 @@ packages:
     resolution: {integrity: sha512-YVB+mVWENQwPyv+40qO7flMgKZ0uI41Ph7qXC2Zf1ft5AIGfnXnMZyifB2ghhZ27u+5wm5mlzO4Y6lwwadzxCA==}
     dev: false
 
+  /@tanstack/query-core@5.0.0-beta.0:
+    resolution: {integrity: sha512-VGq/H3PuRoj0shOcg1S5Flv3YD2qNz2ttk8w5xe5AHQE1I8NO9EHSBUxezIpk4dD6M7bQDtwHBMqqU2EwMwyUw==}
+    dev: false
+
   /@tanstack/react-query-devtools@4.32.6(@tanstack/react-query@4.32.6)(react-dom@18.2.0)(react@18.2.0):
     resolution: {integrity: sha512-Gd9pBkm2sbeze9P5Yp8R7y0rZVUdoIOhduomDjz138WdJuVbRS4Y8p6gX2uMJFsUFVe7jA6fX/D6NfQ9o5OS/A==}
     peerDependencies:
@@ -5084,6 +5091,24 @@ packages:
       react: 18.2.0
       react-dom: 18.2.0(react@18.2.0)
       use-sync-external-store: 1.2.0(react@18.2.0)
+    dev: false
+
+  /@tanstack/react-query@5.0.0-beta.2(react-dom@18.2.0)(react@18.2.0):
+    resolution: {integrity: sha512-JdK1HRw20tuwg3GfT3QZTkuS7s2KDa9FeozuJ7jZULlwPczZagouqYmM6+PL0ad6jfCnw8NzmLFtZdlBx6cTmA==}
+    peerDependencies:
+      react: ^18.0.0
+      react-dom: ^18.0.0
+      react-native: '*'
+    peerDependenciesMeta:
+      react-dom:
+        optional: true
+      react-native:
+        optional: true
+    dependencies:
+      '@tanstack/query-core': 5.0.0-beta.0
+      client-only: 0.0.1
+      react: 18.2.0
+      react-dom: 18.2.0(react@18.2.0)
     dev: false
 
   /@tanstack/react-table@8.9.3(react-dom@18.2.0)(react@18.2.0):
@@ -5187,6 +5212,11 @@ packages:
       - tailwindcss
     dev: false
 
+  /@trigger.dev/core-backend@2.3.6:
+    resolution: {integrity: sha512-sdaYWpniw8FfbO0r+NCr+rBHcmz+cfMCtaulwu8w2ZPY+hfUjnrnKLaaTwLUuMl0U+g8kNOSguJ7WrcqF/KBUw==}
+    engines: {node: '>=18.0.0'}
+    dev: false
+
   /@trigger.dev/core@2.0.11:
     resolution: {integrity: sha512-01Q2PhtOXA4nPnWUViXEMrqnScht0+N4zvcqxhdFuer/rRqFZa7XQK6WcdFWBtcYT1O8XPeezDE10XIuGkGFSQ==}
     engines: {node: '>=16.8.0'}
@@ -5196,11 +5226,11 @@ packages:
       zod-error: 1.5.0
     dev: false
 
-  /@trigger.dev/core@2.2.1:
-    resolution: {integrity: sha512-1b/eUNjpitTyk7fNSNBzxldRXVV8xbGzCTfjHK63AcFUwitcvaSCEdSwIj5SRJ2eoMtL4lWxx/nCq0mwIFmYVw==}
+  /@trigger.dev/core@2.3.6:
+    resolution: {integrity: sha512-ThqvV7uX0jRSeHE9VdZPS967lerXvFUW7aAVJqFa0qvrxu5ilViAm4+dDe+RK8BXSAD+gFHqc82cxSf8lUJudw==}
     engines: {node: '>=18.0.0'}
     dependencies:
-      ulid: 2.3.0
+      ulidx: 2.2.1
       zod: 3.22.3
       zod-error: 1.5.0
     dev: false
@@ -5236,17 +5266,33 @@ packages:
       - supports-color
     dev: false
 
-  /@trigger.dev/nextjs@2.2.1(@trigger.dev/sdk@2.2.1)(next@13.5.4):
-    resolution: {integrity: sha512-erJ5rqA9Wcab628+jHOeVaCPIdQJGloIMvlc6/w3RnrNrMBuCKZX1HEVT/N2ugllbNYJVo15xihcQ7bFBBN2oQ==}
+  /@trigger.dev/nextjs@2.3.6(@trigger.dev/sdk@2.3.6)(next@13.5.4):
+    resolution: {integrity: sha512-39Q0aKG3HLtZnWe5GszpKHAiF77Uzli/HfSjs6J18CCTER+V6IUZxp6KZgjxaBgtaeDgMbSsrvTyAScBBxDvog==}
     engines: {node: '>=18.0.0'}
     peerDependencies:
-      '@trigger.dev/sdk': ^2.2.1
-      next: '>=12.0.0 <14.0.0'
+      '@trigger.dev/sdk': ^2.3.6
+      next: '>=12.0.0'
     dependencies:
-      '@trigger.dev/sdk': 2.2.1
+      '@trigger.dev/sdk': 2.3.6
       debug: 4.3.4
       next: 13.5.4(@babel/core@7.23.0)(react-dom@18.2.0)(react@18.2.0)
     transitivePeerDependencies:
+      - supports-color
+    dev: false
+
+  /@trigger.dev/react@2.3.6(react-dom@18.2.0)(react@18.2.0):
+    resolution: {integrity: sha512-N9RybhWJEEAIGAYonV1QHWMum4zUCun+hWN1jyBymno8HLrxrdRUGAYK7lMuViKan5WrgwUjHlz2uS2p/inYgQ==}
+    peerDependencies:
+      react: ^16.8.0 || ^17.0.0 || ^18
+    dependencies:
+      '@tanstack/react-query': 5.0.0-beta.2(react-dom@18.2.0)(react@18.2.0)
+      '@trigger.dev/core': 2.3.6
+      debug: 4.3.4
+      react: 18.2.0
+      zod: 3.22.3
+    transitivePeerDependencies:
+      - react-dom
+      - react-native
       - supports-color
     dev: false
 
@@ -5277,11 +5323,12 @@ packages:
       - utf-8-validate
     dev: false
 
-  /@trigger.dev/sdk@2.2.1:
-    resolution: {integrity: sha512-zZqeiQkB+CCjXUsT5OcfnP1NlgKfwdaEfag7qctzmy3pJYApAt7B1DZwN9iM1CO/jNn3hJj8bqkGUspCi6SXJQ==}
+  /@trigger.dev/sdk@2.3.6:
+    resolution: {integrity: sha512-9jOGCklyjY/42/UmpMsBWog2aB9tSvihRW8cgTwwoEHTLjU6sqt97lkkr6bhOK2mE8B7SSLzhFIgFA8bpkFwBg==}
     engines: {node: '>=18.0.0'}
     dependencies:
-      '@trigger.dev/core': 2.2.1
+      '@trigger.dev/core': 2.3.6
+      '@trigger.dev/core-backend': 2.3.6
       chalk: 5.3.0
       cronstrue: 2.31.0
       debug: 4.3.4
@@ -5306,7 +5353,7 @@ packages:
     engines: {node: '>=16.8.0'}
     dependencies:
       '@slack/web-api': 6.9.0
-      '@trigger.dev/sdk': 2.2.1
+      '@trigger.dev/sdk': 2.3.6
       zod: 3.22.3
     transitivePeerDependencies:
       - bufferutil
@@ -5321,7 +5368,7 @@ packages:
     dependencies:
       '@supabase/supabase-js': 2.33.1
       '@trigger.dev/integration-kit': 2.0.11
-      '@trigger.dev/sdk': 2.2.1
+      '@trigger.dev/sdk': 2.3.6
       supabase-management-js: 0.1.6
       zod: 3.21.4
     transitivePeerDependencies:
@@ -5337,7 +5384,7 @@ packages:
     dependencies:
       '@supabase/supabase-js': 2.33.1
       '@trigger.dev/integration-kit': 2.2.1
-      '@trigger.dev/sdk': 2.2.1
+      '@trigger.dev/sdk': 2.3.6
       supabase-management-js: 0.1.6
       zod: 3.22.3
     transitivePeerDependencies:
@@ -10264,6 +10311,10 @@ packages:
       language-subtag-registry: 0.3.22
     dev: false
 
+  /layerr@2.0.1:
+    resolution: {integrity: sha512-z0730CwG/JO24evdORnyDkwG1Q7b7mF2Tp1qRQ0YvrMMARbt1DFG694SOv439Gm7hYKolyZyaB49YIrYIfZBdg==}
+    dev: false
+
   /leac@0.6.0:
     resolution: {integrity: sha512-y+SqErxb8h7nE/fiEX07jsbuhrpO9lL8eca7/Y1nuWV2moNlXhyd59iDGcRf6moVyDMbmTNzL40SUyrFU/yDpg==}
     dev: false
@@ -10648,7 +10699,7 @@ packages:
       '@panva/hkdf': 1.1.1
       cookie: 0.5.0
       jose: 4.14.4
-      next: 13.5.4(@babel/core@7.22.11)(react-dom@18.2.0)(react@18.2.0)
+      next: 13.5.4(@babel/core@7.23.0)(react-dom@18.2.0)(react@18.2.0)
       oauth: 0.9.15
       openid-client: 5.4.3
       preact: 10.17.1
@@ -10684,7 +10735,7 @@ packages:
       react: '*'
       react-dom: '*'
     dependencies:
-      next: 13.5.4(@babel/core@7.22.11)(react-dom@18.2.0)(react@18.2.0)
+      next: 13.5.4(@babel/core@7.23.0)(react-dom@18.2.0)(react@18.2.0)
       react: 18.2.0
       react-dom: 18.2.0(react@18.2.0)
     dev: false
@@ -13560,6 +13611,13 @@ packages:
   /ulid@2.3.0:
     resolution: {integrity: sha512-keqHubrlpvT6G2wH0OEfSW4mquYRcbe/J8NMmveoQOjUqmo+hXtO+ORCpWhdbZ7k72UtY61BL7haGxW6enBnjw==}
     hasBin: true
+    dev: false
+
+  /ulidx@2.2.1:
+    resolution: {integrity: sha512-DU9F5t1tihdafuNyW3fIrXUFHHiHxmwuQSGVGIbSpqkc93IH4P0dU8nPhk0gOW7ARxaFu4+P/9cxVwn6PdnIaQ==}
+    engines: {node: '>=16'}
+    dependencies:
+      layerr: 2.0.1
     dev: false
 
   /unbox-primitive@1.0.2:

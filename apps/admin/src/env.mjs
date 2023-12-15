@@ -37,6 +37,7 @@ export const env = createEnv({
 
     //supabase
     SUPABASE_URL: z.string().url(),
+    SUPABASE_API_KEY: z.string(),
 
     //delivery
     DELHIVERY_API_KEY: z.string(),
@@ -83,7 +84,10 @@ export const env = createEnv({
     //prisma
     DATABASE_URL: process.env.DATABASE_URL,
     DIRECT_URL: process.env.DIRECT_URL,
+
+    //supabase
     SUPABASE_URL: process.env.SUPABASE_URL,
+    SUPABASE_API_KEY: process.env.SUPABASE_API_KEY,
 
     //cloudflare
     CF_FILES_BUCKET_NAME: process.env.CF_FILES_BUCKET_NAME,

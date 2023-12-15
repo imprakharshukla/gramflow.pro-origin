@@ -15,7 +15,7 @@ import { prisma } from "../lib/prismaClient";
 const resend = new Resend(env.RESEND_API_KEY);
 // Use OAuth to authenticate with Supabase Management API
 const supabaseManagement = new SupabaseManagement({
-  id: env.TRIGGER_SUPABASE_ID ?? "",
+  id: env.TRIGGER_SUPABASE_ID
 });
 
 const supabaseTriggers = supabaseManagement.db<Database>(
