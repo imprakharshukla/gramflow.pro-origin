@@ -17,7 +17,6 @@ const supabaseTriggers = supabaseManagement.db<Database>(env.SUPABASE_URL);
 client.defineJob({
   id: "order-inserted-operations",
   name: "Order Inserted Operations",
-  enabled: true,
   version: "1.0.1",
   trigger: supabaseTriggers.onInserted({
     schema: "public",

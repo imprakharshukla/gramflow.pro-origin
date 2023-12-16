@@ -29,6 +29,7 @@ const slack = new Slack({
 client.defineJob({
   id: "order-shipped-email",
   name: "Order Shipped Email",
+  enabled: true,
   version: "1.0.0",
   trigger: supabaseTriggers.onUpdated({
     schema: "public",

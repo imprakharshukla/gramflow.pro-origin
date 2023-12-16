@@ -1,14 +1,17 @@
 import { cronTrigger } from "@trigger.dev/sdk";
+import { z } from "zod";
+
+import { OrdersModel } from "@gramflow/db/prisma/zod";
 
 import { updateStatusFromDelhivery } from "~/app/api/ship/route";
 import { client } from "~/trigger";
 import { prisma } from "../lib/prismaClient";
 
-
 client.defineJob({
   id: "shipment-sync",
   name: "Delhivery Sync",
   version: "0.0.1",
+  enabled: true,
   trigger: cronTrigger({
     cron: "*/6 * * * *",
   }),
@@ -32,15 +35,34 @@ client.defineJob({
     for (let i = 0; i < orders.length; i += chunkSize) {
       chunkedOrders.push(orders.slice(i, i + chunkSize));
     }
-    await io.logger.info(
-      `Chunked ${chunkedOrders.length} orders at ${new Date()}`,
-    );
     console.log({ chunkedOrders });
-    for (const chunk of chunkedOrders) {
-      const order_ids = chunk.map((order) => ({id: order.id, status: order.status}));
-      console.log({ order_ids });
-      const shippingRequest = await updateStatusFromDelhivery(order_ids);
-      console.log({ shippingRequest });
+
+    for (let index = 0; index < chunkedOrders.length; index++) {
+      const chunk = chunkedOrders[index];
+      await io.runTask(
+        `Syncing Chunk ${index}`,
+        async () => {
+          await io.logger.info(
+            `Processing chunk of ${chunk.length} orders at ${new Date()}`,
+          );
+          const orders = chunk.map((order: z.infer<typeof OrdersModel>) => ({
+            id: order.id,
+            status: order.status,
+          }));
+          const shippingRequest = await updateStatusFromDelhivery(orders);
+          await io.logger.info(
+            `Got response from delhivery for ${
+              chunk.length
+            } orders at ${new Date()}`,
+          );
+        },
+        {
+          name: `Shipment Syncing for orders ${chunk[0].id} to ${
+            chunk[chunk.length - 1].id
+          }`,
+          icon: "box",
+        },
+      );
     }
     await io.logger.info(`Synced ${orders.length} orders at ${new Date()}`);
     return {

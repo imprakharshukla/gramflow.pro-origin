@@ -20,7 +20,6 @@ const supabaseTriggers = supabaseManagement.db<Database>(env.SUPABASE_URL);
 client.defineJob({
   id: "order-updated-operations",
   name: "Order Updated Operations",
-  enabled: true,
   version: "1.0.1",
   trigger: supabaseTriggers.onUpdated({
     schema: "public",

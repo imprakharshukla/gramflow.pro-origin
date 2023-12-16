@@ -28,6 +28,7 @@ client.defineJob({
   id: "order-out-for-delivery-email",
   name: "Order Out For Delivery Email",
   version: "1.0.0",
+  enabled: true,
   trigger: supabaseTriggers.onUpdated({
     schema: "public",
     table: "Orders",

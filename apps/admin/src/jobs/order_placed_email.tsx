@@ -27,6 +27,7 @@ client.defineJob({
   id: "order-placed-email",
   name: "Order Placed Email",
   version: "1.0.0",
+  enabled: true,
   trigger: supabaseTriggers.onUpdated({
     schema: "public",
     table: "Orders",

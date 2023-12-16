@@ -17,7 +17,7 @@ const fsPromises = fs.promises;
 client.defineJob({
   id: "database-backup",
   name: "Database Backup",
-
+  enabled: true,
   version: "0.0.1",
   trigger: cronTrigger({
     cron: "0 */3 * * *",

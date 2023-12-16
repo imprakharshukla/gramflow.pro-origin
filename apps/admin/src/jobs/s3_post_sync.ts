@@ -22,6 +22,7 @@ const slack = new Slack({
 client.defineJob({
   id: "s3-post-sync",
   name: "S3 Post Sync",
+  
   enabled: true,
   version: "1.0.0",
   trigger: supabaseTriggers.onInserted({
