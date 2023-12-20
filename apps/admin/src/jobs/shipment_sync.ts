@@ -23,7 +23,7 @@ client.defineJob({
 
         const orders: z.infer<typeof OrdersModel>[]
             = await io.runTask(
-            "", async () => {
+            "db-order-fetch", async () => {
                 return await prisma.orders.findMany({
                     where: {
                         NOT: {
