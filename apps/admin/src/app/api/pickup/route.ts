@@ -54,6 +54,7 @@ export async function POST(req: Request) {
         pickup_time: validated.pickup_time,
       }),
     };
+    console.log(JSON.stringify(options));
     const response = await fetch(
       "https://track.delhivery.com/fm/request/new/",
       options,

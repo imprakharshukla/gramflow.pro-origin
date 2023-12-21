@@ -269,7 +269,9 @@ export function DataTable<TData, TValue>({
   };
 
   const [pickupDialogOpen, setPickupDialogOpen] = useState(false);
-  const [date, setDate] = useState<Date>(new Date());
+  const [date, setDate] = useState<Date>(
+    new Date(new Date().toLocaleString("en-US", { timeZone: "Asia/Kolkata" })),
+  );
   const [estimatedPackageCount, setEstimatedPackageCount] = useState(
     getSelectedOrderIds().length,
   );
@@ -430,9 +432,9 @@ export function DataTable<TData, TValue>({
                           mode="single"
                           disabled={[
                             {
-                              before: new Date(),
+                              before: new Date(new Date().toLocaleString("en-US", { timeZone: "Asia/Kolkata" })),
                               after: new Date(
-                                new Date().getTime() + 7 * 24 * 60 * 60 * 1000,
+                                new Date(new Date().getTime() + 7 * 24 * 60 * 60 * 1000).toLocaleString("en-US", { timeZone: "Asia/Kolkata" }),
                               ),
                             },
                             new Date().getHours() >= 14 ? new Date() : null,
@@ -440,6 +442,7 @@ export function DataTable<TData, TValue>({
                           selected={date}
                           onSelect={setDate}
                           initialFocus
+                          timeZone="Asia/Kolkata"
                         />
                       </PopoverContent>
                     </Popover>
