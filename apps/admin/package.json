@@ -39,13 +39,15 @@
     "@testing-library/react": "^14.0.0",
     "@tremor/react": "^3.7.9",
     "@trigger.dev/nextjs": "^2.3.6",
+    "@trigger.dev/react": "^2.3.6",
     "@trigger.dev/sdk": "^2.3.6",
-    "@trigger.dev/slack": "^2.2.1",
-    "@trigger.dev/supabase": "^2.2.1",
+    "@trigger.dev/slack": "^2.3.6",
+    "@trigger.dev/supabase": "^2.3.6",
     "@uploadthing/react": "^5.7.0",
     "@upstash/redis": "^1.23.4",
     "@vercel/kv": "^0.2.3",
     "aws-sdk": "^2.1440.0",
+    "crypto": "^1.0.1",
     "csv-writer": "^1.6.0",
     "date-fns": "^2.30.0",
     "eslint-config-next": "^13.5.4",
@@ -73,8 +75,7 @@
     "uploadthing": "^5.7.4",
     "web": "^0.0.2",
     "zod": "^3.21.4",
-    "zod-prisma": "^0.5.4",
-    "@trigger.dev/react": "^2.3.6"
+    "zod-prisma": "^0.5.4"
   },
   "devDependencies": {
     "@gramflow/eslint-config": "workspace:*",

@@ -110,11 +110,11 @@ importers:
         specifier: ^2.3.6
         version: 2.3.6
       '@trigger.dev/slack':
-        specifier: ^2.2.1
-        version: 2.2.1
+        specifier: ^2.3.6
+        version: 2.3.6
       '@trigger.dev/supabase':
-        specifier: ^2.2.1
-        version: 2.2.1
+        specifier: ^2.3.6
+        version: 2.3.6
       '@uploadthing/react':
         specifier: ^5.7.0
         version: 5.7.0(next@13.5.4)(react@18.2.0)(uploadthing@5.7.4)
@@ -127,6 +127,9 @@ importers:
       aws-sdk:
         specifier: ^2.1440.0
         version: 2.1440.0
+      crypto:
+        specifier: ^1.0.1
+        version: 1.0.1
       csv-writer:
         specifier: ^1.6.0
         version: 1.6.0
@@ -5245,10 +5248,11 @@ packages:
       - encoding
     dev: false
 
-  /@trigger.dev/integration-kit@2.2.1:
-    resolution: {integrity: sha512-+0c6qKGgNnrLEOgvcF+8jEoviGPDeVPvAprRvYhu1Yh+4d4kWBVa7Tv28QgNOTmnDBFF7H/gTUtGpbkErffp3w==}
+  /@trigger.dev/integration-kit@2.3.6:
+    resolution: {integrity: sha512-fonxrZC+dGRwqpEGyPnglt++cYW2b2ycJ1TOmjLZV5tnn/nN+dQhmmkntv1wtNgqaygLqTm4Oc89EYxQXXAflw==}
     engines: {node: '>=18.0.0'}
     dependencies:
+      '@trigger.dev/core': 2.3.6
       uuid: 9.0.0
     dev: false
 
@@ -5348,8 +5352,8 @@ packages:
       - utf-8-validate
     dev: false
 
-  /@trigger.dev/slack@2.2.1:
-    resolution: {integrity: sha512-lP5uwZ/YpWdDe/IFZyooVBnmtR3E0Y8FFvf+NtDu0slbpfVOM/IQeYBU2O6dW56FyaHCBBHE9oFW7Mtvj41rxw==}
+  /@trigger.dev/slack@2.3.6:
+    resolution: {integrity: sha512-loBbQZB/hTeJx75qZnc11kb434bth1IwRYuHdwD9eNtiV07T4plu+K9FxTQY5MRI+rtrhKs5/yIHoqGj2jsToQ==}
     engines: {node: '>=16.8.0'}
     dependencies:
       '@slack/web-api': 6.9.0
@@ -5378,14 +5382,14 @@ packages:
       - utf-8-validate
     dev: false
 
-  /@trigger.dev/supabase@2.2.1:
-    resolution: {integrity: sha512-goKAO9tC9bG7yy/uoZrF+eQPCW5uvJXB108qqJkOFWx6cSF7XxZRhkQW+Hrqa28D1kb1iHCbqdzZyUTmbaeJEw==}
+  /@trigger.dev/supabase@2.3.6:
+    resolution: {integrity: sha512-uMAeR4eT1t60Gqlc3HHgtjMoNbwyjkvOitcj9YWvJJd0ZXdkUC5OGrXo7iCua3hnL0hjY3D5FZjij80ciPU+fA==}
     engines: {node: '>=18.0.0'}
     dependencies:
       '@supabase/supabase-js': 2.33.1
-      '@trigger.dev/integration-kit': 2.2.1
+      '@trigger.dev/integration-kit': 2.3.6
       '@trigger.dev/sdk': 2.3.6
-      supabase-management-js: 0.1.6
+      supabase-management-js: 1.0.0
       zod: 3.22.3
     transitivePeerDependencies:
       - bufferutil
@@ -7017,6 +7021,11 @@ packages:
       path-key: 3.1.1
       shebang-command: 2.0.0
       which: 2.0.2
+
+  /crypto@1.0.1:
+    resolution: {integrity: sha512-VxBKmeNcqQdiUQUW2Tzq0t377b54N2bMtXO/qiLa+6eRRmmC4qT3D4OnTGoT/U6O9aklQ/jTwbOtRMTTY8G0Ig==}
+    deprecated: This package is no longer supported. It's now a built-in Node module. If you've depended on crypto, you should switch to the one that's built-in.
+    dev: false
 
   /css-unit-converter@1.1.2:
     resolution: {integrity: sha512-IiJwMC8rdZE0+xiEZHeru6YoONC4rfPMqGm2W85jMIbkFvv5nFTwJVFHam2eFrN6txmoUYFAFXiv8ICVeTO0MA==}
@@ -13065,6 +13074,13 @@ packages:
 
   /supabase-management-js@0.1.6:
     resolution: {integrity: sha512-TDQg6Nh7e2DaLmMjqpJt7Wwh2Au5loVPH2gwKMkD89e3pb5F/zMQGWt22asEXme031jEmhjazixFH0lwMgbRJA==}
+    engines: {node: '>=18.0.0'}
+    dependencies:
+      openapi-fetch: 0.6.2
+    dev: false
+
+  /supabase-management-js@1.0.0:
+    resolution: {integrity: sha512-CjtUcT1i3lsIyRwS3/HG6BUB8EaJTEdAPP0GQu8dRDi61HvJeBrswCfG/GRxebC0ZZFov+oHqFIWPe1ztyUqYA==}
     engines: {node: '>=18.0.0'}
     dependencies:
       openapi-fetch: 0.6.2
