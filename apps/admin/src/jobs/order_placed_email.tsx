@@ -33,10 +33,10 @@ client.defineJob({
     table: "Orders",
     filter: {
       old_record: {
-        status: [{ $ignoreCaseEquals: Status.PENDING }],
+        status: [{ $ignoreCaseEquals: "PENDING" }],
       },
       record: {
-        status: [{ $ignoreCaseEquals: Status.ACCEPTED }],
+        status: [{ $ignoreCaseEquals: "ACCEPTED" }],
       },
     },
   }),
