@@ -72,7 +72,8 @@ client.defineJob({
             id: order.id,
             status: order.status,
           }));
-          const shippingRequest = await updateStatusFromDelhivery(orders);
+          //const 
+          //shippingRequest = await updateStatusFromDelhivery(orders);
           await io.logger.info(
             `Got response from delhivery for ${
               chunk.length

@@ -101,14 +101,14 @@ importers:
         specifier: ^3.7.9
         version: 3.7.9(prop-types@15.8.1)(react-dom@18.2.0)(react@18.2.0)(tailwindcss@3.3.2)
       '@trigger.dev/nextjs':
-        specifier: ^2.3.6
-        version: 2.3.6(@trigger.dev/sdk@2.3.6)(next@13.5.4)
+        specifier: ^2.3.8
+        version: 2.3.8(@trigger.dev/sdk@2.3.8)(next@13.5.4)
       '@trigger.dev/react':
-        specifier: ^2.3.6
-        version: 2.3.6(react-dom@18.2.0)(react@18.2.0)
+        specifier: ^2.3.8
+        version: 2.3.8(react-dom@18.2.0)(react@18.2.0)
       '@trigger.dev/sdk':
-        specifier: ^2.3.6
-        version: 2.3.6
+        specifier: ^2.3.8
+        version: 2.3.8
       '@trigger.dev/slack':
         specifier: ^2.3.6
         version: 2.3.6
@@ -5215,8 +5215,8 @@ packages:
       - tailwindcss
     dev: false
 
-  /@trigger.dev/core-backend@2.3.6:
-    resolution: {integrity: sha512-sdaYWpniw8FfbO0r+NCr+rBHcmz+cfMCtaulwu8w2ZPY+hfUjnrnKLaaTwLUuMl0U+g8kNOSguJ7WrcqF/KBUw==}
+  /@trigger.dev/core-backend@2.3.8:
+    resolution: {integrity: sha512-hrol/nixfibGMpgtsTNI6b+MncY/NmQ+e7i0/nd5PQbRDUSoWFCmWme2719mL/KBI9e7rVezrUGmEFeMuj0HPw==}
     engines: {node: '>=18.0.0'}
     dev: false
 
@@ -5231,6 +5231,15 @@ packages:
 
   /@trigger.dev/core@2.3.6:
     resolution: {integrity: sha512-ThqvV7uX0jRSeHE9VdZPS967lerXvFUW7aAVJqFa0qvrxu5ilViAm4+dDe+RK8BXSAD+gFHqc82cxSf8lUJudw==}
+    engines: {node: '>=18.0.0'}
+    dependencies:
+      ulidx: 2.2.1
+      zod: 3.22.3
+      zod-error: 1.5.0
+    dev: false
+
+  /@trigger.dev/core@2.3.8:
+    resolution: {integrity: sha512-U8/TgydSd+0T/BCUinkJW0A9NWZwh7IaDkwdQEyd7OHooxKBZCGr1R057bE7FqCJN5AEOQ2obzs+iUU5yTGNBg==}
     engines: {node: '>=18.0.0'}
     dependencies:
       ulidx: 2.2.1
@@ -5270,27 +5279,27 @@ packages:
       - supports-color
     dev: false
 
-  /@trigger.dev/nextjs@2.3.6(@trigger.dev/sdk@2.3.6)(next@13.5.4):
-    resolution: {integrity: sha512-39Q0aKG3HLtZnWe5GszpKHAiF77Uzli/HfSjs6J18CCTER+V6IUZxp6KZgjxaBgtaeDgMbSsrvTyAScBBxDvog==}
+  /@trigger.dev/nextjs@2.3.8(@trigger.dev/sdk@2.3.8)(next@13.5.4):
+    resolution: {integrity: sha512-BspvT3/n2tlntNcgbPkArX3zriJuOIapG1zlnWlWBD8pjq5mSOtQEk8KfXnJcOr8R5JbIUbd4dbu7F2ypbN7vQ==}
     engines: {node: '>=18.0.0'}
     peerDependencies:
-      '@trigger.dev/sdk': ^2.3.6
+      '@trigger.dev/sdk': ^2.3.8
       next: '>=12.0.0'
     dependencies:
-      '@trigger.dev/sdk': 2.3.6
+      '@trigger.dev/sdk': 2.3.8
       debug: 4.3.4
       next: 13.5.4(@babel/core@7.23.0)(react-dom@18.2.0)(react@18.2.0)
     transitivePeerDependencies:
       - supports-color
     dev: false
 
-  /@trigger.dev/react@2.3.6(react-dom@18.2.0)(react@18.2.0):
-    resolution: {integrity: sha512-N9RybhWJEEAIGAYonV1QHWMum4zUCun+hWN1jyBymno8HLrxrdRUGAYK7lMuViKan5WrgwUjHlz2uS2p/inYgQ==}
+  /@trigger.dev/react@2.3.8(react-dom@18.2.0)(react@18.2.0):
+    resolution: {integrity: sha512-If6k612dbIb/5sk7Mfy0/RYjFgdYWjJD93BpDaQwbIFrVGDHx6sChnXBJ/OejJq64Ik7Db0jc91OlK/f6tni0A==}
     peerDependencies:
       react: ^16.8.0 || ^17.0.0 || ^18
     dependencies:
       '@tanstack/react-query': 5.0.0-beta.2(react-dom@18.2.0)(react@18.2.0)
-      '@trigger.dev/core': 2.3.6
+      '@trigger.dev/core': 2.3.8
       debug: 4.3.4
       react: 18.2.0
       zod: 3.22.3
@@ -5327,12 +5336,12 @@ packages:
       - utf-8-validate
     dev: false
 
-  /@trigger.dev/sdk@2.3.6:
-    resolution: {integrity: sha512-9jOGCklyjY/42/UmpMsBWog2aB9tSvihRW8cgTwwoEHTLjU6sqt97lkkr6bhOK2mE8B7SSLzhFIgFA8bpkFwBg==}
+  /@trigger.dev/sdk@2.3.8:
+    resolution: {integrity: sha512-wM/R/Ya0kYBCsoc7ITK26r9BfahEj9nJEWQDBKEwvbLTkphq0IGswJVRmQcVyI0QbeT7lXAZzVCN1fiqkIJRDQ==}
     engines: {node: '>=18.0.0'}
     dependencies:
-      '@trigger.dev/core': 2.3.6
-      '@trigger.dev/core-backend': 2.3.6
+      '@trigger.dev/core': 2.3.8
+      '@trigger.dev/core-backend': 2.3.8
       chalk: 5.3.0
       cronstrue: 2.31.0
       debug: 4.3.4
@@ -5357,7 +5366,7 @@ packages:
     engines: {node: '>=16.8.0'}
     dependencies:
       '@slack/web-api': 6.9.0
-      '@trigger.dev/sdk': 2.3.6
+      '@trigger.dev/sdk': 2.3.8
       zod: 3.22.3
     transitivePeerDependencies:
       - bufferutil
@@ -5372,7 +5381,7 @@ packages:
     dependencies:
       '@supabase/supabase-js': 2.33.1
       '@trigger.dev/integration-kit': 2.0.11
-      '@trigger.dev/sdk': 2.3.6
+      '@trigger.dev/sdk': 2.3.8
       supabase-management-js: 0.1.6
       zod: 3.21.4
     transitivePeerDependencies:
@@ -5388,7 +5397,7 @@ packages:
     dependencies:
       '@supabase/supabase-js': 2.33.1
       '@trigger.dev/integration-kit': 2.3.6
-      '@trigger.dev/sdk': 2.3.6
+      '@trigger.dev/sdk': 2.3.8
       supabase-management-js: 1.0.0
       zod: 3.22.3
     transitivePeerDependencies:
