@@ -67,7 +67,7 @@ client.defineJob({
 
     const order = payload.record;
 
-    await  io.runTask("send-email", async () => {
+    await io.runTask("send-email", async () => {
       const data = await resend.emails.send({
         from: `${AppConfig.StoreName} <no-reply@${env.RESEND_DOMAIN}>`,
         to: [user.email],

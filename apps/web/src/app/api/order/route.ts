@@ -48,23 +48,6 @@ export async function PUT(req: Request) {
     });
     const addRequest = await updateOrder(validated.id, userReq.id);
     await deleteOtp(token);
-    if (env.ENV === "prod") {
-      await sendMessageWithSectionsAndImages(
-        `
-    *Order Id*: ${addRequest.id}
-    *Status*: ${addRequest.status}
-    *Created At*: ${addRequest.created_at}`,
-        `*Name*: ${userReq.name}
-    *Instagram Username*: ${userReq.instagram_username}
-    *Email*: ${userReq.email}
-    *Phone Number*: ${userReq.phone_no}
-    *Address*: ${userReq.house_number}, ${userReq.locality}, ${userReq.landmark}, ${userReq.city}, ${userReq.state}, ${userReq.pincode} ${userReq.country}
-    `,
-        [...addRequest.images],
-        env.SLACK_WEBHOOK_URL_ACCEPTED ?? "",
-      );
-    }
-
     return NextResponse.json({ addRequest });
   } catch (e) {
     console.log({ e });

@@ -1,4 +1,3 @@
-import { Status } from "@prisma/client";
 import { Slack } from "@trigger.dev/slack";
 import { SupabaseManagement } from "@trigger.dev/supabase";
 import { Resend } from "resend";
