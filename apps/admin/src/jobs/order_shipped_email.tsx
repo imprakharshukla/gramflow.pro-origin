@@ -70,7 +70,7 @@ client.defineJob({
     const order = payload.record;
 
     io.runTask("send-email", async () => {
-      await resend.emails.send({
+      const data = await resend.emails.send({
         from: `${AppConfig.StoreName} <no-reply@${env.RESEND_DOMAIN}>`,
         to: [user.email],
         subject: "Order Shipped",
@@ -88,6 +88,7 @@ client.defineJob({
           country: user.country,
         }),
       });
+      await io.logger.info(JSON.stringify(data));
     });
     console.log(`Email sent to ${user.email}`);
     io.runTask("send-slack-message", async () => {

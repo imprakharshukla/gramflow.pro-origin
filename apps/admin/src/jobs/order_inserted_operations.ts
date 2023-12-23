@@ -46,7 +46,7 @@ client.defineJob({
       await io.logger.info(
         `The total for order ${payload.record.id} is ${totalAmount}`,
       );
-      await io.runTask("Calculating total price", async () => {
+      await io.runTask("Updating total price", async () => {
         if (totalAmount > 0) {
           await prisma.orders.update({
             where: {

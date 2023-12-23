@@ -82,6 +82,7 @@ client.defineJob({
           country: user.country,
         }),
       });
+      await io.logger.info(JSON.stringify(data));
     });
     await io.logger.info("Order email sent!");
     io.runTask("send-slack-message", async () => {
