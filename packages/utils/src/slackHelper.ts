@@ -1,5 +1,3 @@
-import * as fs from "fs";
-import TelegramBot from "node-telegram-bot-api";
 
 export async function sendMessageWithSectionsAndImages(
   orderDetails: string,
