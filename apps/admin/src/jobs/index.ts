@@ -1,5 +1,4 @@
 // import all your job files here
-export * from "./insta_photo";
 export * from "./order_placed_email";
 export * from "./order_shipped_email";
 export * from "./order_delivered_email";

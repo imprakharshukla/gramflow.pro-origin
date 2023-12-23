@@ -62,6 +62,7 @@ client.defineJob({
 
     for (let index = 0; index < chunkedOrders.length; index++) {
       const chunk = chunkedOrders[index];
+      if (!chunk) continue;
       await io.runTask(
         `Syncing Chunk ${index}`,
         async () => {
@@ -72,8 +73,7 @@ client.defineJob({
             id: order.id,
             status: order.status,
           }));
-          //const 
-          //shippingRequest = await updateStatusFromDelhivery(orders);
+          await updateStatusFromDelhivery(orders);
           await io.logger.info(
             `Got response from delhivery for ${
               chunk.length
@@ -81,8 +81,8 @@ client.defineJob({
           );
         },
         {
-          name: `Shipment Syncing for orders ${chunk[0].id} to ${
-            chunk[chunk.length - 1].id
+          name: `Shipment Syncing for orders ${chunk[0]?.id} to ${
+            chunk[chunk.length - 1]?.id
           }`,
           icon: "box",
         },

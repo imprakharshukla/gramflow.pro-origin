@@ -1,16 +1,11 @@
-import { intervalTrigger } from "@trigger.dev/sdk";
+import { intervalTrigger, isTriggerError } from "@trigger.dev/sdk";
 import { Redis } from "@upstash/redis";
 import { z } from "zod";
 
-
-
 import { AppConfig } from "@gramflow/utils";
-
-
 
 import { env } from "~/env.mjs";
 import { client } from "~/trigger";
-
 
 const instagramResponseSchema = z.object({
   media_count: z.number(),
@@ -32,13 +27,19 @@ client.defineJob({
   }),
   run: async (_, io, ctx) => {
     try {
-      const req = await fetch(
-        `https://graph.instagram.com/v11.0/me?fields=media_count,username&access_token=${env.INSTAGRAM_TOKEN}`,
+      const instagramResponse = await io.runTask(
+        "Fetching data from instagram",
+        async () => {
+          const response = await fetch(
+            `https://graph.instagram.com/v11.0/me?fields=media_count,username&access_token=${env.INSTAGRAM_TOKEN}`,
+          );
+          return response.json();
+        },
       );
-      if (!req.ok) {
+      if (!instagramResponse.ok) {
         return { status: "error" };
       }
-      const data = (await req.json()) as z.infer<
+      const data = (await instagramResponse.json()) as z.infer<
         typeof instagramResponseSchema
       >;
       console.log({ data });
@@ -51,20 +52,28 @@ client.defineJob({
       if (totalPosts && totalPosts < validatedData.media_count) {
         const diff = validatedData.media_count - totalPosts;
         await io.logger.info(`Difference in posts: ${diff}`);
-        await fetch(`${AppConfig.BaseAdminUrl}/api/instagram?count=${diff}`, {
-          headers: {
-            Authorization: `Bearer ${
-              env.ENV === "dev" ? env.CLERK_DEV_JWT : env.CLERK_PROD_JWT
-            }`,
+        io.runTask(
+          `Syncing Posts ${totalPosts} ${validatedData.media_count}`,
+          async () => {
+            await fetch(
+              `${AppConfig.BaseAdminUrl}/api/instagram?count=${diff}`,
+              {
+                headers: {
+                  Authorization: `Bearer ${
+                    env.ENV === "dev" ? env.CLERK_DEV_JWT : env.CLERK_PROD_JWT
+                  }`,
+                },
+              },
+            );
           },
-        });
+        );
       }
-      await redis.set("total_posts", validatedData.media_count);
+      io.runTask("Updating KV", async () => {
+        await redis.set("total_posts", validatedData.media_count);
+      });
       return { status: "success" };
-    } catch (e) {
-      await io.logger.error(
-        `Error while syncing instagram posts: ${JSON.stringify(e)}`,
-      );
+    } catch (error) {
+      if (isTriggerError(error)) throw error;
       return { status: "error" };
     }
   },

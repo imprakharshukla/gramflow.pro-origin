@@ -15,7 +15,7 @@ import { prisma } from "../lib/prismaClient";
 const resend = new Resend(env.RESEND_API_KEY);
 // Use OAuth to authenticate with Supabase Management API
 const supabaseManagement = new SupabaseManagement({
-  id: env.TRIGGER_SUPABASE_ID
+  id: env.TRIGGER_SUPABASE_ID,
 });
 
 const supabaseTriggers = supabaseManagement.db<Database>(
@@ -69,28 +69,32 @@ client.defineJob({
 
     const order = payload.record;
 
-    const data = await resend.emails.send({
-      from: `${AppConfig.StoreName} <no-reply@${env.RESEND_DOMAIN}>`,
-      to: [user.email],
-      subject: "Order Shipped",
-      react: OrderShippedEmail({
-        awb: order.awb ?? "",
-        name: user.name,
-        courier: order.courier ?? "",
-        house_number: user.house_number,
-        pincode: user.pincode,
-        landmark: user.landmark ?? "",
-        locality: user.locality,
-        city: user.city,
-        state: user.state,
-        country: user.country,
-      }),
+    io.runTask("send-email", async () => {
+      await resend.emails.send({
+        from: `${AppConfig.StoreName} <no-reply@${env.RESEND_DOMAIN}>`,
+        to: [user.email],
+        subject: "Order Shipped",
+
+        react: OrderShippedEmail({
+          awb: order.awb ?? "",
+          name: user.name,
+          courier: order.courier ?? "",
+          house_number: user.house_number,
+          pincode: user.pincode,
+          landmark: user.landmark ?? "",
+          locality: user.locality,
+          city: user.city,
+          state: user.state,
+          country: user.country,
+        }),
+      });
     });
-    console.log({ data });
     console.log(`Email sent to ${user.email}`);
-    await io.slack.postMessage("post message", {
-      channel: "C05PJ1T8CE7",
-      text: `Sent email to ${user.email} for shipped order ${payload.record.id}! ✅`,
+    io.runTask("send-slack-message", async () => {
+      await io.slack.postMessage("post message", {
+        channel: "C06BTFF4R5F",
+        text: `Order Shipped 🚀 \n Order ID: ${order.id} \n Email: ${user.email} \n Name: ${user.name} \n AWB: ${order.awb}`,
+      });
     });
     await io.logger.info(`Email sent to ${user.email}`);
     return { status: "success" };

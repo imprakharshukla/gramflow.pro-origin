@@ -61,7 +61,6 @@ const defaultOrder = {
 
 export const OrderAcceptedEmail = ({
   id,
-  awb,
   name,
   house_number,
   pincode,
@@ -72,7 +71,6 @@ export const OrderAcceptedEmail = ({
   country,
 }: {
   id: string;
-  awb: string;
   name: string;
   house_number: string;
   pincode: string;

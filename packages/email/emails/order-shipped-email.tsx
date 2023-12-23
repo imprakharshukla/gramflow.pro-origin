@@ -21,7 +21,6 @@ import {
 import { AppConfig } from "@gramflow/utils";
 
 export const OrderShippedEmail = ({
-  id,
   awb,
   name,
   house_number,
@@ -33,7 +32,6 @@ export const OrderShippedEmail = ({
   state,
   country,
 }: {
-  id: string;
   awb: string;
   name: string;
   house_number: string;

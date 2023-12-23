@@ -12,7 +12,7 @@ import { prisma } from "../lib/prismaClient";
 
 // Use OAuth to authenticate with Supabase Management API
 const supabaseManagement = new SupabaseManagement({
-  id: env.TRIGGER_SUPABASE_ID
+  id: env.TRIGGER_SUPABASE_ID,
 });
 
 const supabaseTriggers = supabaseManagement.db<Database>(env.SUPABASE_URL);
@@ -22,7 +22,7 @@ const slack = new Slack({
 client.defineJob({
   id: "s3-post-sync",
   name: "S3 Post Sync",
-  
+
   enabled: true,
   version: "1.0.0",
   trigger: supabaseTriggers.onInserted({
@@ -59,7 +59,7 @@ client.defineJob({
               const putObjectCommand = new PutObjectCommand({
                 Bucket: env.CF_IMAGES_BUCKET_NAME,
                 Key: fileName,
-                Body: buffer,
+                Body: Buffer.from(buffer),
               });
               await S3.send(putObjectCommand);
 
