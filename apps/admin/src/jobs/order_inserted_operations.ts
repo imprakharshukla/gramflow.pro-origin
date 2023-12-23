@@ -1,4 +1,5 @@
 import { PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
+import { isTriggerError } from "@trigger.dev/sdk";
 import { SupabaseManagement } from "@trigger.dev/supabase";
 
 import { AppConfig } from "@gramflow/utils";
@@ -10,7 +11,7 @@ import { prisma } from "../lib/prismaClient";
 
 // Use OAuth to authenticate with Supabase Management API
 const supabaseManagement = new SupabaseManagement({
-  id: env.TRIGGER_SUPABASE_ID
+  id: env.TRIGGER_SUPABASE_ID,
 });
 const supabaseTriggers = supabaseManagement.db<Database>(env.SUPABASE_URL);
 
@@ -30,25 +31,33 @@ client.defineJob({
 
     try {
       const linkArray = payload.record.instagram_post_urls ?? [];
-      let total = 0;
-      for (const link of linkArray) {
-        const { searchParams } = new URL(link);
-        const price = searchParams.get("price");
-        total += parseInt(price ?? "0");
-      }
-      await io.logger.info(
-        `The total for order ${payload.record.id} is ${total}`,
+      const totalAmount = await io.runTask(
+        "Calculating total price",
+        async () => {
+          let total = 0;
+          for (const link of linkArray) {
+            const { searchParams } = new URL(link);
+            const price = searchParams.get("price");
+            total += parseInt(price ?? "0");
+          }
+          return total;
+        },
       );
-      if (total > 0) {
-        await prisma.orders.update({
-          where: {
-            id: payload.record.id,
-          },
-          data: {
-            price: total,
-          },
-        });
-      }
+      await io.logger.info(
+        `The total for order ${payload.record.id} is ${totalAmount}`,
+      );
+      await io.runTask("Calculating total price", async () => {
+        if (totalAmount > 0) {
+          await prisma.orders.update({
+            where: {
+              id: payload.record.id,
+            },
+            data: {
+              price: totalAmount,
+            },
+          });
+        }
+      });
       if (!payload.record.images) {
         await io.logger.info(
           `No images found for order ${payload.record.id} in database.`,
@@ -73,28 +82,33 @@ client.defineJob({
             continue;
           }
           // This line extracts the file name from the URL by splitting the URL string at each "/" character and then taking the last element of the resulting array.
-          const fileName = payload.record.id + "_" + index.toString() + ".jpg";
-          console.log({ fileName });
-          const response = await fetch(url);
-          const buffer = await response.arrayBuffer();
-          const putObjectCommand = new PutObjectCommand({
-            Bucket: env.CF_IMAGES_BUCKET_NAME,
-            Key: fileName,
-            Body: Buffer.from(buffer),
+          await io.runTask(`Uploading file ${index} to S3`, async () => {
+            const fileName =
+              payload.record.id + "_" + index.toString() + ".jpg";
+            console.log({ fileName });
+            const response = await fetch(url);
+            const buffer = await response.arrayBuffer();
+            const putObjectCommand = new PutObjectCommand({
+              Bucket: env.CF_IMAGES_BUCKET_NAME,
+              Key: fileName,
+              Body: Buffer.from(buffer),
+            });
+            await S3.send(putObjectCommand);
+            await io.logger.info(
+              `Successfully uploaded image ${index} for order ${payload.record.id} to S3`,
+            );
+            newS3Urls[index] = `${AppConfig.ImageBaseUrl}/${fileName}`;
           });
-          await S3.send(putObjectCommand);
-          await io.logger.info(
-            `Successfully uploaded image ${index} for order ${payload.record.id} to S3`,
-          );
-          newS3Urls[index] = `${AppConfig.ImageBaseUrl}/${fileName}`;
         }
-        await prisma.orders.update({
-          where: {
-            id: payload.record.id,
-          },
-          data: {
-            images: newS3Urls,
-          },
+        await io.runTask("Updating Orders Images", async () => {
+          await prisma.orders.update({
+            where: {
+              id: payload.record.id,
+            },
+            data: {
+              images: newS3Urls,
+            },
+          });
         });
         await io.logger.info(
           `Successfully updated images for order ${payload.record.id} in database.`,
@@ -105,6 +119,7 @@ client.defineJob({
       await io.logger.error(
         `Error uploading images for order ${payload.record.id} to S3: ${e}`,
       );
+      if (isTriggerError(e)) throw e;
       return { status: "failed" };
     }
   },
