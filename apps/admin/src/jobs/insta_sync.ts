@@ -52,7 +52,7 @@ client.defineJob({
       if (totalPosts && totalPosts < validatedData.media_count) {
         const diff = validatedData.media_count - totalPosts;
         await io.logger.info(`Difference in posts: ${diff}`);
-        io.runTask(
+        await io.runTask(
           `Syncing Posts ${totalPosts} ${validatedData.media_count}`,
           async () => {
             await fetch(

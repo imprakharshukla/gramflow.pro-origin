@@ -65,7 +65,7 @@ client.defineJob({
 
     const order = payload.record;
 
-    io.runTask("send-email", async () => {
+    await  io.runTask("send-email", async () => {
       const data = await resend.emails.send({
         from: `${AppConfig.StoreName} <no-reply@${env.RESEND_DOMAIN}>`,
         to: [user.email],
@@ -87,7 +87,7 @@ client.defineJob({
 
     await io.logger.info("Order email sent!");
 
-    io.runTask("send-slack-message", async () => {
+    await io.runTask("send-slack-message", async () => {
       await io.slack.postMessage("post message", {
         channel: "C06BTFF4R5F",
         text: `Order Accepted 📬 \n Order ID: ${order.id} \n Email: ${user.email} \n Name: ${user.name} \n`,
