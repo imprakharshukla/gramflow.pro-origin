@@ -1,0 +1,88 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 0 4% 5%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 0 4% 5%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 0 4% 5%;
+
+    --primary: 0 89% 86%;
+    --primary-foreground: 0 0% 2%;
+
+    --secondary: 0 16% 93%;
+    --secondary-foreground: 0 4% 5%;
+
+    --muted: 0 7% 97%;
+    --muted-foreground: 0 3% 40%;
+
+    --accent: 0 7% 97%;
+    --accent-foreground: 0 4% 5%;
+
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 98%;
+
+    --border: 0 11% 93%;
+    --input: 0 16% 87%;
+    --ring: 0 45% 72%;
+
+    --radius: 0.75rem;
+  }
+  
+  .dark {
+    --background: 0 12% 5%;
+    --foreground: 0 14% 90%;
+
+    --card: 0 11% 7%;
+    --card-foreground: 0 14% 90%;
+
+    --popover: 0 11% 7%;
+    --popover-foreground: 0 14% 90%;
+
+    --primary: 0 69% 86%;
+    --primary-foreground: 0 0% 2%;
+
+    --secondary: 0 25% 14%;
+    --secondary-foreground: 0 14% 90%;
+
+    --muted: 0 18% 12%;
+    --muted-foreground: 0 8% 60%;
+
+    --accent: 0 21% 12%;
+    --accent-foreground: 0 14% 90%;
+
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 98%;
+
+    --border: 0 11% 15%;
+    --input: 0 10% 23%;
+    --ring: 0 50% 43%;
+  }
+}
+@layer base {
+  input[type="number"]::-webkit-inner-spin-button,
+  input[type="number"]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+}
+.heart-bullet-list {
+  list-style-type: none; /* Remove default bullet points */
+}
+
+.heart-bullet-list li::before {
+  content: "❤︎"; /* Unicode for a heart symbol */
+  margin-right: 0.5em; /* Adjust spacing between the heart and text */
+}
