@@ -1,9 +1,8 @@
 import { NextResponse } from "next/server";
-import { render } from "@jsx-email/render";
 import { Resend } from "resend";
 import { z } from "zod";
 
-import { OtpEmail, SendEmailViaResend } from "@gramflow/email";
+import { OtpEmail } from "@gramflow/email";
 import { AppConfig } from "@gramflow/utils";
 
 import { env } from "~/env.mjs";
@@ -14,11 +13,11 @@ export async function GET(req: Request) {
   try {
     const { searchParams } = new URL(req.url);
     const email = searchParams.get("email") ?? "";
-    const order_id = searchParams.get("order_id") ?? "";
+    const order_id = searchParams.get("order_id");
 
     const otpSchema = z.object({
       email: z.string().email(),
-      order_id: z.string().uuid(),
+      order_id: z.string().uuid().nullable(),
     });
 
     otpSchema.parse({ email, order_id });
@@ -31,7 +30,7 @@ export async function GET(req: Request) {
       data: {
         email: email,
         otp: otp,
-        order_id,
+        order_id: "",
         expires: new Date(new Date().getTime() + 5 * 60 * 1000),
       },
     });

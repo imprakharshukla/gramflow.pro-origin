@@ -33,20 +33,23 @@ client.defineJob({
           const response = await fetch(
             `https://graph.instagram.com/v11.0/me?fields=media_count,username&access_token=${env.INSTAGRAM_TOKEN}`,
           );
+          if (!response.ok) return Error("Instagram response not ok");
           return response.json();
         },
       );
-      if (!instagramResponse.ok) {
-        return { status: "error" };
-      }
-      const data = (await instagramResponse.json()) as z.infer<
-        typeof instagramResponseSchema
-      >;
-      console.log({ data });
-      const validatedData = instagramResponseSchema.parse(data);
-      await io.logger.info(`Total posts From Instagram: ${data.media_count}`);
 
-      const totalPosts = await redis.get<number>("total_posts");
+      const validatedData = instagramResponseSchema.parse(instagramResponse);
+      await io.logger.info(
+        `Total posts From Instagram: ${validatedData.media_count}`,
+      );
+
+      const totalPosts = await io.runTask(
+        "Fetching data from reddis",
+        async () => {
+          return await redis.get<number>("total_posts");
+        },
+      );
+
       await io.logger.info(`Total posts From KV: ${totalPosts}`);
 
       if (totalPosts && totalPosts < validatedData.media_count) {
@@ -68,8 +71,8 @@ client.defineJob({
           },
         );
       }
-      io.runTask("Updating KV", async () => {
-        await redis.set("total_posts", validatedData.media_count);
+      await io.runTask("Updating KV", async () => {
+        return await redis.set("total_posts", validatedData.media_count);
       });
       return { status: "success" };
     } catch (error) {

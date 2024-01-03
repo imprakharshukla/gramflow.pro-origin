@@ -13,7 +13,7 @@
     "with-env": "dotenv -e ../../.env --",
     "trigger-dev": "doppler run --mount .env -- pnpm dlx @trigger.dev/cli@latest dev --port 3000",
     "test": "doppler run --config=test -- jest",
-    "supabase-gen": "doppler run -- pnpm dlx supabase gen types typescript --project-id $SUPABASE_PROJECT_ID --schema public > types/supabase.ts"
+    "supabase-gen": "doppler run -- pnpm dlx supabase gen types typescript --debug --project-id $SUPABASE_PROJECT_ID --schema public > types/supabase.ts"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.400.0",
@@ -96,6 +96,6 @@
     "uuid": "^9.0.0"
   },
   "trigger.dev": {
-    "endpointId": "reskinn-orders-Gh4O"
+    "endpointId": "reskinn-aR67"
   }
 }

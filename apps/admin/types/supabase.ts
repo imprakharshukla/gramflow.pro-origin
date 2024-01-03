@@ -42,6 +42,68 @@ export interface Database {
         }
         Relationships: []
       }
+      Bundles: {
+        Row: {
+          aesthetics: string
+          bundle_description: string
+          bundle_size: string
+          created_at: string
+          fashion_dislikes: string | null
+          id: string
+          images: string[] | null
+          length: string
+          link_input: string
+          other_aesthetics: string | null
+          status: Database["public"]["Enums"]["Status"]
+          top_size: string
+          updated_at: string
+          user_id: string | null
+          waist: string
+        }
+        Insert: {
+          aesthetics: string
+          bundle_description: string
+          bundle_size: string
+          created_at?: string
+          fashion_dislikes?: string | null
+          id: string
+          images?: string[] | null
+          length: string
+          link_input: string
+          other_aesthetics?: string | null
+          status?: Database["public"]["Enums"]["Status"]
+          top_size: string
+          updated_at: string
+          user_id?: string | null
+          waist: string
+        }
+        Update: {
+          aesthetics?: string
+          bundle_description?: string
+          bundle_size?: string
+          created_at?: string
+          fashion_dislikes?: string | null
+          id?: string
+          images?: string[] | null
+          length?: string
+          link_input?: string
+          other_aesthetics?: string | null
+          status?: Database["public"]["Enums"]["Status"]
+          top_size?: string
+          updated_at?: string
+          user_id?: string | null
+          waist?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "Bundles_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "Users"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
       Orders: {
         Row: {
           awb: string | null
@@ -53,7 +115,9 @@ export interface Database {
           images: string[] | null
           instagram_post_urls: string[] | null
           length: string | null
+          prebook: boolean
           price: number
+          shipping_cost: number | null
           status: Database["public"]["Enums"]["Status"]
           updated_at: string
           user_id: string | null
@@ -69,7 +133,9 @@ export interface Database {
           images?: string[] | null
           instagram_post_urls?: string[] | null
           length?: string | null
+          prebook?: boolean
           price?: number
+          shipping_cost?: number | null
           status?: Database["public"]["Enums"]["Status"]
           updated_at: string
           user_id?: string | null
@@ -85,7 +151,9 @@ export interface Database {
           images?: string[] | null
           instagram_post_urls?: string[] | null
           length?: string | null
+          prebook?: boolean
           price?: number
+          shipping_cost?: number | null
           status?: Database["public"]["Enums"]["Status"]
           updated_at?: string
           user_id?: string | null
@@ -95,6 +163,7 @@ export interface Database {
           {
             foreignKeyName: "Orders_user_id_fkey"
             columns: ["user_id"]
+            isOneToOne: false
             referencedRelation: "Users"
             referencedColumns: ["id"]
           }
@@ -123,6 +192,41 @@ export interface Database {
           otp?: string
         }
         Relationships: []
+      }
+      Pickups: {
+        Row: {
+          id: string
+          order_id: string[] | null
+          ordersId: string | null
+          pickup_date: string
+          pickup_id: number
+          pickup_location: string
+        }
+        Insert: {
+          id: string
+          order_id?: string[] | null
+          ordersId?: string | null
+          pickup_date: string
+          pickup_id: number
+          pickup_location: string
+        }
+        Update: {
+          id?: string
+          order_id?: string[] | null
+          ordersId?: string | null
+          pickup_date?: string
+          pickup_id?: number
+          pickup_location?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "Pickups_ordersId_fkey"
+            columns: ["ordersId"]
+            isOneToOne: false
+            referencedRelation: "Orders"
+            referencedColumns: ["id"]
+          }
+        ]
       }
       Posts: {
         Row: {
@@ -238,3 +342,83 @@ export interface Database {
     }
   }
 }
+
+export type Tables<
+  PublicTableNameOrOptions extends
+    | keyof (Database["public"]["Tables"] & Database["public"]["Views"])
+    | { schema: keyof Database },
+  TableName extends PublicTableNameOrOptions extends { schema: keyof Database }
+    ? keyof (Database[PublicTableNameOrOptions["schema"]]["Tables"] &
+        Database[PublicTableNameOrOptions["schema"]]["Views"])
+    : never = never
+> = PublicTableNameOrOptions extends { schema: keyof Database }
+  ? (Database[PublicTableNameOrOptions["schema"]]["Tables"] &
+      Database[PublicTableNameOrOptions["schema"]]["Views"])[TableName] extends {
+      Row: infer R
+    }
+    ? R
+    : never
+  : PublicTableNameOrOptions extends keyof (Database["public"]["Tables"] &
+      Database["public"]["Views"])
+  ? (Database["public"]["Tables"] &
+      Database["public"]["Views"])[PublicTableNameOrOptions] extends {
+      Row: infer R
+    }
+    ? R
+    : never
+  : never
+
+export type TablesInsert<
+  PublicTableNameOrOptions extends
+    | keyof Database["public"]["Tables"]
+    | { schema: keyof Database },
+  TableName extends PublicTableNameOrOptions extends { schema: keyof Database }
+    ? keyof Database[PublicTableNameOrOptions["schema"]]["Tables"]
+    : never = never
+> = PublicTableNameOrOptions extends { schema: keyof Database }
+  ? Database[PublicTableNameOrOptions["schema"]]["Tables"][TableName] extends {
+      Insert: infer I
+    }
+    ? I
+    : never
+  : PublicTableNameOrOptions extends keyof Database["public"]["Tables"]
+  ? Database["public"]["Tables"][PublicTableNameOrOptions] extends {
+      Insert: infer I
+    }
+    ? I
+    : never
+  : never
+
+export type TablesUpdate<
+  PublicTableNameOrOptions extends
+    | keyof Database["public"]["Tables"]
+    | { schema: keyof Database },
+  TableName extends PublicTableNameOrOptions extends { schema: keyof Database }
+    ? keyof Database[PublicTableNameOrOptions["schema"]]["Tables"]
+    : never = never
+> = PublicTableNameOrOptions extends { schema: keyof Database }
+  ? Database[PublicTableNameOrOptions["schema"]]["Tables"][TableName] extends {
+      Update: infer U
+    }
+    ? U
+    : never
+  : PublicTableNameOrOptions extends keyof Database["public"]["Tables"]
+  ? Database["public"]["Tables"][PublicTableNameOrOptions] extends {
+      Update: infer U
+    }
+    ? U
+    : never
+  : never
+
+export type Enums<
+  PublicEnumNameOrOptions extends
+    | keyof Database["public"]["Enums"]
+    | { schema: keyof Database },
+  EnumName extends PublicEnumNameOrOptions extends { schema: keyof Database }
+    ? keyof Database[PublicEnumNameOrOptions["schema"]]["Enums"]
+    : never = never
+> = PublicEnumNameOrOptions extends { schema: keyof Database }
+  ? Database[PublicEnumNameOrOptions["schema"]]["Enums"][EnumName]
+  : PublicEnumNameOrOptions extends keyof Database["public"]["Enums"]
+  ? Database["public"]["Enums"][PublicEnumNameOrOptions]
+  : never

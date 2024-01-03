@@ -24,17 +24,18 @@ model Posts {
 }
 
 model Otp {
-  id       String   @id @default(cuid())
-  email    String
-  otp      String
-  order_id String   @default("")
-  expires  DateTime
+  id        String   @id @default(cuid())
+  email     String
+  otp       String
+  order_id  String   @default("")
+  bundle_id String   @default("")
+  expires   DateTime
 }
 
 model Users {
-  id                 String   @id @default(uuid()) /// @zod.uuid()
+  id                 String    @id @default(uuid()) /// @zod.uuid()
   name               String
-  email              String   @unique
+  email              String    @unique
   house_number       String
   pincode            String /// @zod.max(6).min(6)
   landmark           String?
@@ -45,10 +46,30 @@ model Users {
   country            String
   phone_no           String /// @zod.max(10).min(10)
   orders             Orders[]
-  created_at         DateTime @default(now())
-  updated_at         DateTime @updatedAt
+  created_at         DateTime  @default(now())
+  updated_at         DateTime  @updatedAt
+  Bundles            Bundles[]
 
   @@index([id])
+}
+
+model Bundles {
+  id                 String   @id @default(uuid())
+  bundle_size        String
+  aesthetics         String
+  other_aesthetics   String?
+  fashion_dislikes   String?
+  link_input         String
+  bundle_description String
+  top_size           String
+  waist              String
+  length             String
+  status             Status   @default(PENDING)
+  user_id            String?
+  user               Users?   @relation(fields: [user_id], references: [id])
+  images             String[]
+  created_at         DateTime @default(now())
+  updated_at         DateTime @updatedAt
 }
 
 model Orders {
@@ -82,7 +103,7 @@ model Pickups {
   order_id        String[]
   Orders          Orders?  @relation(fields: [ordersId], references: [id])
   ordersId        String?
-  
+
   @@index([id, pickup_date])
 }
 

@@ -20,7 +20,7 @@ export default function NavMenu({ className }: { className?: string }) {
 
   return (
     <nav
-      className={`fixed left-0 top-0 z-20 w-full border-b border-gray-200 ${
+      className={`z-20 w-full border-b border-gray-200 ${
         isDarkTheme ? "dark:border-gray-900 dark:bg-gray-950" : "bg-white"
       }`}
     >

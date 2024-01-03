@@ -9,3 +9,4 @@ export * from "./s3_post_sync";
 export * from "./insta_sync";
 export * from "./order_inserted_operations";
 export * from "./order_updated_operations";
+export * from "./bundle_inserted_operations"

@@ -10,6 +10,7 @@ import { Metadata } from "next";
 import { GeistSans } from "geist/font";
 import { Toaster } from "sonner";
 
+import NavMenu from "~/features/ui/components/navMenu";
 import QueryProvider from "~/providers/query-provider";
 
 export const metadata: Metadata = {
@@ -65,7 +66,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <head />
+     
       <body
         className={cn(
           "min-h-screen bg-background font-sans antialiased",
@@ -76,6 +77,7 @@ export default function RootLayout({
           <QueryProvider>
             <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
               <Toaster />
+              <NavMenu />
               <div
                 className={
                   "relative flex min-h-screen flex-col " + fontSans.className
@@ -84,7 +86,6 @@ export default function RootLayout({
                 {children}
               </div>
             </ThemeProvider>
-
             <TailwindIndicator />
           </QueryProvider>
         </AuthSessionProvider>

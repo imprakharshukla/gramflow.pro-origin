@@ -1,6 +1,21 @@
 import type { Config } from "tailwindcss";
+import { withUt } from "uploadthing/tw";
+
 import baseConfig from "@gramflow/tailwind-config";
-export default {
-  content: ["./src/**/*.tsx", "../../packages/ui/**/*.{js,ts,jsx,tsx}"],
+
+export default withUt({
+  content: [
+    "./src/**/*.tsx",
+    "../../packages/ui/**/*.{js,ts,jsx,tsx}",
+    "./src/**/*.{ts,tsx,mdx}",
+  ],
   presets: [baseConfig],
-} satisfies Config;
+  theme:{
+    extend:{
+      backgroundImage: {
+        'bg': "url('/bg.png')",
+      }
+    }
+  },
+  plugins: [require("@tailwindcss/typography"),],
+}) satisfies Config;
