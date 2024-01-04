@@ -179,6 +179,9 @@ importers:
       npm:
         specifier: ^9.8.1
         version: 9.8.1
+      posthog-js:
+        specifier: ^1.96.1
+        version: 1.96.1
       react:
         specifier: '18'
         version: 18.2.0
@@ -351,6 +354,9 @@ importers:
       node-telegram-bot-api:
         specifier: ^0.61.0
         version: 0.61.0
+      posthog-js:
+        specifier: ^1.96.1
+        version: 1.96.1
       react:
         specifier: '18'
         version: 18.2.0
@@ -8513,6 +8519,10 @@ packages:
       web-streams-polyfill: 3.2.1
     dev: false
 
+  /fflate@0.4.8:
+    resolution: {integrity: sha512-FJqqoDBR00Mdj9ppamLa/Y7vxm+PRmNWA67N846RvsoYVMKB4q3y/de5PA7gUmRMYK/8CMz2GDZQmCRN1wBcWA==}
+    dev: false
+
   /file-entry-cache@6.0.1:
     resolution: {integrity: sha512-7Gps/XWymbLk2QLYK4NzpMOrYjMhdIxXuIvy2QBsLE6ljuodKvdkWs/cpyJJ3CVIVpH0Oi1Hvg1ovbMzLdFBBg==}
     engines: {node: ^10.12.0 || >=12.0.0}
@@ -11715,6 +11725,12 @@ packages:
       nanoid: 3.3.6
       picocolors: 1.0.0
       source-map-js: 1.0.2
+
+  /posthog-js@1.96.1:
+    resolution: {integrity: sha512-kv1vQqYMt2BV3YHS+wxsbGuP+tz+M3y1AzNhz8TfkpY1HT8W/ONT0i0eQpeRr9Y+d4x/fZ6M4cXG5GMvi9lRCA==}
+    dependencies:
+      fflate: 0.4.8
+    dev: false
 
   /preact-render-to-string@5.2.6(preact@10.17.1):
     resolution: {integrity: sha512-JyhErpYOvBV1hEPwIxc/fHWXPfnEGdRKxc8gFdAZ7XV4tlzyzG847XAyEZqoDnynP88akM4eaHcSOzNcLWFguw==}

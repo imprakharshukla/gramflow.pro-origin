@@ -8,8 +8,11 @@ import { ThemeProvider } from "~/providers/theme-provider";
 import "~/styles/globals.css";
 import { Metadata } from "next";
 import { GeistSans } from "geist/font";
+import posthog from "posthog-js";
+import { PostHogProvider } from "posthog-js/react";
 import { Toaster } from "sonner";
 
+import { env } from "~/env.mjs";
 import NavMenu from "~/features/ui/components/navMenu";
 import QueryProvider from "~/providers/query-provider";
 
@@ -64,9 +67,13 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
+  if (typeof window !== "undefined") {
+    posthog.init(env.NEXT_PUBLIC_POSTHOG_KEY, {
+      api_host: env.NEXT_PUBLIC_POSTHOG_HOST,
+    });
+  }
   return (
     <html lang="en" suppressHydrationWarning>
-     
       <body
         className={cn(
           "min-h-screen bg-background font-sans antialiased",
@@ -75,17 +82,23 @@ export default function RootLayout({
       >
         <AuthSessionProvider>
           <QueryProvider>
-            <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-              <Toaster />
-              <NavMenu />
-              <div
-                className={
-                  "relative flex min-h-screen flex-col " + fontSans.className
-                }
+            <PostHogProvider client={posthog}>
+              <ThemeProvider
+                attribute="class"
+                defaultTheme="system"
+                enableSystem
               >
-                {children}
-              </div>
-            </ThemeProvider>
+                <Toaster />
+                <NavMenu />
+                <div
+                  className={
+                    "relative flex min-h-screen flex-col " + fontSans.className
+                  }
+                >
+                  {children}
+                </div>
+              </ThemeProvider>
+            </PostHogProvider>
             <TailwindIndicator />
           </QueryProvider>
         </AuthSessionProvider>

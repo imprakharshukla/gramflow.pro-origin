@@ -3,6 +3,8 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useTheme } from "next-themes";
+import { useFeatureFlagEnabled, useFeatureFlagPayload } from "posthog-js/react";
+import { toast } from "sonner";
 
 import {
   Button,
@@ -21,6 +23,10 @@ import HeroComponent from "~/features/ui/components/hero";
 export default function HomePage() {
   const { theme, setTheme } = useTheme();
   const [isDarkTheme, setIsDarkTheme] = useState(false);
+
+  const areBundlesAvailable = useFeatureFlagPayload("bundles") === true;
+
+  console.log("areBundlesAvailable", areBundlesAvailable);
 
   useEffect(() => {
     const prefersDark = window.matchMedia(
@@ -49,8 +55,21 @@ export default function HomePage() {
           {/* Buttons */}
 
           <div className="mt-5 flex items-center justify-center gap-x-1 sm:gap-x-3">
-            <Button>
-              <Link href={"/bundles"}>Book a Bundle</Link>
+            <Button
+              disabled={!areBundlesAvailable}
+              onClick={() => {
+                if (areBundlesAvailable) {
+                  window.location.href = "/bundles";
+                } else {
+                  toast.error(
+                    "We are not accepting new bundle requests at the moment. Please check back later.",
+                  );
+                }
+              }}
+              variant={"link"}
+              className="mt-2 w-fit p-0 font-semibold text-primary "
+            >
+              Book a Bundle
             </Button>
             <Button variant={"outline"}>
               <Link href={"https://instagram.com/re_skinn"}>Shop @ IG</Link>
@@ -79,7 +98,20 @@ export default function HomePage() {
                       Book your very own bundle of clothes and accessories that
                       match your style and aesthetic.
                     </p>
-                    <Button variant={"link"} className="mt-2 w-fit p-0 text-primary font-semibold ">
+                    <Button
+                      disabled={!areBundlesAvailable}
+                      onClick={() => {
+                        if (areBundlesAvailable) {
+                          window.location.href = "/bundles";
+                        } else {
+                          toast.error(
+                            "We are not accepting new bundle requests at the moment. Please check back later.",
+                          );
+                        }
+                      }}
+                      variant={"link"}
+                      className="mt-2 w-fit p-0 font-semibold text-primary "
+                    >
                       Book your Bundle
                     </Button>
                   </div>
