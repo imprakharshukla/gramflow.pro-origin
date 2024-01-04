@@ -9,12 +9,12 @@ import "~/styles/globals.css";
 import { Metadata } from "next";
 import { GeistSans } from "geist/font";
 import posthog from "posthog-js";
-import { PostHogProvider } from "posthog-js/react";
 import { Toaster } from "sonner";
 
 import { env } from "~/env.mjs";
 import NavMenu from "~/features/ui/components/navMenu";
 import QueryProvider from "~/providers/query-provider";
+import PHProvider from "~/providers/posthog-provider";
 
 export const metadata: Metadata = {
   viewport: "width=device-width, initial-scale=1, maximum-scale=1",
@@ -67,11 +67,7 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  if (typeof window !== "undefined") {
-    posthog.init(env.NEXT_PUBLIC_POSTHOG_KEY, {
-      api_host: env.NEXT_PUBLIC_POSTHOG_HOST,
-    });
-  }
+
   return (
     <html lang="en" suppressHydrationWarning>
       <body
@@ -82,7 +78,7 @@ export default function RootLayout({
       >
         <AuthSessionProvider>
           <QueryProvider>
-            <PostHogProvider client={posthog}>
+            <PHProvider >
               <ThemeProvider
                 attribute="class"
                 defaultTheme="system"
@@ -98,7 +94,7 @@ export default function RootLayout({
                   {children}
                 </div>
               </ThemeProvider>
-            </PostHogProvider>
+            </PHProvider>
             <TailwindIndicator />
           </QueryProvider>
         </AuthSessionProvider>
