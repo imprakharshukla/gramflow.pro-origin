@@ -84,7 +84,7 @@ export default async function Dashboard({
 
         <TabGroup
           className="mt-6"
-          defaultIndex={2}
+          defaultIndex={1}
           // index={currentDashboardTab}
           // onIndexChange={setCurrentDashboardTab}
         >

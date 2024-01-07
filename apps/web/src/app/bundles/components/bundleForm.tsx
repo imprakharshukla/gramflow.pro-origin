@@ -7,7 +7,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
 import { UploadButton } from "@uploadthing/react";
 import { motion } from "framer-motion";
-import { Loader2, SignalZero } from "lucide-react";
+import { Loader2, ShareIcon, SignalZero } from "lucide-react";
 import ReactConfetti from "react-confetti";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
@@ -258,6 +258,7 @@ export default function BundleForm() {
 
   return (
     <div className="p-2 pb-10 text-justify md:p-10">
+      
       {formStage == FormState.Success && (
         <ReactConfetti
           width={windowSize.width}

@@ -12,6 +12,7 @@ import posthog from "posthog-js";
 import { Toaster } from "sonner";
 
 import { env } from "~/env.mjs";
+import Footer from "~/features/ui/components/footer";
 import NavMenu from "~/features/ui/components/navMenu";
 import PHProvider from "~/providers/posthog-provider";
 import QueryProvider from "~/providers/query-provider";
@@ -87,6 +88,7 @@ export default function RootLayout({
                 >
                   {children}
                 </div>
+                <Footer />
               </ThemeProvider>
             </PHProvider>
             <TailwindIndicator />

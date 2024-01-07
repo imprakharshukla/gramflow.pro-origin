@@ -42,3 +42,7 @@ export const metadata: Metadata = {
 
   manifest: `${siteConfig.url}/site.webmanifest`,
 };
+
+export default function Layout({ children }: { children: React.ReactNode }) {
+  return <>{children}</>;
+}

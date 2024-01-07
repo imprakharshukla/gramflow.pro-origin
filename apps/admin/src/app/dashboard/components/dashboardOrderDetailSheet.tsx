@@ -443,7 +443,6 @@ export function DashboardOrderDetailSheet({
           );
         })}
         <div className="p-1"></div>
-        <RecordDisplay label="Order ID" value={order.id} />
         <RecordDisplay
           label="Size"
           value={`${order.length} cm x ${order.breadth} cm x ${order.height} cm @ ${order.weight} gm`}

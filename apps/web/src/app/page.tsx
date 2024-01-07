@@ -2,6 +2,7 @@ import { Redis } from "@upstash/redis";
 
 import { env } from "~/env.mjs";
 import HeroSection from "~/features/ui/components/heroSection";
+import { FAQSection } from "./bundles/components/faqSectionDrawer";
 
 export default async function HomePage() {
   const redis = new Redis({
@@ -17,10 +18,13 @@ export default async function HomePage() {
     console.log({ areBundlesAvailable });
   }
   return (
-    <HeroSection
-      props={{
-        areBundlesAvailable: areBundlesAvailable,
-      }}
-    />
+    <div className="">
+      <HeroSection
+      
+        props={{
+          areBundlesAvailable: areBundlesAvailable,
+        }}
+      />
+    </div>
   );
 }

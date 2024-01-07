@@ -3,10 +3,13 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
+import { HelpCircle } from "lucide-react";
 import { useTheme } from "next-themes";
 import { toast } from "sonner";
 
 import { Button, Separator } from "@gramflow/ui";
+
+import { FAQSectionDrawer } from "~/app/bundles/components/faqSectionDrawer";
 
 export default function HeroSection({
   props,
@@ -33,8 +36,54 @@ export default function HeroSection({
       animate={{ x: 0, opacity: 1 }}
       className={""}
     >
-      <div className="">
+      <div className="min-h-screen">
         <div className="">
+          <FAQSectionDrawer
+            faqItems={[
+              {
+                question: "What is Reskinn?",
+                answer:
+                  "We are a thrift store that sources clothes for various styles and sizes.",
+              },
+              {
+                question: "Were are we based out of?",
+                answer:
+                  "We are based out of the Delhi NCR, India. We ship nationwide.",
+              },
+              {
+                question: "Do we ship internationally?",
+                answer:
+                  "We do not ship internationally at the moment. We are working on it.",
+              },
+              {
+                question: "Can I return my order?",
+                answer:
+                  "We do not accept returns at the moment but in case of any issues, please reach out to us at.",
+              },
+              {
+                question: "How can I track my order?",
+                answer:
+                  "You can track your orders by clicking on the link provided to you for filling your information. You will also be notified via email.",
+              },
+              {
+                question: "How do we ship?",
+                answer:
+                  "We ship via Delhivery. We will defult to surface shipping but if you want express shipping, please reach out to us at.",
+              },
+            ]}
+          >
+            <div className="flex items-center justify-end">
+              <Button
+                // onClick={handleShareButton}
+                size={"sm"}
+                className="m-3 -mb-5 flex w-fit justify-end space-x-2"
+                variant={"outline"}
+              >
+                <span>FAQs</span>
+                <HelpCircle className="h-4 w-4" />
+              </Button>
+            </div>
+          </FAQSectionDrawer>
           <div className="mx-auto max-w-[85rem] px-4 pb-10 pt-24 sm:px-6 lg:px-8">
             <div className="flex justify-center"></div>
 
@@ -50,7 +99,7 @@ export default function HeroSection({
 
             {/* Buttons */}
 
-            <div className="mt-5 flex items-center justify-center gap-x-1 sm:gap-x-3">
+            <div className="mt-5 flex items-center justify-center gap-x-2">
               <Button
                 onClick={() => {
                   if (areBundlesAvailable) {
