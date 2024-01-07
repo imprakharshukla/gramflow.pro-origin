@@ -13,8 +13,8 @@ import { Toaster } from "sonner";
 
 import { env } from "~/env.mjs";
 import NavMenu from "~/features/ui/components/navMenu";
-import QueryProvider from "~/providers/query-provider";
 import PHProvider from "~/providers/posthog-provider";
+import QueryProvider from "~/providers/query-provider";
 
 export const metadata: Metadata = {
   viewport: "width=device-width, initial-scale=1, maximum-scale=1",
@@ -33,25 +33,20 @@ export const metadata: Metadata = {
     url: siteConfig.url,
     title: siteConfig.name,
     description: siteConfig.description,
-    images: [`${siteConfig.url}/cl_og.jpg`],
+    images: [`${siteConfig.url}/base_og.png`],
     siteName: siteConfig.name,
   },
   twitter: {
     card: "summary_large_image",
     title: siteConfig.name,
     description: siteConfig.description,
-    images: [`${siteConfig.url}/cl_og.jpg`],
-    creator: "@",
+    images: [`${siteConfig.url}/base_og.png`],
+    creator: `@${siteConfig.name}`,
   },
   robots: {
-    index: false,
+    index: true,
     follow: true,
     nocache: true,
-    googleBot: {
-      index: false,
-      follow: false,
-      noimageindex: false,
-    },
   },
   icons: {
     icon: "/favicon.ico",
@@ -67,7 +62,6 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-
   return (
     <html lang="en" suppressHydrationWarning>
       <body
@@ -78,7 +72,7 @@ export default function RootLayout({
       >
         <AuthSessionProvider>
           <QueryProvider>
-            <PHProvider >
+            <PHProvider>
               <ThemeProvider
                 attribute="class"
                 defaultTheme="system"

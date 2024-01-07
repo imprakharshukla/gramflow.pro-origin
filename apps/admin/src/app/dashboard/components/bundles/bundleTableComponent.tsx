@@ -4,11 +4,12 @@ import { motion } from "framer-motion";
 
 import { DataTable } from "~/app/dashboard/components/bundles/bundle-data-table";
 import { columns } from "~/app/dashboard/components/bundles/bundlesColumn";
+import { BundleSwitch } from "./bundleSwitch";
 
-export const BundlesTable = ({
-  searchBundleId,
+export const BundlesTable = async ({
+  areBundlesAvailable,
 }: {
-  searchBundleId?: string | null | undefined;
+  areBundlesAvailable: boolean;
 }) => {
   return (
     <motion.div
@@ -16,7 +17,8 @@ export const BundlesTable = ({
       animate={{ opacity: 1 }}
       className="mt-4"
     >
-      <DataTable columns={columns} searchBundleId={searchBundleId} />
+      <BundleSwitch areBundlesAvailable={areBundlesAvailable} />
+      <DataTable columns={columns} searchBundleId={null} />
     </motion.div>
   );
 };

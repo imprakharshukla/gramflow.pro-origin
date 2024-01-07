@@ -34,7 +34,7 @@ export const columns: ColumnDef<CompleteBundles>[] = [
     accessorKey: "image",
     id: "image",
     header: ({ table }) => (
-      <div className={"flex w-40 items-center space-x-4"}>
+      <div className={"pointer-cursor flex w-40 items-center space-x-4"}>
         <Checkbox
           checked={table.getIsAllPageRowsSelected()}
           onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
@@ -44,7 +44,6 @@ export const columns: ColumnDef<CompleteBundles>[] = [
       </div>
     ),
     cell: ({ row }) => {
-    
       return (
         <div>
           {
@@ -57,9 +56,7 @@ export const columns: ColumnDef<CompleteBundles>[] = [
               />
 
               <div className={"relative"}>
-                <Sheet
-                  key={row.id}
-                >
+                <Sheet key={row.id}>
                   <SheetTrigger asChild className={""}>
                     <div>
                       {/*// row.original.images.map((image, index) => (*/}

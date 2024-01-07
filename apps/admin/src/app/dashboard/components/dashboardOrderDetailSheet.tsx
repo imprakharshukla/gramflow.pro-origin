@@ -9,7 +9,7 @@ import { COURIER, Status } from "@prisma/client";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Badge as StatusBadge, type Color } from "@tremor/react";
 import { format } from "date-fns";
-import { Loader2, ShareIcon, X } from "lucide-react";
+import { ArrowRight, Loader2, ShareIcon, X } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
@@ -31,6 +31,7 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
+  Separator,
   Sheet,
   SheetContent,
   SheetDescription,
@@ -56,11 +57,11 @@ export const RecordDisplay = ({
   onClick?: () => void;
 }) => (
   <Card
-    className={`flex cursor-pointer items-center border p-3 text-sm ${className}`}
+    className={`flex w-fit cursor-pointer items-center border p-3 text-sm ${className}`}
     {...restProps}
   >
     <Label className={"border-r pr-2"}>{label}</Label>
-    <p className="ml-2 text-xs text-muted-foreground">{value}</p>
+    <p className="ml-2 text-sm text-muted-foreground md:text-base">{value}</p>
   </Card>
 );
 
@@ -355,76 +356,33 @@ export function DashboardOrderDetailSheet({
           </SheetClose>
         </div>
         <SheetTitle>Manage Order</SheetTitle>
-        <SheetDescription>
-          <div className="flex items-center justify-between gap-4">
-            <span className={"break-all text-xs text-muted-foreground"}>
-              {order.id}
-            </span>
-            <div>
-              <Button
-                onClick={handleShareButton}
-                size={"sm"}
-                variant={"outline"}
-              >
-                <ShareIcon className="h-4 w-4" />
-              </Button>
-            </div>
-          </div>
-        </SheetDescription>
+        <SheetDescription>{order.id}</SheetDescription>
       </SheetHeader>
-      <StatusBadge
-        size="xs"
-        color={pillColors[order.status] as Color}
-        className={"mt-2 text-xs font-medium"}
-      >
-        {order.status}
-      </StatusBadge>
-
-      {order.bundles && (
-        <Sheet>
-          <SheetTrigger>
-            <RecordDisplay
-              className="my-5"
-              label="Bundle ID"
-              value={order.bundles?.id ?? "N/A"}
-            />
-          </SheetTrigger>
-          {/* <SheetContent
-          side={"top"}
-          className={"max-h-screen overflow-y-scroll pb-20"}
+      <div className="py-3">
+        <Separator />
+      </div>
+      <div className="mt-3 flex items-center justify-between gap-4">
+        <StatusBadge
+          size="xs"
+          color={pillColors[order.status] as Color}
+          className={"mt-2 text-xs font-medium"}
         >
-          <SheetHeader className="sticky top-0 bg-background pb-4 pt-6 dark:bg-background">
-            <div className="flex justify-end">
-              <SheetClose>
-                <Button variant={"ghost"}>
-                  <X className="h-4 w-4" />
-                </Button>
-              </SheetClose>
-            </div>
-            <SheetTitle>Manage Bundle</SheetTitle>
-            <SheetDescription>
-              <div className="flex items-center justify-between gap-4">
-                <span className={"break-all text-xs text-muted-foreground"}>
-                  {}
-                </span>
-                <div>
-                  <Button
-                    onClick={handleShareButton}
-                    size={"sm"}
-                    variant={"outline"}
-                  >
-                    <ShareIcon className="h-4 w-4" />
-                  </Button>
-                </div>
-              </div>
-            </SheetDescription>
-          </SheetHeader>
-        </SheetContent> */}
-          <DashboardBundleDetailSheet bundle={order.bundles} />
-        </Sheet>
-      )}
+          {order.status}
+        </StatusBadge>
+        <div>
+          <Button
+            onClick={handleShareButton}
+            size={"sm"}
+            className="flex items-center space-x-2"
+            variant={"outline"}
+          >
+            <span>Share</span>
+            <ShareIcon className="h-4 w-4" />
+          </Button>
+        </div>
+      </div>
 
-      <div className={"flex space-x-3"}>
+      <div className={"flex flex-wrap space-x-3"}>
         {order.images.map((image) => (
           <Image
             key={image}
@@ -437,17 +395,39 @@ export function DashboardOrderDetailSheet({
         ))}
       </div>
 
-      {order.status === "PENDING" && (
-        <Button
-          onClick={() => {
-            router.push(`/add?orderId=${order.id}`);
-          }}
-          variant={"outline"}
-          className="mt-4"
-        >
-          Accept Manually
-        </Button>
-      )}
+      <div className="grid gap-4 py-4">
+        <div className="p-1"></div>
+        {order.bundles && (
+          <div className="mt-4">
+            <Sheet>
+              <SheetTrigger>
+                <div className="flex items-center space-x-2">
+                  <RecordDisplay label="Bundle ID" value={order.bundles.id} />
+                  <Card className="flex w-fit cursor-pointer items-center border p-3 text-sm">
+                    <ArrowRight className="h-4 w-4" />
+                  </Card>
+                </div>
+              </SheetTrigger>
+              <DashboardBundleDetailSheet bundle={order.bundles} />
+            </Sheet>
+          </div>
+        )}
+        <div className="">
+          <RecordDisplay label="Order ID" value={order.id} />
+          {order.status === "PENDING" && (
+            <Button
+              onClick={() => {
+                router.push(`/add?orderId=${order.id}`);
+              }}
+              variant={"outline"}
+              className="mt-4"
+            >
+              Accept Manually
+            </Button>
+          )}
+        </div>
+      </div>
+
       <div className="grid gap-4 py-4">
         {order.instagram_post_urls.map((url, index) => {
           const uri = new URL(url);

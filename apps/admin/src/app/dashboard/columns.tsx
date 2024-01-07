@@ -34,7 +34,7 @@ export const columns: ColumnDef<CompleteOrders>[] = [
     accessorKey: "image",
     id: "image",
     header: ({ table }) => (
-      <div className={"flex w-40 items-center space-x-4"}>
+      <div className={"flex w-40 items-center space-x-4 pointer-cursor"}>
         <Checkbox
           checked={table.getIsAllPageRowsSelected()}
           onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}

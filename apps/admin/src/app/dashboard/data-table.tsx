@@ -403,7 +403,7 @@ export function DataTable<TData, TValue>({
           </Button>
 
           <>
-            <Card className={"hidden items-center justify-center lg:flex "}>
+            <Card className={"hidden items-center justify-center lg:flex"}>
               <DashboardSelectedRowDisplayCard
                 data={dataQuery.data?.rows}
                 rowSelection={rowSelection}

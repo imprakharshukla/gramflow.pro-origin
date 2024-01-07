@@ -8,12 +8,18 @@ export default async function HomePage() {
     url: env.UPSTASH_URL,
     token: env.UPSTASH_TOKEN,
   });
-  const areBundlesAvailable = await redis.get<boolean>("bundles");
-  console.log({areBundlesAvailable});
+  let areBundlesAvailable = false;
+  console.log({ env: env.ENV });
+  if (env.ENV === "dev") {
+    areBundlesAvailable = true;
+  } else {
+    areBundlesAvailable = (await redis.get<boolean>("bundles")) ?? false;
+    console.log({ areBundlesAvailable });
+  }
   return (
     <HeroSection
       props={{
-        areBundlesAvailable: areBundlesAvailable ?? false,
+        areBundlesAvailable: areBundlesAvailable,
       }}
     />
   );

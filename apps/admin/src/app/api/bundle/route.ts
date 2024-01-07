@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { auth } from "@clerk/nextjs";
+import { Redis } from "@upstash/redis";
 import { z } from "zod";
 
 import { Status } from "@gramflow/db";
@@ -8,6 +9,11 @@ import { AppConfig } from "@gramflow/utils/config.mjs";
 import { env } from "~/env.mjs";
 import { prisma } from "~/lib/prismaClient";
 
+const redis = new Redis({
+  url: env.UPSTASH_URL,
+  token: env.UPSTASH_TOKEN,
+});
+const areBundlesAvailable = await redis.get<boolean>("bundles");
 const baseUrl =
   env.ENV === "dev" ? "http://localhost:3000" : AppConfig.BaseAdminUrl;
 
@@ -43,7 +49,7 @@ export async function POST(req: Request) {
     }
 
     const randomString = Math.random().toString(36).substring(2, 6);
-    const fakeOrderUrl = `https://www.instagram.com/p/prebooking${randomString}/?img_index=0&price=${validated.price}`;
+    const fakeOrderUrl = `https://www.instagram.com/p/bundles${randomString}/?img_index=0&price=${validated.price}`;
 
     // Transform the orders array into the format expected by your API
     const requestBody = {
@@ -142,6 +148,25 @@ export async function PUT(req: Request) {
       });
       return NextResponse.json({ success: true });
     }
+  } catch (e) {
+    console.log({ e });
+    return NextResponse.json({ error: "Something went wrong", status: 500 });
+  }
+}
+
+export async function OPTIONS(req: Request) {
+  const { userId }: { userId: string | null } = auth();
+  if (!userId) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  const { searchParams } = new URL(req.url);
+  const areBundlesEnabled = searchParams.get("bundles_enabled") ?? "";
+  console.log({ areBundlesEnabled });
+  const bundlesEnabled = areBundlesEnabled === "true";
+  try {
+    await redis.set("bundles", bundlesEnabled);
+    return NextResponse.json({ success: true });
   } catch (e) {
     console.log({ e });
     return NextResponse.json({ error: "Something went wrong", status: 500 });

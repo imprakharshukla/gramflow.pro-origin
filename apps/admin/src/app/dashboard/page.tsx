@@ -11,10 +11,12 @@ import {
   Text,
   Title,
 } from "@tremor/react";
+import { Redis } from "@upstash/redis";
 import { format } from "date-fns";
 import { useAtom } from "jotai";
 
 import { OrderTable } from "~/app/dashboard/components/orderTableComponent";
+import { env } from "~/env.mjs";
 import { prisma } from "~/lib/prismaClient";
 import { currentTabAtom } from "~/stores/dashboardStore";
 import KpiCards from "./components/analytics/kpiCards";
@@ -41,13 +43,19 @@ const checkIfPickupToday = async () => {
 
 const pickupToday = await checkIfPickupToday();
 
-export default function Dashboard({
+export default async function Dashboard({
   searchParams,
 }: {
   searchParams?: { [key: string]: string | string[] | undefined };
 }) {
   // get search params from the page:
   console.log({ searchParams });
+
+  const redis = new Redis({
+    url: env.UPSTASH_URL,
+    token: env.UPSTASH_TOKEN,
+  });
+  const areBundlesAvailable = (await redis.get<boolean>("bundles")) ?? false;
 
   //  const [currentDashboardTab, setCurrentDashboardTab] = useAtom(currentTabAtom);
 
@@ -76,7 +84,7 @@ export default function Dashboard({
 
         <TabGroup
           className="mt-6"
-          defaultIndex={1}
+          defaultIndex={2}
           // index={currentDashboardTab}
           // onIndexChange={setCurrentDashboardTab}
         >
@@ -104,7 +112,7 @@ export default function Dashboard({
               <OrderTable searchOrderId={searchOrderId} />
             </TabPanel>
             <TabPanel>
-              <BundlesTable searchBundleId={searchBundleId} />
+              <BundlesTable areBundlesAvailable={areBundlesAvailable} />
             </TabPanel>
           </TabPanels>
         </TabGroup>

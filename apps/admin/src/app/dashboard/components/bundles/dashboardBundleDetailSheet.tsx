@@ -9,7 +9,7 @@ import { COURIER, Status } from "@prisma/client";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Badge as StatusBadge, type Color } from "@tremor/react";
 import { format } from "date-fns";
-import { Loader2, ShareIcon, X } from "lucide-react";
+import { ArrowRight, ChevronRightSquare, Loader2, X } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
@@ -33,15 +33,19 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
+  Separator,
+  Sheet,
   SheetContent,
   SheetDescription,
   SheetFooter,
   SheetHeader,
   SheetTitle,
 } from "@gramflow/ui";
-import { SheetClose } from "@gramflow/ui/src/sheet";
+import { SheetClose, SheetTrigger } from "@gramflow/ui/src/sheet";
 import { AppConfig } from "@gramflow/utils";
 import { OrderShippingUpdateSchema } from "@gramflow/utils/src/schema";
+
+import { DashboardOrderDetailSheet } from "../dashboardOrderDetailSheet";
 
 export const RecordDisplay = ({
   label,
@@ -55,11 +59,11 @@ export const RecordDisplay = ({
   onClick?: () => void;
 }) => (
   <Card
-    className={`flex cursor-pointer items-center border p-3 text-sm ${className}`}
+    className={`flex w-fit cursor-pointer items-center border p-3 text-sm ${className}`}
     {...restProps}
   >
     <Label className={"border-r pr-2"}>{label}</Label>
-    <p className="ml-2 text-xs text-muted-foreground">{value}</p>
+    <p className="ml-2 text-sm text-muted-foreground lg:text-base">{value}</p>
   </Card>
 );
 
@@ -135,14 +139,19 @@ export function AcceptForm({
               <FormLabel>Price</FormLabel>
               <FormDescription>Enter the price of the bundle.</FormDescription>
               <FormControl>
-                <Input placeholder="Price" type="number" {...field} />
+                <Input
+                  disabled={acceptLoading}
+                  placeholder="Price"
+                  type="number"
+                  {...field}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
           )}
         />
-        <Button type="submit">
-          {acceptLoading && <Loader />}
+        <Button disabled={acceptLoading} type="submit">
+          {acceptLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
           Accept
         </Button>
       </form>
@@ -155,7 +164,6 @@ export function DashboardBundleDetailSheet({
 }: {
   bundle: CompleteBundles;
 }) {
-  const router = useRouter();
   return (
     <SheetContent
       side={"top"}
@@ -170,14 +178,11 @@ export function DashboardBundleDetailSheet({
           </SheetClose>
         </div>
         <SheetTitle>Manage Bundle</SheetTitle>
-        <SheetDescription>
-          <div className="flex items-center justify-between gap-4">
-            <span className={"break-all text-xs text-muted-foreground"}>
-              {bundle.id}
-            </span>
-          </div>
-        </SheetDescription>
+        <SheetDescription>{bundle.id}</SheetDescription>
       </SheetHeader>
+      <div className="py-3">
+        <Separator />
+      </div>
       <div className="flex items-center space-x-4">
         <StatusBadge
           size="xs"
@@ -195,7 +200,7 @@ export function DashboardBundleDetailSheet({
         </StatusBadge>
       </div>
 
-      <div className={"flex space-x-3"}>
+      <div className={"flex flex-wrap space-x-3"}>
         {bundle.images.map((image) => (
           <Image
             key={image}
@@ -212,20 +217,19 @@ export function DashboardBundleDetailSheet({
         <div className="p-1"></div>
         {bundle.Orders && (
           <div className="mt-4">
-            <RecordDisplay
-              onClick={() => {
-                router.push(`/dashboard?order_id=${bundle.Orders?.id}`);
-              }}
-              label="Order ID"
-              value={bundle.Orders.id}
-            />
+            <Sheet>
+              <SheetTrigger>
+                <div className="flex items-center space-x-2">
+                  <RecordDisplay label="Order ID" value={bundle.Orders.id} />
+                  <Card className="flex w-fit cursor-pointer items-center border p-3 text-sm">
+                    <ArrowRight className="h-4 w-4" />
+                  </Card>
+                </div>
+              </SheetTrigger>
+              <DashboardOrderDetailSheet order={bundle.Orders} />
+            </Sheet>
           </div>
         )}
-        <RecordDisplay label="Bundle ID" value={bundle.id} />
-        {/* <RecordDisplay
-          label="Size"
-          value={`${order.length} cm x ${order.breadth} cm x ${order.height} cm @ ${order.weight} gm`}
-        /> */}
         <RecordDisplay
           label="Date"
           value={format(
@@ -233,6 +237,24 @@ export function DashboardBundleDetailSheet({
             "dd/MM/yy, hh:mm a",
           )}
         />
+        <Separator className={"my-3"} />
+        <RecordDisplay label="Bundle ID" value={bundle.id} />
+        <RecordDisplay label="Description" value={bundle.bundle_description} />
+        <RecordDisplay label="Aesthetic" value={bundle.aesthetics} />
+        {bundle.aesthetics === "other" && (
+          <RecordDisplay label="" value={bundle.other_aesthetics} />
+        )}
+        <RecordDisplay label="Dislikes" value={bundle.fashion_dislikes} />
+        <a href={bundle.link_input} target="_blank" rel="noopener noreferrer">
+          <RecordDisplay label="Link" value={bundle.link_input} />
+        </a>
+        <Separator className={"my-2"} />
+        <RecordDisplay label="Top Size" value={bundle.top_size} />
+        <RecordDisplay label="Bottom Size" value={bundle.waist} />
+        <RecordDisplay label="Bottom Length" value={bundle.length} />
+
+        <Separator className={"my-2"} />
+
         <>
           {bundle.user && (
             <div className="grid gap-4 py-4">

@@ -17,11 +17,11 @@ export function DashboardNavigation() {
   const router = useRouter();
   return (
     <div className="flex space-x-3">
-      <Button>
+      <UiButton>
         <Link href="/new" rel="noopener noreferrer" target="_blank">
           Create Order
         </Link>
-      </Button>
+      </UiButton>
       <DropdownMenu>
         <DropdownMenuTrigger>
           <UiButton variant="outline">
