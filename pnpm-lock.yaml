@@ -1,9 +1,5 @@
 lockfileVersion: '6.0'
 
-settings:
-  autoInstallPeers: true
-  excludeLinksFromLockfile: false
-
 importers:
 
   .:
@@ -154,10 +150,13 @@ importers:
         version: 0.13.0
       jest:
         specifier: ^29.6.4
-        version: 29.6.4(@types/node@18.16.5)
+        version: 29.6.4(@types/node@20.10.6)
       jest-environment-jsdom:
         specifier: ^29.6.4
         version: 29.6.4
+      jotai:
+        specifier: ^2.6.1
+        version: 2.6.1(@types/react@18.2.47)(react@18.2.0)
       lucide-react:
         specifier: ^0.216.0
         version: 0.216.0(react@18.2.0)
@@ -183,13 +182,13 @@ importers:
         specifier: ^1.96.1
         version: 1.96.1
       react:
-        specifier: '18'
+        specifier: ^18.2.0
         version: 18.2.0
       react-confetti:
         specifier: ^6.1.0
         version: 6.1.0(react@18.2.0)
       react-dom:
-        specifier: '18'
+        specifier: ^18.2.0
         version: 18.2.0(react@18.2.0)
       react-hook-form:
         specifier: ^7.45.4
@@ -232,14 +231,14 @@ importers:
         specifier: ^29.5.4
         version: 29.5.4
       '@types/node':
-        specifier: ^18.16.5
-        version: 18.16.5
+        specifier: ^20.10.6
+        version: 20.10.6
       '@types/react':
-        specifier: ^18.2.33
-        version: 18.2.33
+        specifier: ^18.2.47
+        version: 18.2.47
       '@types/react-dom':
-        specifier: ^18.2.14
-        version: 18.2.14
+        specifier: ^18.2.18
+        version: 18.2.18
       autoprefixer:
         specifier: ^10.4.14
         version: 10.4.14(postcss@8.4.23)
@@ -361,13 +360,13 @@ importers:
         specifier: ^1.96.1
         version: 1.96.1
       react:
-        specifier: '18'
+        specifier: ^18.2.0
         version: 18.2.0
       react-confetti:
         specifier: ^6.1.0
         version: 6.1.0(react@18.2.0)
       react-dom:
-        specifier: '18'
+        specifier: ^18.2.0
         version: 18.2.0(react@18.2.0)
       react-hook-form:
         specifier: ^7.45.4
@@ -395,17 +394,17 @@ importers:
         specifier: workspace:*
         version: link:../../packages/config/eslint
       '@types/node':
-        specifier: ^18.16.5
-        version: 18.16.5
+        specifier: ^20.10.6
+        version: 20.10.6
       '@types/node-telegram-bot-api':
         specifier: ^0.61.7
         version: 0.61.7
       '@types/react':
-        specifier: ^18.2.6
-        version: 18.2.6
+        specifier: ^18.2.47
+        version: 18.2.47
       '@types/react-dom':
-        specifier: ^18.2.4
-        version: 18.2.4
+        specifier: ^18.2.18
+        version: 18.2.18
       admin:
         specifier: ^1.4.1
         version: 1.4.1
@@ -5195,7 +5194,7 @@ packages:
       chalk: 3.0.0
       css.escape: 1.5.1
       dom-accessibility-api: 0.5.16
-      jest: 29.6.4(@types/node@18.16.5)
+      jest: 29.6.4(@types/node@20.10.6)
       lodash: 4.17.21
       redent: 3.0.0
     dev: false
@@ -5209,7 +5208,7 @@ packages:
     dependencies:
       '@babel/runtime': 7.22.11
       '@testing-library/dom': 9.3.1
-      '@types/react-dom': 18.2.14
+      '@types/react-dom': 18.2.18
       react: 18.2.0
       react-dom: 18.2.0(react@18.2.0)
     dev: false
@@ -5638,7 +5637,7 @@ packages:
   /@types/keyv@3.1.4:
     resolution: {integrity: sha512-BQ5aZNSCpj7D6K2ksrRCTmKRLEpnPvWDiLPfoGyhZ++8YtiK9d/3DBKPJgry359X/P1PfruyYwvnvwFjuEiEIg==}
     dependencies:
-      '@types/node': 20.8.9
+      '@types/node': 18.16.5
     dev: false
 
   /@types/mailgun-js@0.22.13:
@@ -5681,11 +5680,10 @@ packages:
   /@types/node@18.16.5:
     resolution: {integrity: sha512-seOA34WMo9KB+UA78qaJoCO20RJzZGVXQ5Sh6FWu0g/hfT44nKXnej3/tCQl7FL97idFpBhisLYCTB50S0EirA==}
 
-  /@types/node@20.8.9:
-    resolution: {integrity: sha512-UzykFsT3FhHb1h7yD4CA4YhBHq545JC0YnEz41xkipN88eKQtL6rSgocL5tbAP6Ola9Izm/Aw4Ora8He4x0BHg==}
+  /@types/node@20.10.6:
+    resolution: {integrity: sha512-Vac8H+NlRNNlAmDfGUP7b5h/KA+AtWIzuXy0E6OyP8f1tCLYAtPvKRRDJjAPqhpCb0t6U2j7/xqAuLEebW2kiw==}
     dependencies:
       undici-types: 5.26.5
-    dev: false
 
   /@types/normalize-package-data@2.4.3:
     resolution: {integrity: sha512-ehPtgRgaULsFG8x0NeYJvmyH1hmlfsNLujHe9dQEia/7MAJYdzMSi19JtchUHjmBA6XC/75dK55mzZH+RyieSg==}
@@ -5713,19 +5711,19 @@ packages:
     resolution: {integrity: sha512-+0autS93xyXizIYiyL02FCY8N+KkKPhILhcUSA276HxzreZ16kl+cmwvV2qAM/PuCCwPXzOXOWhiPcw20uSFcA==}
     dev: false
 
-  /@types/react-dom@18.2.14:
-    resolution: {integrity: sha512-V835xgdSVmyQmI1KLV2BEIUgqEuinxp9O4G6g3FqO/SqLac049E53aysv0oEFD2kHfejeKU+ZqL2bcFWj9gLAQ==}
+  /@types/react-dom@18.2.18:
+    resolution: {integrity: sha512-TJxDm6OfAX2KJWJdMEVTwWke5Sc/E/RlnPGvGfS0W7+6ocy2xhDVQVh/KvC2Uf7kACs+gDytdusDSdWfWkaNzw==}
     dependencies:
-      '@types/react': 18.2.33
+      '@types/react': 18.2.47
 
   /@types/react-dom@18.2.4:
     resolution: {integrity: sha512-G2mHoTMTL4yoydITgOGwWdWMVd8sNgyEP85xVmMKAPUBwQWm9wBPQUmvbeF4V3WBY1P7mmL4BkjQ0SqUpf1snw==}
     dependencies:
-      '@types/react': 18.2.6
+      '@types/react': 18.2.47
     dev: true
 
-  /@types/react@18.2.33:
-    resolution: {integrity: sha512-v+I7S+hu3PIBoVkKGpSYYpiBT1ijqEzWpzQD62/jm4K74hPpSP7FF9BnKG6+fg2+62weJYkkBWDJlZt5JO/9hg==}
+  /@types/react@18.2.47:
+    resolution: {integrity: sha512-xquNkkOirwyCgoClNk85BjP+aqnIS+ckAJ8i37gAbDs14jfW/J23f2GItAf33oiUPQnqNMALiFeoM9Y5mbjpVQ==}
     dependencies:
       '@types/prop-types': 15.7.9
       '@types/scheduler': 0.16.5
@@ -5750,7 +5748,7 @@ packages:
   /@types/responselike@1.0.0:
     resolution: {integrity: sha512-85Y2BjiufFzaMIlvJDvTTB8Fxl2xfLo4HgmHzVBz08w4wDePCTjYw66PdrolO0kzli3yam/YCgRufyo1DdQVTA==}
     dependencies:
-      '@types/node': 20.8.9
+      '@types/node': 18.16.5
     dev: false
 
   /@types/retry@0.12.0:
@@ -9645,7 +9643,7 @@ packages:
       - supports-color
     dev: false
 
-  /jest-cli@29.6.4(@types/node@18.16.5):
+  /jest-cli@29.6.4(@types/node@20.10.6):
     resolution: {integrity: sha512-+uMCQ7oizMmh8ZwRfZzKIEszFY9ksjjEQnTEMTaL7fYiL3Kw4XhqT9bYh+A4DQKUb67hZn2KbtEnDuHvcgK4pQ==}
     engines: {node: ^14.15.0 || ^16.10.0 || >=18.0.0}
     hasBin: true
@@ -9662,7 +9660,7 @@ packages:
       exit: 0.1.2
       graceful-fs: 4.2.11
       import-local: 3.1.0
-      jest-config: 29.6.4(@types/node@18.16.5)
+      jest-config: 29.6.4(@types/node@20.10.6)
       jest-util: 29.6.3
       jest-validate: 29.6.3
       prompts: 2.4.2
@@ -9690,6 +9688,46 @@ packages:
       '@jest/test-sequencer': 29.6.4
       '@jest/types': 29.6.3
       '@types/node': 18.16.5
+      babel-jest: 29.6.4(@babel/core@7.23.0)
+      chalk: 4.1.2
+      ci-info: 3.8.0
+      deepmerge: 4.3.1
+      glob: 7.2.3
+      graceful-fs: 4.2.11
+      jest-circus: 29.6.4
+      jest-environment-node: 29.6.4
+      jest-get-type: 29.6.3
+      jest-regex-util: 29.6.3
+      jest-resolve: 29.6.4
+      jest-runner: 29.6.4
+      jest-util: 29.6.3
+      jest-validate: 29.6.3
+      micromatch: 4.0.5
+      parse-json: 5.2.0
+      pretty-format: 29.6.3
+      slash: 3.0.0
+      strip-json-comments: 3.1.1
+    transitivePeerDependencies:
+      - babel-plugin-macros
+      - supports-color
+    dev: false
+
+  /jest-config@29.6.4(@types/node@20.10.6):
+    resolution: {integrity: sha512-JWohr3i9m2cVpBumQFv2akMEnFEPVOh+9L2xIBJhJ0zOaci2ZXuKJj0tgMKQCBZAKA09H049IR4HVS/43Qb19A==}
+    engines: {node: ^14.15.0 || ^16.10.0 || >=18.0.0}
+    peerDependencies:
+      '@types/node': '*'
+      ts-node: '>=9.0.0'
+    peerDependenciesMeta:
+      '@types/node':
+        optional: true
+      ts-node:
+        optional: true
+    dependencies:
+      '@babel/core': 7.23.0
+      '@jest/test-sequencer': 29.6.4
+      '@jest/types': 29.6.3
+      '@types/node': 20.10.6
       babel-jest: 29.6.4(@babel/core@7.23.0)
       chalk: 4.1.2
       ci-info: 3.8.0
@@ -10013,7 +10051,7 @@ packages:
       supports-color: 8.1.1
     dev: false
 
-  /jest@29.6.4(@types/node@18.16.5):
+  /jest@29.6.4(@types/node@20.10.6):
     resolution: {integrity: sha512-tEFhVQFF/bzoYV1YuGyzLPZ6vlPrdfvDmmAxudA1dLEuiztqg2Rkx20vkKY32xiDROcD2KXlgZ7Cu8RPeEHRKw==}
     engines: {node: ^14.15.0 || ^16.10.0 || >=18.0.0}
     hasBin: true
@@ -10026,7 +10064,7 @@ packages:
       '@jest/core': 29.6.4
       '@jest/types': 29.6.3
       import-local: 3.1.0
-      jest-cli: 29.6.4(@types/node@18.16.5)
+      jest-cli: 29.6.4(@types/node@20.10.6)
     transitivePeerDependencies:
       - '@types/node'
       - babel-plugin-macros
@@ -10049,6 +10087,22 @@ packages:
 
   /jose@4.14.4:
     resolution: {integrity: sha512-j8GhLiKmUAh+dsFXlX1aJCbt5KMibuKb+d7j1JaOJG6s2UjX1PQlW+OKB/sD4a/5ZYF4RcmYmLSndOoU3Lt/3g==}
+    dev: false
+
+  /jotai@2.6.1(@types/react@18.2.47)(react@18.2.0):
+    resolution: {integrity: sha512-GLQtAnA9iEKRMXnyCjf1azIxfQi5JausX2EI5qSlb59j4i73ZEyV/EXPDEAQj4uQNZYEefi3degv/Pw3+L/Dtg==}
+    engines: {node: '>=12.20.0'}
+    peerDependencies:
+      '@types/react': '>=17.0.0'
+      react: '>=17.0.0'
+    peerDependenciesMeta:
+      '@types/react':
+        optional: true
+      react:
+        optional: true
+    dependencies:
+      '@types/react': 18.2.47
+      react: 18.2.0
     dev: false
 
   /jquery@3.7.0:
@@ -13525,7 +13579,6 @@ packages:
 
   /undici-types@5.26.5:
     resolution: {integrity: sha512-JlCMO+ehdEIKqlFxk6IfVoAUVmgz7cU7zD/h9XZ0qzeosSHmUJVOzSQvvYSYWXkFXC+IfLKSIffhv0sVZup6pA==}
-    dev: false
 
   /universal-user-agent@6.0.0:
     resolution: {integrity: sha512-isyNax3wXoKaulPDZWHQqbmIx1k2tb9fb3GGDBRxCscfYV2Ch7WxPArBsFEG8s/safwXTT7H4QGhaIkTp9447w==}
@@ -14140,3 +14193,7 @@ packages:
   /zod@3.22.3:
     resolution: {integrity: sha512-EjIevzuJRiRPbVH4mGc8nApb/lVLKVpmUhAaR5R5doKGfAnGJ6Gr3CViAVjP+4FWSxCsybeWQdcgCtbX+7oZug==}
     dev: false
+
+settings:
+  autoInstallPeers: true
+  excludeLinksFromLockfile: false

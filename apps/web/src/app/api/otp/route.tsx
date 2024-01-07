@@ -13,11 +13,11 @@ export async function GET(req: Request) {
   try {
     const { searchParams } = new URL(req.url);
     const email = searchParams.get("email") ?? "";
-    const order_id = searchParams.get("order_id");
+    const order_id = searchParams.get("order_id") ?? "";
 
     const otpSchema = z.object({
       email: z.string().email(),
-      order_id: z.string().uuid().nullable(),
+      order_id: z.string(),
     });
 
     otpSchema.parse({ email, order_id });
@@ -30,7 +30,7 @@ export async function GET(req: Request) {
       data: {
         email: email,
         otp: otp,
-        order_id: "",
+        order_id: order_id,
         expires: new Date(new Date().getTime() + 5 * 60 * 1000),
       },
     });

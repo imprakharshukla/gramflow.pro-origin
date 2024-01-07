@@ -12,9 +12,11 @@ import {
   Title,
 } from "@tremor/react";
 import { format } from "date-fns";
+import { useAtom } from "jotai";
 
 import { OrderTable } from "~/app/dashboard/components/orderTableComponent";
 import { prisma } from "~/lib/prismaClient";
+import { currentTabAtom } from "~/stores/dashboardStore";
 import KpiCards from "./components/analytics/kpiCards";
 import NumberOfOrdersChart from "./components/analytics/numberOfOrderChart";
 import RevenueChart from "./components/analytics/revenueChart";
@@ -47,6 +49,8 @@ export default function Dashboard({
   // get search params from the page:
   console.log({ searchParams });
 
+  //  const [currentDashboardTab, setCurrentDashboardTab] = useAtom(currentTabAtom);
+
   const searchOrderId = Array.isArray(searchParams?.order_id)
     ? searchParams?.order_id.join(",")
     : searchParams?.order_id ?? null;
@@ -70,7 +74,12 @@ export default function Dashboard({
           <DashboardNavigation />
         </div>
 
-        <TabGroup className="mt-6" defaultIndex={1}>
+        <TabGroup
+          className="mt-6"
+          defaultIndex={1}
+          // index={currentDashboardTab}
+          // onIndexChange={setCurrentDashboardTab}
+        >
           <TabList>
             <Tab>Analytics</Tab>
             <Tab>Orders</Tab>

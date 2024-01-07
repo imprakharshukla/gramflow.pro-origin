@@ -19,7 +19,6 @@ export const OrdersModel = z.object({
   height: z.string().nullish(),
   weight: z.string().nullish(),
   shipping_cost: z.number().nullish(),
-  bundle: z.boolean(),
   bundle_id: z.string().nullish(),
 })
 

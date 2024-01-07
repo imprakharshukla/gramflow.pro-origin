@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { type ColumnDef } from "@tanstack/react-table";
@@ -43,9 +44,6 @@ export const columns: ColumnDef<CompleteOrders>[] = [
       </div>
     ),
     cell: ({ row }) => {
-      const [orderDetailSheetOpen, setOrderDetailSheetOpen] = useAtom(
-        isOrderDetailOpenAtom,
-      );
       return (
         <div>
           {
@@ -58,11 +56,7 @@ export const columns: ColumnDef<CompleteOrders>[] = [
               />
 
               <div className={"relative"}>
-                <Sheet
-                  key={row.id}
-                  // open={orderDetailSheetOpen}
-                  // onOpenChange={setOrderDetailSheetOpen}
-                >
+                <Sheet key={row.id}>
                   <SheetTrigger asChild className={""}>
                     <div>
                       {/*// row.original.images.map((image, index) => (*/}

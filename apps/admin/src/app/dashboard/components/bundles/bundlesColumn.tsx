@@ -44,9 +44,7 @@ export const columns: ColumnDef<CompleteBundles>[] = [
       </div>
     ),
     cell: ({ row }) => {
-      const [bundleSheetOpen, setBundleSheetOpen] = useAtom(
-        isBundleDetailOpenAtom,
-      );
+    
       return (
         <div>
           {
@@ -61,8 +59,6 @@ export const columns: ColumnDef<CompleteBundles>[] = [
               <div className={"relative"}>
                 <Sheet
                   key={row.id}
-                  open={bundleSheetOpen}
-                  onOpenChange={setBundleSheetOpen}
                 >
                   <SheetTrigger asChild className={""}>
                     <div>

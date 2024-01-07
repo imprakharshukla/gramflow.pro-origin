@@ -31,15 +31,18 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
+  Sheet,
   SheetContent,
   SheetDescription,
   SheetFooter,
   SheetHeader,
   SheetTitle,
 } from "@gramflow/ui";
-import { SheetClose } from "@gramflow/ui/src/sheet";
+import { SheetClose, SheetTrigger } from "@gramflow/ui/src/sheet";
 import { AppConfig } from "@gramflow/utils";
 import { OrderShippingUpdateSchema } from "@gramflow/utils/src/schema";
+
+import { DashboardBundleDetailSheet } from "./bundles/dashboardBundleDetailSheet";
 
 export const RecordDisplay = ({
   label,
@@ -376,14 +379,51 @@ export function DashboardOrderDetailSheet({
       >
         {order.status}
       </StatusBadge>
-      <RecordDisplay
-        onClick={() => {
-          router.push(`/dashboard?bundle_id=${order.bundles?.id}`);
-        }}
-        className="my-5"
-        label="Bundle ID"
-        value={order.bundles?.id ?? "N/A"}
-      />
+
+      {order.bundles && (
+        <Sheet>
+          <SheetTrigger>
+            <RecordDisplay
+              className="my-5"
+              label="Bundle ID"
+              value={order.bundles?.id ?? "N/A"}
+            />
+          </SheetTrigger>
+          {/* <SheetContent
+          side={"top"}
+          className={"max-h-screen overflow-y-scroll pb-20"}
+        >
+          <SheetHeader className="sticky top-0 bg-background pb-4 pt-6 dark:bg-background">
+            <div className="flex justify-end">
+              <SheetClose>
+                <Button variant={"ghost"}>
+                  <X className="h-4 w-4" />
+                </Button>
+              </SheetClose>
+            </div>
+            <SheetTitle>Manage Bundle</SheetTitle>
+            <SheetDescription>
+              <div className="flex items-center justify-between gap-4">
+                <span className={"break-all text-xs text-muted-foreground"}>
+                  {}
+                </span>
+                <div>
+                  <Button
+                    onClick={handleShareButton}
+                    size={"sm"}
+                    variant={"outline"}
+                  >
+                    <ShareIcon className="h-4 w-4" />
+                  </Button>
+                </div>
+              </div>
+            </SheetDescription>
+          </SheetHeader>
+        </SheetContent> */}
+          <DashboardBundleDetailSheet bundle={order.bundles} />
+        </Sheet>
+      )}
+
       <div className={"flex space-x-3"}>
         {order.images.map((image) => (
           <Image
