@@ -1,6 +1,6 @@
 import * as z from "zod"
 import { Status } from "@prisma/client"
-import { CompleteUsers, RelatedUsersModel } from "./index"
+import { CompleteUsers, RelatedUsersModel, CompleteOrders, RelatedOrdersModel } from "./index"
 
 export const BundlesModel = z.object({
   id: z.string(),
@@ -22,6 +22,7 @@ export const BundlesModel = z.object({
 
 export interface CompleteBundles extends z.infer<typeof BundlesModel> {
   user?: CompleteUsers | null
+  Orders?: CompleteOrders | null
 }
 
 /**
@@ -31,4 +32,5 @@ export interface CompleteBundles extends z.infer<typeof BundlesModel> {
  */
 export const RelatedBundlesModel: z.ZodSchema<CompleteBundles> = z.lazy(() => BundlesModel.extend({
   user: RelatedUsersModel.nullish(),
+  Orders: RelatedOrdersModel.nullish(),
 }))

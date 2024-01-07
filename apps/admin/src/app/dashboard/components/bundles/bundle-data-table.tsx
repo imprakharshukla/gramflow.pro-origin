@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useUser } from "@clerk/nextjs";
 import { Status } from "@prisma/client";
 import { useMutation, useQuery } from "@tanstack/react-query";
@@ -19,7 +19,6 @@ import {
   type Table as TsTable,
 } from "@tanstack/react-table";
 import { addDays, format, set, subDays } from "date-fns";
-import { useAtom } from "jotai";
 import {
   CalendarIcon,
   ChevronLeftIcon,
@@ -32,7 +31,7 @@ import {
 import { toast } from "sonner";
 import { date } from "zod";
 
-import { type CompleteOrders } from "@gramflow/db/prisma/zod";
+import { CompleteBundles, type CompleteOrders } from "@gramflow/db/prisma/zod";
 import {
   Button,
   Calendar,
@@ -64,21 +63,16 @@ import {
 } from "@gramflow/ui";
 import { AppConfig, cn } from "@gramflow/utils";
 
-import {
-  isOrderDetailOpenAtom,
-  searchBundleIdAtom,
-  searchOrderIdAtom,
-} from "~/stores/dashboardStore";
-import DashboardBulkOptionsSelectComponent from "./components/dashboadBulkOptionsSelect";
-import DashboardBulkCsvDownloadButton from "./components/dashboardBulkCsvDownloadButton";
-import DashboardConfirmModal from "./components/dashboardConfirmModal";
-import DashboardSelectedRowDisplayCard from "./components/dashboardSelectedRowDisplayCard";
+import DashboardConfirmModal from "../dashboardConfirmModal";
+import DashboardBundlesBulkOptionsSelectComponent from "./dashboardBundlesBulkSelectComponent";
+// import DashboardBulkCsvDownloadButton from "../../components/dashboardBulkCsvDownloadButton";
+// import DashboardConfirmModal from "../../components/dashboardConfirmModal";
+import DashboardBundlesSelectedRowDisplayCard from "./dashboardBundlesSelectedRowDisplayCard";
 
 type SearchParamKey = keyof typeof SearchParams;
 
 export const SearchParams = {
   Order_ID: "id",
-  AWB: "awb",
   Email: "user.email",
   Name: "user.name",
   Username: "user.instagram_username",
@@ -94,12 +88,15 @@ export interface DataTableProps<TData, TValue> {
 
 export type NullableVoidFunction = (() => void) | null;
 interface ResponseType {
-  orders: CompleteOrders[];
+  orders: CompleteBundles[];
   count: number;
 }
 export function DataTable<TData, TValue>({
   columns,
-}: DataTableProps<TData, TValue>) {
+  searchBundleId,
+}: DataTableProps<TData, TValue> & {
+  searchBundleId: string | null | undefined;
+}) {
   const { user } = useUser();
 
   const [sorting, setSorting] = useState<SortingState>([]);
@@ -134,43 +131,13 @@ export function DataTable<TData, TValue>({
   const [selectedStatus, setSelectedStatus] = useState<Status | "All">("All");
   const [searchParam, setSearchParam] = useState(SearchParams.Order_ID);
 
-  const { mutate: createPickupMutation, isLoading: createPickupLoading } =
-    useMutation(
-      async (data: { pickup_date: Date; expected_package_count: number }) => {
-        const response = await fetch("/api/pickup", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ order_ids: getSelectedOrderIds(), ...data }),
-        });
-
-        if (response.ok) {
-          return response.json();
-        } else {
-          const error = await response.json();
-          console.log(error);
-          throw new Error(error.error);
-        }
-      },
-      {
-        onSuccess: (data) => {
-          toast.success("Pickup request created successfully");
-          setPickupDialogOpen(false);
-        },
-        onError: (error: any) => {
-          toast.error("" + error);
-        },
-      },
-    );
-
   const fetchData = async (options: {
     pageIndex: number;
     pageSize: number;
     search: string;
   }) => {
     const response = await fetch(
-      `/api/admin?page=${pageIndex}&pageSize=${pageSize}&search=${options.search}`,
+      `/api/bundles?page=${pageIndex}&pageSize=${pageSize}&search=${options.search}`,
     );
     if (response.ok) {
       const data = (await response.json()) as ResponseType;
@@ -184,7 +151,7 @@ export function DataTable<TData, TValue>({
   };
 
   const dataQuery = useQuery(
-    ["allOrders", fetchDataOptions],
+    ["allBundles", fetchDataOptions],
     () => fetchData(fetchDataOptions),
     { keepPreviousData: true },
   );
@@ -282,26 +249,21 @@ export function DataTable<TData, TValue>({
     getSelectedOrderIds().length,
   );
 
-  const searchInputRef = useRef<HTMLInputElement>(null);
-
-  const [searchOrderId, setSearchOrderId] = useAtom(searchOrderIdAtom);
-  const [_, setIsOrderDetailOpenAtom] = useAtom(isOrderDetailOpenAtom);
   useEffect(() => {
-    if (searchOrderId) {
-      setSearchTerm(searchOrderId);
-      toast.info(`Finding ${searchParam} ${searchOrderId}`);
-      table.getColumn(searchParam)?.setFilterValue(searchOrderId);
-      setIsOrderDetailOpenAtom(false);
+    if (searchBundleId) {
+      setSearchTerm(searchBundleId);
+      toast.info(`Finding ${searchParam} ${searchBundleId}`);
+      table.getColumn(searchParam)?.setFilterValue(searchBundleId);
     }
-  }, [searchOrderId]);
+  }, [searchBundleId]);
+
   useEffect(() => {
     table
       .getAllColumns()
       .filter(
         (column) =>
-          column.id === "awb" ||
-          column.id === "user.phone_number" ||
-          column.id === "user.email",
+          // column.id === "awb" ||
+          column.id === "user.phone_number" || column.id === "user.email",
       )
       .map((column) => {
         column.toggleVisibility(false);
@@ -316,7 +278,7 @@ export function DataTable<TData, TValue>({
         onConfirmFunction={onConfirmFunction}
       ></DashboardConfirmModal>
       <Card className={"flex w-fit items-center justify-center lg:hidden"}>
-        <DashboardSelectedRowDisplayCard
+        <DashboardBundlesSelectedRowDisplayCard
           data={dataQuery.data?.rows}
           rowSelection={rowSelection}
         />
@@ -371,7 +333,6 @@ export function DataTable<TData, TValue>({
             placeholder={`Search with ${Object.keys(SearchParams)
               .find((key) => SearchParams[key] === searchParam)
               ?.replace("_", " ")}`}
-            ref={searchInputRef}
             value={
               (table.getColumn(searchParam)?.getFilterValue() as string) ?? ""
             }
@@ -404,12 +365,12 @@ export function DataTable<TData, TValue>({
 
           <>
             <Card className={"hidden items-center justify-center lg:flex "}>
-              <DashboardSelectedRowDisplayCard
+              <DashboardBundlesSelectedRowDisplayCard
                 data={dataQuery.data?.rows}
                 rowSelection={rowSelection}
-              ></DashboardSelectedRowDisplayCard>
+              ></DashboardBundlesSelectedRowDisplayCard>
             </Card>
-            <DashboardBulkOptionsSelectComponent
+            <DashboardBundlesBulkOptionsSelectComponent
               advancedDisabled={advancedDisabled}
               getSelectedOrderIds={getSelectedOrderIds}
               setConfirmMessage={setConfirmMessage}
@@ -419,108 +380,7 @@ export function DataTable<TData, TValue>({
               data={dataQuery.data?.rows}
               setPickupDialogOpen={setPickupDialogOpen}
               setLoading={setLoading}
-            ></DashboardBulkOptionsSelectComponent>
-            <Dialog onOpenChange={setPickupDialogOpen} open={pickupDialogOpen}>
-              <DialogContent>
-                <DialogHeader>
-                  <DialogTitle>Create a Pickup Request</DialogTitle>
-                  <DialogDescription>
-                    Select a date on which you want to pickup the orders.
-                  </DialogDescription>
-                  <div className="grid gap-4 py-4">
-                    <Label>Pickup Date</Label>
-                    <Popover>
-                      <PopoverTrigger asChild>
-                        <Button
-                          variant={"outline"}
-                          className={cn(
-                            "w-[280px] justify-start text-left font-normal",
-                            !date && "text-muted-foreground",
-                          )}
-                        >
-                          <CalendarIcon className="mr-2 h-4 w-4" />
-                          {date ? (
-                            format(date, "PPP")
-                          ) : (
-                            <span>Pick a date</span>
-                          )}
-                        </Button>
-                      </PopoverTrigger>
-                      <PopoverContent className="w-auto p-0">
-                        <Calendar
-                          mode="single"
-                          disabled={[
-                            {
-                              before: new Date(
-                                new Date().toLocaleString("en-US", {
-                                  timeZone: "Asia/Kolkata",
-                                }),
-                              ),
-                              after: new Date(
-                                new Date(
-                                  new Date().getTime() +
-                                    7 * 24 * 60 * 60 * 1000,
-                                ).toLocaleString("en-US", {
-                                  timeZone: "Asia/Kolkata",
-                                }),
-                              ),
-                            },
-                            new Date().getHours() >= 14 ? new Date() : null,
-                          ]}
-                          selected={date}
-                          onSelect={setDate}
-                          initialFocus
-                          timeZone="Asia/Kolkata"
-                        />
-                      </PopoverContent>
-                    </Popover>
-                    <Label>Estimated Package Count</Label>
-                    <Input
-                      className={cn(
-                        "w-[280px] justify-start text-left font-normal",
-                        !date && "text-muted-foreground",
-                      )}
-                      type="number"
-                      value={estimatedPackageCount}
-                      onChange={(event) => {
-                        const value = event.target.value;
-                        if (value !== "0") {
-                          setEstimatedPackageCount(Number(value));
-                          // Update the state or perform any other necessary actions
-                        }
-                      }}
-                      placeholder="Estimated Package Count"
-                    />
-                  </div>
-                </DialogHeader>
-                <DialogFooter>
-                  <Button
-                    onClick={() => {
-                      createPickupMutation({
-                        pickup_date: date,
-                        expected_package_count: estimatedPackageCount,
-                      });
-                    }}
-                  >
-                    {createPickupLoading ? (
-                      <Loader2 className="h-4 w-4 animate-spin" />
-                    ) : (
-                      "Create Pickup"
-                    )}
-                  </Button>
-                </DialogFooter>
-              </DialogContent>
-            </Dialog>
-
-            {table.getFilteredSelectedRowModel().rows.length > 0 && (
-              <DashboardBulkCsvDownloadButton
-                advandcedDisabled={advancedDisabled}
-                getSelectedOrderIds={getSelectedOrderIds}
-                setConfirmMessage={setConfirmMessage}
-                setShowConfirmation={setShowConfirmation}
-                setOnConfirmFunction={setOnConfirmFunction}
-              ></DashboardBulkCsvDownloadButton>
-            )}
+            ></DashboardBundlesBulkOptionsSelectComponent>
           </>
         </div>
       </div>

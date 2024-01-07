@@ -70,6 +70,7 @@ model Bundles {
   images             String[]
   created_at         DateTime @default(now())
   updated_at         DateTime @updatedAt
+  Orders             Orders?
 }
 
 model Orders {
@@ -91,7 +92,8 @@ model Orders {
   weight              String?   @default("0")
   shipping_cost       Float?    @default(0.0)
   pickup              Pickups[]
-
+  bundle_id           String?   @unique
+  bundles             Bundles?  @relation(fields: [bundle_id], references: [id])
   @@index([user_id, id])
 }
 

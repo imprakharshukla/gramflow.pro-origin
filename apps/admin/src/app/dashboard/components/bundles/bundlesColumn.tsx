@@ -8,7 +8,7 @@ import { format } from "date-fns";
 import { useAtom } from "jotai";
 import { ArrowUpDown, ExternalLink } from "lucide-react";
 
-import { type CompleteOrders } from "@gramflow/db/prisma/zod";
+import { type CompleteBundles } from "@gramflow/db/prisma/zod";
 import {
   Badge,
   Button,
@@ -21,14 +21,15 @@ import {
 } from "@gramflow/ui";
 import { AppConfig } from "@gramflow/utils";
 
-import { isOrderDetailOpenAtom } from "~/stores/dashboardStore";
+import { isBundleDetailOpenAtom } from "~/stores/dashboardStore";
+import Dashboard from "../../page";
 import {
-  DashboardOrderDetailSheet,
-  orderStatus,
+  DashboardBundleDetailSheet,
   pillColors,
-} from "./components/dashboardOrderDetailSheet";
+  sizePillColors,
+} from "./dashboardBundleDetailSheet";
 
-export const columns: ColumnDef<CompleteOrders>[] = [
+export const columns: ColumnDef<CompleteBundles>[] = [
   {
     accessorKey: "image",
     id: "image",
@@ -43,8 +44,8 @@ export const columns: ColumnDef<CompleteOrders>[] = [
       </div>
     ),
     cell: ({ row }) => {
-      const [orderDetailSheetOpen, setOrderDetailSheetOpen] = useAtom(
-        isOrderDetailOpenAtom,
+      const [bundleSheetOpen, setBundleSheetOpen] = useAtom(
+        isBundleDetailOpenAtom,
       );
       return (
         <div>
@@ -60,8 +61,8 @@ export const columns: ColumnDef<CompleteOrders>[] = [
               <div className={"relative"}>
                 <Sheet
                   key={row.id}
-                  // open={orderDetailSheetOpen}
-                  // onOpenChange={setOrderDetailSheetOpen}
+                  open={bundleSheetOpen}
+                  onOpenChange={setBundleSheetOpen}
                 >
                   <SheetTrigger asChild className={""}>
                     <div>
@@ -78,19 +79,23 @@ export const columns: ColumnDef<CompleteOrders>[] = [
                       {/*// ))*/}
                       {
                         //todo do something to display multiple images
-                        row.original.images[0] && (
+                        row.original.images[0] ? (
                           <Image
                             alt={"product_image"}
                             src={row.original.images[0]}
                             width={100}
-                            height={100}
+                            height={50}
                             className="rounded-md"
                           />
+                        ) : (
+                          <p className="mx-auto w-full rounded-md text-center font-medium">
+                            No Image
+                          </p>
                         )
                       }
                     </div>
                   </SheetTrigger>
-                  <DashboardOrderDetailSheet order={row.original} />
+                  <DashboardBundleDetailSheet bundle={row.original} />
                 </Sheet>
               </div>
             </div>
@@ -102,42 +107,20 @@ export const columns: ColumnDef<CompleteOrders>[] = [
     minSize: 800,
   },
   {
-    accessorKey: "number_of_items",
-    id: "number_of_items",
-    header: () => <div className={"w-12"}>Items</div>,
+    accessorKey: "bundle_size",
+    header: "Size",
     cell: ({ row }) => {
-      const height = row.original.height;
-      const length = row.original.length;
-      const weight = row.original.weight;
-      const breadth = row.original.breadth;
-      let packageSize = "Custom";
-      Object.entries(AppConfig.DefaultPackageDetails).forEach(
-        ([key, value]) => {
-          if (
-            value.height === height &&
-            value.length === length &&
-            value.weight === weight &&
-            value.breadth === breadth
-          ) {
-            packageSize = key;
-          }
-        },
-      );
       return (
         <div
           className={"flex flex-col items-center justify-center gap-2 text-xs"}
         >
-          <p>{row.original.images.length}</p>
           <StatusBadge
             size="xs"
-            // color={
-            //   packageSize == "Custom"
-            //     ? "gray"
-            //     : (pillColors[row.original.status] as Color)
-            // }
+            color={sizePillColors[row.original.bundle_size] as Color}
             className={"text-xs font-medium"}
           >
-            {packageSize.slice(0, 1) + packageSize.slice(1).toLowerCase()}
+            {row.original.bundle_size.slice(0, 1).toUpperCase() +
+              row.original.bundle_size.slice(1).toLowerCase()}
           </StatusBadge>
         </div>
       );
@@ -177,24 +160,6 @@ export const columns: ColumnDef<CompleteOrders>[] = [
         <div
           className={"flex flex-col items-center justify-center gap-2 text-xs"}
         >
-          {row.original.prebook && (
-            <StatusBadge
-              size="xs"
-              // color={"fuchsia" as Color}
-              className={"text-xs font-medium"}
-            >
-              Prebook
-            </StatusBadge>
-          )}
-          {row.original.bundles && (
-            <StatusBadge
-              size="xs"
-              color={"fuchsia" as Color}
-              className={"text-xs font-medium"}
-            >
-              Bundle
-            </StatusBadge>
-          )}
           <StatusBadge
             size="xs"
             color={pillColors[row.original.status] as Color}
@@ -203,52 +168,6 @@ export const columns: ColumnDef<CompleteOrders>[] = [
             {row.original.status.slice(0, 1) +
               row.original.status.slice(1).toLowerCase()}
           </StatusBadge>
-        </div>
-      );
-    },
-  },
-  {
-    accessorKey: "price",
-    header: () => <div className={"w-16"}>Price</div>,
-    cell: ({ row }) => {
-      // fetch the price from the instagram_post_urls in which they are like this: https://www.instagram.com/p/CPQX0Y3nZ6I/?price=100 by adding all the prices of all the products in the array
-      return (
-        <div className={"flex items-center justify-center break-keep text-sm"}>
-          ₹ {new Intl.NumberFormat("en-IN").format(row.original.price)}
-        </div>
-      );
-    },
-  },
-  {
-    id: "awb",
-    header: "AWB",
-    accessorKey: "awb",
-    cell: ({ row }) => {
-      return (
-        <div className={"flex items-center justify-center text-sm"}>
-          {row.original.awb}
-        </div>
-      );
-    },
-  },
-  {
-    id: "user.phone_number",
-    accessorKey: "phone_number",
-    cell: ({ row }) => {
-      return (
-        <div className={"flex items-center justify-center text-sm"}>
-          {row.original.user?.phone_no}
-        </div>
-      );
-    },
-  },
-  {
-    id: "user.email",
-    accessorKey: "email",
-    cell: ({ row }) => {
-      return (
-        <div className={"flex items-center justify-center text-sm"}>
-          {row.original.user?.email}
         </div>
       );
     },
@@ -267,7 +186,7 @@ export const columns: ColumnDef<CompleteOrders>[] = [
   },
   {
     accessorKey: "id",
-    header: () => <div className={"w-48"}>Order ID</div>,
+    header: () => <div className={"w-48 text-center"}>Bundle ID</div>,
     cell: ({ row }) => {
       const input = row.original.id;
       let short = input;
@@ -284,11 +203,6 @@ export const columns: ColumnDef<CompleteOrders>[] = [
                 <p className={"break-all text-sm text-muted-foreground"}>
                   {row.original.id}
                 </p>
-                <Link
-                  href={`${AppConfig.BaseOrderUrl}/order/${row.original.id}`}
-                >
-                  <Button variant={"outline"}>Open Link</Button>
-                </Link>
               </div>
             </PopoverContent>
           </Popover>
@@ -299,7 +213,7 @@ export const columns: ColumnDef<CompleteOrders>[] = [
   {
     accessorKey: "user.instagram_username",
     id: "user.instagram_username",
-    header: () => <div className={"w-32"}>Instagram User</div>,
+    header: () => <div className={"w-32 text-center"}>Instagram User</div>,
     cell: ({ row }) => {
       const instagram_user_id = row.original.user?.instagram_username;
       return (

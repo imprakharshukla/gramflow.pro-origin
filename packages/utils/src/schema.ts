@@ -4,6 +4,7 @@ import { z } from "zod";
 export const AddOrderPostSchema = z.object({
   instagram_post_urls: z.string().array(),
   prebook: z.boolean().default(false),
+  bundle_id: z.string().optional(),
   images: z.string().array().optional(),
   size: z.object({
     length: z.string(),
@@ -100,6 +101,13 @@ export const UpdateOrderWeightAndSizePutSchema = z.object({
   breadth: z.string().optional(),
   height: z.string().optional(),
   weight: z.string().optional(),
+});
+
+export const UpdateBundlePutSchema = z.object({
+  
+  
+  status: z.nativeEnum(Status).optional(),
+
 });
 
 export const OrderShippingUpdateSchema = z.object({

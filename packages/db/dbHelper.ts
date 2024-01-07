@@ -1,16 +1,17 @@
-import { PrismaClient, Status } from "@prisma/client";
 import { z } from "zod";
 
 import { AppConfig } from "@gramflow/utils";
 import {
   OrderShippingUpdateSchema,
   ShippingCostResponseSchema,
+  UpdateBundlePutSchema,
   UpdateOrderWeightAndSizePutSchema,
   type AddOrderPostSchema,
   type UserSchema,
 } from "@gramflow/utils/src/schema";
 
 import { env } from "~/env.mjs";
+import { PrismaClient, Status } from "./index";
 import { fetchImageUrls } from "./instagramHelper";
 
 const prisma = new PrismaClient();
@@ -132,6 +133,7 @@ export const getAllOrdersWithPagination = async ({
   const orders = await prisma.orders.findMany({
     include: {
       user: true,
+      bundles: true,
     },
     orderBy: {
       created_at: "desc",
@@ -145,10 +147,48 @@ export const getAllOrdersWithPagination = async ({
     count,
   };
 };
+
+export const getAllBundlesWithPagination = async ({
+  page,
+  pageSize,
+}: {
+  page: number;
+  pageSize: number;
+}) => {
+  const offset = page * pageSize;
+  const orders = await prisma.bundles.findMany({
+    include: {
+      user: true,
+      Orders: true
+    },
+    orderBy: {
+      created_at: "desc",
+    },
+    skip: offset,
+    take: pageSize,
+  });
+  const count = await prisma.bundles.count();
+  return {
+    orders,
+    count,
+  };
+};
 export const getAllOrders = async () => {
   return prisma.orders.findMany({
     include: {
       user: true,
+      bundles: true,
+    },
+    orderBy: {
+      created_at: "desc",
+    },
+  });
+};
+export const getAllBundles = async () => {
+  return prisma.bundles.findMany({
+    include: {
+      user: true,
+      Orders: true,
     },
     orderBy: {
       created_at: "desc",
@@ -185,6 +225,11 @@ export const deleteOtp = async (id: string) => {
 
 export const OrderShippingUpdateSchemaWithOrderId =
   UpdateOrderWeightAndSizePutSchema.extend({
+    id: z.string().uuid(),
+  });
+
+export const BundleShippingUpdateSchemaWithOrderId =
+  UpdateBundlePutSchema.extend({
     id: z.string().uuid(),
   });
 
@@ -256,6 +301,20 @@ export const updateOrderStatus = async (
     },
   });
 };
+export const updateBundleStatus = async (
+  order: z.infer<typeof BundleShippingUpdateSchemaWithOrderId>,
+) => {
+  const { id, ...rest } = order;
+
+  return prisma.orders.update({
+    where: {
+      id: id,
+    },
+    data: {
+      status: rest.status !== undefined ? rest.status : undefined,
+    },
+  });
+};
 export const checkIfAnyOrderContainsProducts = async (
   order: z.infer<typeof AddOrderPostSchema>,
 ) => {
@@ -282,6 +341,7 @@ export const addOrder = async (
   return prisma.orders.create({
     data: {
       prebook: order.prebook,
+      bundle_id: order.bundle_id,
       instagram_post_urls: order.instagram_post_urls,
       images: mediaUrls,
       length: size.length,

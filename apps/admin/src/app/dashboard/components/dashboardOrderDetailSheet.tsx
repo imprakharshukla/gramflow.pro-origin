@@ -376,6 +376,14 @@ export function DashboardOrderDetailSheet({
       >
         {order.status}
       </StatusBadge>
+      <RecordDisplay
+        onClick={() => {
+          router.push(`/dashboard?bundle_id=${order.bundles?.id}`);
+        }}
+        className="my-5"
+        label="Bundle ID"
+        value={order.bundles?.id ?? "N/A"}
+      />
       <div className={"flex space-x-3"}>
         {order.images.map((image) => (
           <Image
