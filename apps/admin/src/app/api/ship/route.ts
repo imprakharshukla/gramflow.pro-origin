@@ -108,8 +108,6 @@ export async function PUT(req: Request) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const user = await currentUser();
-
   try {
     //get data from request
     // @ts-ignore

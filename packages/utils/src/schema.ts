@@ -14,8 +14,7 @@ export const AddOrderPostSchema = z.object({
   }),
 });
 
-
-  export const bundleFormSchema = z.object({
+export const bundleFormSchema = z.object({
   name: z.string().min(1),
   email: z.string().email(),
   otp: z.string(),
@@ -60,8 +59,8 @@ export const AddOrderPostSchema = z.object({
   bundleDescription: z.string(),
 });
 
-
 export const OrderPageOrderFetchSchema = z.object({
+  bundle_id: z.string().nullable(),
   id: z.string().uuid(),
   images: z.string().array(),
   awb: z.string().nullish(),
@@ -104,10 +103,7 @@ export const UpdateOrderWeightAndSizePutSchema = z.object({
 });
 
 export const UpdateBundlePutSchema = z.object({
-  
-  
   status: z.nativeEnum(Status).optional(),
-
 });
 
 export const OrderShippingUpdateSchema = z.object({
@@ -166,7 +162,6 @@ export const OrderSchemaCSV = z.object({
 });
 
 export const CSVSchema = z.array(OrderSchemaCSV);
-
 
 export const ShippingCostResponseSchema = z.array(
   z.object({

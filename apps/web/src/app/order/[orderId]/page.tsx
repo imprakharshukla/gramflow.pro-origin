@@ -3,8 +3,8 @@ import { Status } from "@prisma/client";
 
 import { db as prisma } from "@gramflow/db";
 
-import OrderManager from "./components/OrderManagerComponent";
 import Order404Component from "./components/Order404Component";
+import OrderManager from "./components/OrderManagerComponent";
 
 export default async function Order({
   params,
@@ -16,6 +16,7 @@ export default async function Order({
       id: params.orderId,
     },
     select: {
+      bundle_id: true,
       id: true,
       status: true,
       images: true,
@@ -23,7 +24,7 @@ export default async function Order({
     },
   });
   console.log(order);
-  if(!order) {
+  if (!order) {
     return <Order404Component />;
   }
   return (

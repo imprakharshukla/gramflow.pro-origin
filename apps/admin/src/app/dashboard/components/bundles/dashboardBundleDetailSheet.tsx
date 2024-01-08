@@ -250,7 +250,7 @@ export function DashboardBundleDetailSheet({
         </a>
         <Separator className={"my-2"} />
         <RecordDisplay label="Top Size" value={bundle.top_size} />
-        <RecordDisplay label="Bottom Size" value={bundle.waist} />
+        <RecordDisplay label="Bottom Waist" value={bundle.waist} />
         <RecordDisplay label="Bottom Length" value={bundle.length} />
 
         <Separator className={"my-2"} />

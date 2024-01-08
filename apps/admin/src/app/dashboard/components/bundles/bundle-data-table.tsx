@@ -141,9 +141,13 @@ export function DataTable<TData, TValue>({
     );
     if (response.ok) {
       const data = (await response.json()) as ResponseType;
+      //filter the rows that have been accepted and created into orders
+      const filteredData = data.orders.filter((order) => {
+        return order.status === Status.PENDING;
+      });
       return {
-        rows: data.orders,
-        pageCount: Math.ceil(data.count / options.pageSize),
+        rows: filteredData,
+        pageCount: Math.ceil(filteredData.length / options.pageSize),
       };
     } else {
       throw new Error("Something went wrong");

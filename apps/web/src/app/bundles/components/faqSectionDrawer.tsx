@@ -47,7 +47,7 @@ export const FAQSectionDrawer = ({
               {/* Title */}
               {/* <div className="mx-auto mb-10 max-w-2xl text-center lg:mb-14">
               <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-200 md:text-3xl md:leading-tight">
-                Frequently Asked Questions
+                Frequently Asked Questions 
               </h2>
               <Separator className={"my-4"} />
             </div> */}

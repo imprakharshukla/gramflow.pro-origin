@@ -39,8 +39,8 @@ export default function functionOrderPendingComponent({
                 className={
                   "mt-5 rounded-md text-sm font-medium text-gray-600 shadow-sm ring-1 ring-gray-900/5 transition-all hover:shadow-lg active:shadow-sm"
                 }
-                width={100}
-                height={100}
+                width={150}
+                height={150}
                 src={image}
                 alt={"Item Picture"}
               />
