@@ -133,7 +133,11 @@ export const getAllOrdersWithPagination = async ({
   const orders = await prisma.orders.findMany({
     include: {
       user: true,
-      bundles: true,
+      bundles: {
+        include: {
+          user: true,
+        },
+      },
     },
     orderBy: {
       created_at: "desc",
@@ -159,7 +163,7 @@ export const getAllBundlesWithPagination = async ({
   const orders = await prisma.bundles.findMany({
     include: {
       user: true,
-      Orders: true
+      Orders: true,
     },
     orderBy: {
       created_at: "desc",

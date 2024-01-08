@@ -264,10 +264,12 @@ export function DashboardBundleDetailSheet({
                 value={`+91 ${bundle.user?.phone_no}`}
               />
               <RecordDisplay label="Email" value={bundle.user?.email} />
+              <a href={bundle.user?.instagram_username} target="_blank" rel="noopener noreferrer">
               <RecordDisplay
                 label={"Buyer's Username"}
                 value={`${bundle.user?.instagram_username}`}
               />
+              </a>
             </div>
           )}
         </>
