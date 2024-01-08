@@ -26,6 +26,10 @@ const config = {
       },
       {
         protocol: "https",
+        hostname: `${AppConfig.Domain}`,
+      },
+      {
+        protocol: "https",
         hostname: `utfs.io`,
       },
       {
@@ -33,7 +37,7 @@ const config = {
         hostname: "**.cdninstagram.com",
       },
     ],
-    domains: ["localhost", "cdn.discordapp.com", `images.${AppConfig.Domain}`],
+    domains: ["localhost", "cdn.discordapp.com", `images.${AppConfig.Domain}`, `${AppConfig.Domain}`],
   },
   reactStrictMode: true,
   /** Enables hot reloading for local packages without a build step */
