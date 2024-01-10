@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 
 import { db } from "@gramflow/db";
-import { upsertUser } from "@gramflow/db/dbHelper";
+import { addUserIfNotExists } from "@gramflow/db/dbHelper";
 import { bundleFormSchema } from "@gramflow/utils/src/schema";
 
 export async function POST(req: Request) {
@@ -11,7 +11,7 @@ export async function POST(req: Request) {
     const validated = bundleFormSchema.parse(body);
     console.log({ validated });
 
-    const userReq = await upsertUser({
+    const userReq = await addUserIfNotExists({
       state: "",
       name: validated.name,
       instagram_username: validated.instagramUsername,
@@ -26,7 +26,7 @@ export async function POST(req: Request) {
     });
     console.log({
       user_id: userReq.id,
-    })
+    });
     const bundle = await db.bundles.create({
       data: {
         user_id: userReq.id,

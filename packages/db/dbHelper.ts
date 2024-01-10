@@ -372,3 +372,19 @@ export const upsertUser = async (user: z.infer<typeof UserSchema>) => {
     },
   });
 };
+
+export const addUserIfNotExists = async (user: z.infer<typeof UserSchema>) => {
+  const userFromDB = await prisma.users.findUnique({
+    where: {
+      email: user.email,
+    },
+  });
+  if (!userFromDB) {
+    return prisma.users.create({
+      data: {
+        ...user,
+      },
+    });
+  }
+  return userFromDB;
+};
