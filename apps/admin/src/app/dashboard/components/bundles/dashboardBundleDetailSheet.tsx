@@ -192,11 +192,18 @@ export function DashboardBundleDetailSheet({
             </SheetClose>
           </div>
           <div className="flex flex-col space-y-2 text-left">
-            <div className="flex items-center gap-x-3">
-              <SheetTitle>
-                {bundle.id.replace(/^(.{8}).+(.{8})$/, "$1").toUpperCase()}
-              </SheetTitle>
-            </div>
+           <div className="flex items-center gap-3">
+            <SheetTitle>
+              {bundle.id.replace(/^(.{8}).+(.{8})$/, "$1").toUpperCase()}
+            </SheetTitle>
+            <StatusBadge
+              size="xs"
+              color={pillColors[bundle.status] as Color}
+              className={"text-xs font-medium"}
+            >
+              {bundle.status.slice(0, 1) + bundle.status.slice(1).toLowerCase()}
+            </StatusBadge>
+          </div>
             <div
               onClick={async () => {
                 if (navigator.clipboard) {
