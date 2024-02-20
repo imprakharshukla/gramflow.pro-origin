@@ -1,4 +1,5 @@
 "use client";
+"use client";
 
 import { useState } from "react";
 import Image from "next/image";
@@ -6,7 +7,6 @@ import Link from "next/link";
 import { type ColumnDef } from "@tanstack/react-table";
 import { Badge as StatusBadge, type Color } from "@tremor/react";
 import { format } from "date-fns";
-import { useAtom } from "jotai";
 import { ArrowUpDown, ExternalLink } from "lucide-react";
 
 import { type CompleteOrders } from "@gramflow/db/prisma/zod";
@@ -14,13 +14,17 @@ import {
   Badge,
   Button,
   Checkbox,
+  Drawer,
+  DrawerContent,
+  DrawerTrigger,
   Popover,
   PopoverContent,
   PopoverTrigger,
   Sheet,
   SheetTrigger,
+  useMediaQuery,
 } from "@gramflow/ui";
-import { AppConfig } from "@gramflow/utils";
+import { AppConfig, cn } from "@gramflow/utils";
 
 import { isOrderDetailOpenAtom } from "~/stores/dashboardStore";
 import {
@@ -34,7 +38,7 @@ export const columns: ColumnDef<CompleteOrders>[] = [
     accessorKey: "image",
     id: "image",
     header: ({ table }) => (
-      <div className={"flex w-40 items-center space-x-4 pointer-cursor"}>
+      <div className={"pointer-cursor flex w-40 items-center space-x-4"}>
         <Checkbox
           checked={table.getIsAllPageRowsSelected()}
           onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
@@ -53,39 +57,34 @@ export const columns: ColumnDef<CompleteOrders>[] = [
                 checked={row.getIsSelected()}
                 onCheckedChange={(value) => row.toggleSelected(!!value)}
                 aria-label="Select row"
+                F
               />
 
               <div className={"relative"}>
-                <Sheet key={row.id}>
-                  <SheetTrigger asChild className={""}>
-                    <div>
-                      {/*// row.original.images.map((image, index) => (*/}
-                      {/*// <Image*/}
-                      {/*//     key={index}*/}
-                      {/*//     className={`absolute top-0 left-0 mt-${6 * index} ml-${6 * index} hover:shadow-outline cursor-pointer`}*/}
-                      {/*//     src={image}*/}
-                      {/*//     alt={`product_image_${index}`}*/}
-                      {/*//     width={100}*/}
-                      {/*//     height={100}*/}
-                      {/*//     style={{zIndex: row.original.images.length - index}}*/}
-                      {/*//   />*/}
-                      {/*// ))*/}
-                      {
-                        //todo do something to display multiple images
-                        row.original.images[0] && (
-                          <Image
-                            alt={"product_image"}
-                            src={row.original.images[0]}
-                            width={100}
-                            height={100}
-                            className="rounded-md"
-                          />
-                        )
-                      }
-                    </div>
-                  </SheetTrigger>
-                  <DashboardOrderDetailSheet order={row.original} />
-                </Sheet>
+               
+                { // only pass the open prop if is the   firstttt row
+              
+                  <Sheet>
+                    <SheetTrigger asChild className={""}>
+                      <div>
+
+                        {
+                          //todo do something to display multiple images
+                          row.original.images[0] && (
+                            <Image
+                              alt={"product_image"}
+                              src={row.original.images[0]}
+                              width={100}
+                              height={100}
+                              className="rounded-md"
+                            />
+                          )
+                        }
+                      </div>
+                    </SheetTrigger>
+                    <DashboardOrderDetailSheet order={row.original} />
+                  </Sheet>
+                }
               </div>
             </div>
           }

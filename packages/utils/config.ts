@@ -4,6 +4,7 @@ export type GramflowConfig = {
   MasterEmails: string[];
   AdminEmails: string[];
   StoreName: string;
+  StoreShortName: string;
   logo: string;
   ReturnAddress: {
     house_number: string;

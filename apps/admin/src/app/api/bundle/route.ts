@@ -54,7 +54,7 @@ export async function POST(req: Request) {
     // Transform the orders array into the format expected by your API
     const requestBody = {
       instagram_post_urls: [fakeOrderUrl],
-      images: ["https://reskinn.store/bundle_og.png"],
+      images: [`${AppConfig.BaseStoreUrl}/bundle_og.png`],
       prebook: false,
       bundle: true,
       bundle_id: validated.id,

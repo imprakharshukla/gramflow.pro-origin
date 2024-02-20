@@ -35,7 +35,7 @@ import {
   Separator,
   Textarea,
 } from "@gramflow/ui";
-import { cn } from "@gramflow/utils";
+import { AppConfig, cn } from "@gramflow/utils";
 import { bundleFormSchema } from "@gramflow/utils/src/schema";
 
 import { fontSerif } from "~/lib/fonts";
@@ -320,7 +320,7 @@ export default function BundleForm() {
         {formStage == FormState.Success && (
           <div>
             <p className="md:text-md text-start text-sm md:text-center">
-              Thank you so much for your interest in Reskinn Bundles! We'll get
+              Thank you so much for your interest in {AppConfig.StoreName} Bundles! We'll get
               back to you soon.
             </p>
             <div className="lg:text-md flex items-center justify-start text-sm md:justify-center md:text-base">

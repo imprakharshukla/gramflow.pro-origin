@@ -10,6 +10,7 @@ import { toast } from "sonner";
 import { Button, Separator } from "@gramflow/ui";
 
 import { FAQSectionDrawer } from "~/app/bundles/components/faqSectionDrawer";
+import { AppConfig } from "@gramflow/utils";
 
 export default function HeroSection({
   props,
@@ -41,7 +42,7 @@ export default function HeroSection({
           <FAQSectionDrawer
             faqItems={[
               {
-                question: "What is Reskinn?",
+                question: `What is ${AppConfig.StoreName}?`,
                 answer:
                   "We are a thrift store that sources clothes for various styles and sizes.",
               },
@@ -92,7 +93,7 @@ export default function HeroSection({
 
             <div className="mx-auto mt-5 max-w-3xl text-center">
               <p className="text-lg text-gray-600 dark:text-gray-400">
-                Reskinn Store is your one-stop thrift store for all your
+                {AppConfig.StoreName} is your one-stop thrift store for all your
                 thrifting needs.
               </p>
             </div>
@@ -134,7 +135,7 @@ export default function HeroSection({
                   <div className="flex flex-wrap">
                     <div className="flex h-full flex-col p-4 sm:p-5">
                       <h3 className="not-prose text-lg font-bold text-gray-800 no-underline dark:text-white">
-                        Reskinn Bundles
+                        {AppConfig.StoreShortName} Bundles
                       </h3>
                       <p className="not-prose mt-1 text-gray-500 no-underline dark:text-gray-400">
                         Book your very own bundle of clothes and accessories
