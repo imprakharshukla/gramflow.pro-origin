@@ -1,21 +1,10 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { useAtom } from "jotai";
-
 import { columns } from "~/app/dashboard/columns";
 import { DataTable } from "~/app/dashboard/data-table";
-import { searchOrderIdAtom } from "~/stores/dashboardStore";
 
-export const OrderTable = ({
-  searchOrderId,
-}: {
-  searchOrderId: string | null | undefined;
-}) => {
-  const [_, setSearchOrderIdVal] = useAtom(searchOrderIdAtom);
-  if (searchOrderId) {
-    setSearchOrderIdVal(searchOrderId);
-  }
+export const OrderTable = ({}: {}) => {
   return (
     <motion.div
       initial={{ opacity: 0 }}

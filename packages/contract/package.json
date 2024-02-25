@@ -1,0 +1,17 @@
+{
+  "name": "@gramflow/contract",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.ts",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@gramflow/db": "workspace:^",
+    "@ts-rest/core": "^3.33.0",
+    "zod": "^3.22.4"
+  }
+}

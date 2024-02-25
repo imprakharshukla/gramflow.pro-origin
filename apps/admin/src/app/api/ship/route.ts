@@ -138,6 +138,32 @@ export async function PUT(req: Request) {
       const products: string[] = [];
       let totalPrice = 0;
       order.instagram_post_urls.map((url) => {
+        const getPostIdAndImageIndex = (
+          url: string,
+        ): {
+          postId: string;
+          imageIndex: string;
+        } => {
+          const regex = /\/p\/([A-Za-z0-9-_]+)\/\?img_index=(\d+)/;
+          const match = url.match(regex);
+          console.log({ match, url });
+          if (match) {
+            const postID = match[1];
+            const imageIndex = match[2];
+
+            console.log({ postID, imageIndex });
+            return {
+              postId: postID ?? "P",
+              imageIndex: imageIndex ?? "(0)",
+            };
+          } else {
+            return {
+              postId: "",
+              imageIndex: "",
+            };
+          }
+        };
+
         const { postId, imageIndex } = getPostIdAndImageIndex(url);
         products.push(`${postId}(${imageIndex})`);
         const uri = new URL(url);

@@ -125,10 +125,20 @@ export const GetOtp = async (id: string) => {
 export const getAllOrdersWithPagination = async ({
   page,
   pageSize,
+  to,
+  from,
 }: {
   page: number;
   pageSize: number;
+  from: Date;
+  to: Date;
 }) => {
+  const fromDateRange = new Date(from).toISOString()
+  const toDateRange = new Date(to).toISOString()
+  console.log({fromDateRange, toDateRange})
+  console.log({
+    from, to
+  })
   const offset = page * pageSize;
   const orders = await prisma.orders.findMany({
     include: {
@@ -139,13 +149,27 @@ export const getAllOrdersWithPagination = async ({
         },
       },
     },
+    where: {
+      created_at: {
+        gte: fromDateRange,
+        lte: toDateRange
+      },
+    },
     orderBy: {
       created_at: "desc",
     },
     skip: offset,
     take: pageSize,
   });
-  const count = await prisma.orders.count();
+  const count = await prisma.orders.count({
+    where: {
+      created_at: {
+        gte: fromDateRange,
+        lte: toDateRange,
+      },
+    },
+  });
+ 
   return {
     orders,
     count,

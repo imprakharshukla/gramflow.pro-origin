@@ -1,7 +1,7 @@
 import { PrismaClient } from '@gramflow/db'
 
 const prismaClientSingleton = () => {
-  return new PrismaClient()
+  return new PrismaClient( )
 }
 
 type PrismaClientSingleton = ReturnType<typeof prismaClientSingleton>

@@ -22,9 +22,6 @@ import {
 import { useForm } from "react-hook-form";
 import { ImPinterest2 } from "react-icons/im";
 import { toast } from "sonner";
-
-import "yet-another-react-lightbox/styles.css";
-import "yet-another-react-lightbox/plugins/thumbnails.css";
 import { z } from "zod";
 
 import { CompleteBundles, type CompleteOrders } from "@gramflow/db/prisma/zod";

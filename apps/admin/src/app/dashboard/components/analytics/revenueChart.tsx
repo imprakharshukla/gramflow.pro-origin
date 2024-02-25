@@ -3,7 +3,7 @@ import { AreaChart, Text, Title } from "@tremor/react";
 import { prisma } from "~/lib/prismaClient";
 
 export default async function RevenueChart() {
-  //   const [dateRange, setDateRange] = useState([new Date(), new Date()]);
+
 
   const numberOfDays = 20;
 

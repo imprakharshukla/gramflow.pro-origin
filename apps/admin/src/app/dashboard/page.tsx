@@ -18,7 +18,6 @@ import { useAtom } from "jotai";
 import { OrderTable } from "~/app/dashboard/components/orderTableComponent";
 import { env } from "~/env.mjs";
 import { prisma } from "~/lib/prismaClient";
-import { currentTabAtom } from "~/stores/dashboardStore";
 import KpiCards from "./components/analytics/kpiCards";
 import NumberOfOrdersChart from "./components/analytics/numberOfOrderChart";
 import RevenueChart from "./components/analytics/revenueChart";
@@ -50,25 +49,17 @@ export default async function Dashboard({
 }) {
   // get search params from the page:
   console.log({ searchParams });
+  const currentTab = searchParams?.tab as string ?? '1';
 
   const redis = new Redis({
     url: env.UPSTASH_URL,
     token: env.UPSTASH_TOKEN,
   });
   const areBundlesAvailable = (await redis.get<boolean>("bundles")) ?? false;
-
-  //  const [currentDashboardTab, setCurrentDashboardTab] = useAtom(currentTabAtom);
-
-  const searchOrderId = Array.isArray(searchParams?.order_id)
-    ? searchParams?.order_id.join(",")
-    : searchParams?.order_id ?? null;
-  const searchBundleId = Array.isArray(searchParams?.bundle_id)
-    ? searchParams?.bundle_id.join(",")
-    : searchParams?.bundle_id ?? null;
   return (
     <>
       {pickupToday && (
-        <div className="-mt-16 mb-12 w-full bg-blue-600 px-4 py-2 text-sm font-medium text-white">
+        <div className="-mt-16 mb-12 w-full bg-card px-4 py-2 text-sm font-medium text-black">
           Pickup today on {format(new Date(), "dd MMMM yyyy")}
         </div>
       )}
@@ -81,41 +72,6 @@ export default async function Dashboard({
 
           <DashboardNavigation />
         </div>
-
-        <TabGroup
-          className="mt-6"
-          defaultIndex={1}
-          // index={currentDashboardTab}
-          // onIndexChange={setCurrentDashboardTab}
-        >
-          <TabList>
-            <Tab>Analytics</Tab>
-            <Tab>Orders</Tab>
-            <Tab>Bundles</Tab>
-          </TabList>
-
-          <TabPanels>
-            <TabPanel>
-              <div className="mt-6">
-                <KpiCards />
-              </div>
-              <Grid numItemsMd={1} numItemsLg={2} className="mt-6 gap-6">
-                <Card>
-                  <NumberOfOrdersChart />
-                </Card>
-                <Card>
-                  <RevenueChart />
-                </Card>{" "}
-              </Grid>
-            </TabPanel>
-            <TabPanel>
-              <OrderTable searchOrderId={searchOrderId} />
-            </TabPanel>
-            <TabPanel>
-              <BundlesTable areBundlesAvailable={areBundlesAvailable} />
-            </TabPanel>
-          </TabPanels>
-        </TabGroup>
       </main>
     </>
   );

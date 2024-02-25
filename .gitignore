@@ -55,3 +55,5 @@ packages/utils/config.mjs
 
 # Email package
 /packages/email/.react-email
+
+app-config.ts

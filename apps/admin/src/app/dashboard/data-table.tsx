@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useUser } from "@clerk/nextjs";
 import { Status } from "@prisma/client";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   VisibilityState,
   flexRender,
@@ -29,6 +29,7 @@ import {
   Loader2,
   RefreshCcw,
 } from "lucide-react";
+import { DateRange } from "react-day-picker";
 import { toast } from "sonner";
 import { date } from "zod";
 
@@ -64,11 +65,7 @@ import {
 } from "@gramflow/ui";
 import { AppConfig, cn } from "@gramflow/utils";
 
-import {
-  isOrderDetailOpenAtom,
-  searchBundleIdAtom,
-  searchOrderIdAtom,
-} from "~/stores/dashboardStore";
+import { DatePickerWithRange } from "~/features/ui/components/dateRangePicker";
 import DashboardBulkOptionsSelectComponent from "./components/dashboadBulkOptionsSelect";
 import DashboardBulkCsvDownloadButton from "./components/dashboardBulkCsvDownloadButton";
 import DashboardConfirmModal from "./components/dashboardConfirmModal";
@@ -115,6 +112,7 @@ export function DataTable<TData, TValue>({
   const [onConfirmFunction, setOnConfirmFunction] =
     useState<NullableVoidFunction>(null);
   const [confirmMessage, setConfirmMessage] = useState("");
+  const queryClient = useQueryClient();
 
   useEffect(() => {
     setEstimatedPackageCount(getSelectedOrderIds().length);
@@ -134,6 +132,10 @@ export function DataTable<TData, TValue>({
   const [selectedStatus, setSelectedStatus] = useState<Status | "All">("All");
   const [searchParam, setSearchParam] = useState(SearchParams.Order_ID);
 
+  const [dateRange, setDateRange] = useState<DateRange | undefined>({
+    from: subDays(new Date(), 30),
+    to: new Date(),
+  }); 
   const { mutate: createPickupMutation, isLoading: createPickupLoading } =
     useMutation(
       async (data: { pickup_date: Date; expected_package_count: number }) => {
@@ -170,8 +172,19 @@ export function DataTable<TData, TValue>({
     search: string;
   }) => {
     const response = await fetch(
-      `/api/admin?page=${pageIndex}&pageSize=${pageSize}&search=${options.search}`,
+      `/api/admin?page=${pageIndex}&pageSize=${pageSize}&search=${
+        options.search
+      }&from=${dateRange?.from?.valueOf() ?? subDays(new Date(), 30).valueOf()}&to=${
+        dateRange?.to?.valueOf() ?? new Date().valueOf()
+      }`,
     );
+    console.log({
+      pageIndex,
+      pageSize,
+      search: options.search,
+      from: dateRange?.from ?? subDays(new Date(), 30),
+      to: dateRange?.to ?? new Date().toISOString(),
+    });
     if (response.ok) {
       const data = (await response.json()) as ResponseType;
       return {
@@ -284,16 +297,6 @@ export function DataTable<TData, TValue>({
 
   const searchInputRef = useRef<HTMLInputElement>(null);
 
-  const [searchOrderId, setSearchOrderId] = useAtom(searchOrderIdAtom);
-  const [_, setIsOrderDetailOpenAtom] = useAtom(isOrderDetailOpenAtom);
-  useEffect(() => {
-    if (searchOrderId) {
-      setSearchTerm(searchOrderId);
-      toast.info(`Finding ${searchParam} ${searchOrderId}`);
-      table.getColumn(searchParam)?.setFilterValue(searchOrderId);
-      setIsOrderDetailOpenAtom(false);
-    }
-  }, [searchOrderId]);
   useEffect(() => {
     table
       .getAllColumns()
@@ -324,13 +327,14 @@ export function DataTable<TData, TValue>({
 
       <div className="flex flex-col gap-2 py-4 md:flex-row md:items-center md:justify-between">
         <div className="flex flex-wrap gap-2">
-          <div className="flex w-full items-center gap-2">
+          <div className="flex w-full items-center gap-2 flex-wrap">
+
             <Select
               onValueChange={(value) => {
                 setSearchParam(value);
               }}
             >
-              <SelectTrigger className="w-1/2">
+              <SelectTrigger className="w-fit">
                 <SelectValue placeholder="Search by" />
               </SelectTrigger>
               <SelectContent>
@@ -351,7 +355,7 @@ export function DataTable<TData, TValue>({
                 setSelectedStatus(value);
               }}
             >
-              <SelectTrigger className="w-1/2">
+              <SelectTrigger className="w-fit">
                 <SelectValue placeholder="Filter Status" />
               </SelectTrigger>
               <SelectContent>
@@ -366,6 +370,10 @@ export function DataTable<TData, TValue>({
                 </SelectItem>
               </SelectContent>
             </Select>
+            <DatePickerWithRange onClickFunction={()=>{
+              console.log({dateRange})
+              dataQuery.refetch();
+            }} date={dateRange} setDate={setDateRange} />
           </div>
           <Input
             placeholder={`Search with ${Object.keys(SearchParams)
@@ -379,9 +387,10 @@ export function DataTable<TData, TValue>({
               setSearchTerm(event.target.value);
               table.getColumn(searchParam)?.setFilterValue(event.target.value);
             }}
-            className="order-2 w-full md:order-1"
+            className="order-2 w-fit md:order-1"
           />
         </div>
+        <div></div>
         <div
           className={"order-1 mb-4 flex items-center gap-1 md:order-2 md:mb-0"}
         >

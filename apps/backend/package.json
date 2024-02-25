@@ -1,0 +1,49 @@
+{
+  "name": "@gramflow/backend",
+  "version": "1.0.0",
+  "description": "",
+  "main": "src/index.js",
+  "scripts": {
+    "build": "npx tsc",
+    "start": "node dist/index.js",
+    "dev": "nodemon src/index.ts",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/cors": "^2.8.17",
+    "@types/express": "^4.17.21",
+    "@types/node": "^20.11.19",
+    "@types/swagger-ui-express": "^4.1.6",
+    "nodemon": "^3.0.3",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.3.3"
+  },
+  "dependencies": {
+    "@clerk/clerk-sdk-node": "^4.13.9",
+    "@gramflow/contract": "workspace:^",
+    "@gramflow/db": "workspace:^",
+    "@gramflow/utils": "workspace:^",
+    "@prisma/client": "^4.13.0",
+    "@ts-rest/express": "^3.33.0",
+    "@ts-rest/open-api": "^3.33.0",
+    "body-parser": "^1.20.2",
+    "cors": "^2.8.5",
+    "csv-writer": "^1.6.0",
+    "date-fns": "^2.30.0",
+    "envalid": "^8.0.0",
+    "form-data": "^4.0.0",
+    "got": "^14.2.0",
+    "lodash": "^4.17.21",
+    "node-fetch": "^2.7.0",
+    "playwright": "^1.41.2",
+    "reflect-metadata": "^0.2.1",
+    "swagger-ui-express": "^5.0.0",
+    "typedi": "^0.10.0",
+    "winston": "^3.11.0",
+    "zod": "^3.22.4",
+    "zod-express-middleware": "^1.4.0"
+  }
+}

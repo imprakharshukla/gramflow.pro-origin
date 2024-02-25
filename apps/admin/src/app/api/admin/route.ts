@@ -23,8 +23,12 @@ export async function GET(req: Request) {
     const pageSize = searchParams.get("pageSize");
     // const searchParam = searchParams.get("searchParam") as SearchParams;
     const searchTerm = searchParams.get("search");
-
-    console.log({ pageIndex, pageSize });
+    const from = searchParams.get("from");
+    const to = searchParams.get("to");
+    if(!from || !to) return NextResponse.json({ error: "Please provide from and to date" }, { status: 400 });
+    const fromDate = new Date(Number(from));
+    const toDate = new Date(Number(to));
+    console.log(`Fetching orders within date range: ${fromDate} to ${toDate}`)
     if (searchTerm) {
       console.log("Returning everything...");
       // const getSearchingReq = await getOrdersWithSearchParams({
@@ -39,7 +43,10 @@ export async function GET(req: Request) {
       const getReq = await getAllOrdersWithPagination({
         page: parseInt(pageIndex),
         pageSize: parseInt(pageSize),
+        from: fromDate,
+        to: toDate,
       });
+      console.log(`Fetched ${getReq.count} orders`)
       return NextResponse.json({ ...getReq });
     }
     const getReq = await getAllOrders();

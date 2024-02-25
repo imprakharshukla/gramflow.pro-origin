@@ -97,7 +97,6 @@ export async function POST(req: Request) {
     });
     return NextResponse.json({
       pickup_id: json.pickup_id,
-
       pickup_location: validated.pickup_location,
       pickup_date: format(
         new Date(validated.pickup_date),
