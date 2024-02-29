@@ -2,11 +2,16 @@ import { Container, Inject, Service } from "typedi";
 import { Logger } from "winston";
 import { z } from "zod";
 
+
+
 import { Status, db } from "@gramflow/db";
 import { OrdersModel, RelatedOrdersModel } from "@gramflow/db/prisma/zod";
 
+
+
 import { AppConfig } from "../config/app-config";
 import { IOrderInputDTO } from "../interfaces/IOrder";
+
 
 type OrdersModelType = z.infer<typeof OrdersModel>;
 const optionalOrdersModelType = OrdersModel.partial().omit({
@@ -81,21 +86,13 @@ export default class OrderService {
         user: true,
       },
     });
-    this.logger.debug("Orders Data: %o", JSON.stringify(ordersData));
-
     const usersIds = ordersData.map((order) => order.user_id);
-    this.logger.debug("Users IDs: %o", usersIds);
-
     //remove the null and undefined values
     const users = usersIds.filter((user_id) => user_id !== null);
-    // Extract user IDs from ordersData, removing undefined values
-    this.logger.debug("User IDs: %o", users);
 
     // Create a set from the user IDs
     const usersSet = new Set(users);
     const userSetArray = Array.from(usersSet);
-    this.logger.debug("Users Set: %o", JSON.stringify(userSetArray));
-
     if (userSetArray.length === 0) {
       throw new Error("Orders do not have any users");
     }
@@ -125,7 +122,6 @@ export default class OrderService {
       },
     );
 
-    this.logger.debug("Merged Order Data: %o", JSON.stringify(mergedOrderData));
 
     const defaultPackageDetails = AppConfig.DefaultPackageDetails.MEDIUM;
     const user = userSetArray[0];
@@ -137,7 +133,7 @@ export default class OrderService {
         },
       },
     });
-    this.logger.debug("Deleted Orders: %o", JSON.stringify(deleteReq));
+    this.logger.debug("Deleted Orders while merging: %o", JSON.stringify(deleteReq));
 
     return await db.orders.create({
       data: {

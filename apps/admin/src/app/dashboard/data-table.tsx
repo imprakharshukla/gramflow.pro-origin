@@ -32,7 +32,6 @@ import {
 } from "lucide-react";
 import { DateRange } from "react-day-picker";
 import { toast } from "sonner";
-import { date } from "zod";
 
 import { orderContract } from "@gramflow/contract";
 import { type CompleteOrders } from "@gramflow/db/prisma/zod";
@@ -90,6 +89,7 @@ interface DataTablePaginationProps<TData> {
 
 export interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
+  onRowClick?: (row: TData) => void;
 }
 
 export type NullableVoidFunction = (() => void) | null;
@@ -99,6 +99,7 @@ interface ResponseType {
 }
 export function DataTable<TData, TValue>({
   columns,
+  onRowClick,
 }: DataTableProps<TData, TValue>) {
   const { user } = useUser();
 
@@ -260,12 +261,7 @@ export function DataTable<TData, TValue>({
           column.setFilterValue(selectedStatus);
         });
     } else {
-      table
-        .getAllColumns()
-        .filter((column) => column.id === "status")
-        .map((column) => {
-          column.setFilterValue("");
-        });
+      table.resetColumnFilters();
     }
   }, [selectedStatus]);
 
@@ -559,6 +555,7 @@ export function DataTable<TData, TValue>({
                 table.getRowModel().rows.map((row) => (
                   <TableRow
                     key={row.id}
+                    onClick={() => onRowClick && onRowClick(row.original)}
                     data-state={row.getIsSelected() && "selected"}
                   >
                     {row.getVisibleCells().map((cell) => (

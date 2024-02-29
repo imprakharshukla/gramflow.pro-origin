@@ -44,6 +44,7 @@ export default ({ app }: { app: express.Application }) => {
   //   swaggerUi.serve,
   //   swaggerUi.setup(openApiDocument),
   // );
+  
 
   app.use(
     "/reference",

@@ -61,27 +61,20 @@ export const columns: ColumnDef<CompleteOrders>[] = [
 
               <div className={"relative"}>
                 {
-                  // only pass the open prop if is the   firstttt row
-
-                  <Sheet>
-                    <SheetTrigger asChild className={""}>
-                      <div>
-                        {
-                          //todo do something to display multiple images
-                          row.original.images[0] && (
-                            <img
-                              alt={"product_image"}
-                              src={row.original.images[0]}
-                              width={100}
-                              height={100}
-                              className="rounded-md"
-                            />
-                          )
-                        }
-                      </div>
-                    </SheetTrigger>
-                    <DashboardOrderDetailSheet order={row.original} />
-                  </Sheet>
+                  <div>
+                    {
+                      //todo do something to display multiple images
+                      row.original.images[0] && (
+                        <img
+                          alt={"product_image"}
+                          src={row.original.images[0]}
+                          width={100}
+                          height={100}
+                          className="rounded-md"
+                        />
+                      )
+                    }
+                  </div>
                 }
               </div>
             </div>
@@ -135,30 +128,16 @@ export const columns: ColumnDef<CompleteOrders>[] = [
     },
   },
   {
-    header: ({ column }) => {
-      return (
-        <Button
-          className={"w-32"}
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        >
-          Date
-          <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
-      );
-    },
+    id: "user.name",
+    accessorKey: "user.name",
     cell: ({ row }) => {
       return (
-        <div className={"flex items-center justify-center break-all text-xs"}>
-          {format(
-            new Date(row.original.created_at ?? new Date()),
-            "dd/MM/yy, EEE, hh:mm a",
-          )}
+        <div className={"flex items-center justify-start text-sm"}>
+          {row.original.user?.name}
         </div>
       );
     },
-    id: "created_at",
-    accessorKey: "createdAt",
+    header: "Name",
   },
   {
     accessorKey: "status",
@@ -211,6 +190,32 @@ export const columns: ColumnDef<CompleteOrders>[] = [
     },
   },
   {
+    header: ({ column }) => {
+      return (
+        <Button
+          className={"w-32"}
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          Date
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      );
+    },
+    cell: ({ row }) => {
+      return (
+        <div className={"flex items-center justify-center break-all text-xs"}>
+          {format(
+            new Date(row.original.created_at ?? new Date()),
+            "dd/MM/yy, EEE, hh:mm a",
+          )}
+        </div>
+      );
+    },
+    id: "created_at",
+    accessorKey: "createdAt",
+  },
+  {
     id: "awb",
     header: "AWB",
     accessorKey: "awb",
@@ -244,18 +249,7 @@ export const columns: ColumnDef<CompleteOrders>[] = [
       );
     },
   },
-  {
-    id: "user.name",
-    accessorKey: "user.name",
-    cell: ({ row }) => {
-      return (
-        <div className={"flex items-center justify-center text-sm"}>
-          {row.original.user?.name}
-        </div>
-      );
-    },
-    header: "Name",
-  },
+
   {
     accessorKey: "id",
     header: () => <div className={"w-48"}>Order ID</div>,

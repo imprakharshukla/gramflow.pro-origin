@@ -61,6 +61,7 @@ import { SheetClose, SheetTrigger } from "@gramflow/ui/src/sheet";
 import { AppConfig, cn } from "@gramflow/utils";
 import { OrderShippingUpdateSchema } from "@gramflow/utils/src/schema";
 
+import useOrderQueryClient from "~/features/hooks/use-order-query-client";
 import { DashboardBundleDetailSheet } from "./bundles/dashboardBundleDetailSheet";
 import { RecordText } from "./recordText";
 
@@ -100,6 +101,24 @@ export const pillColors: { [key: string]: Color } = {
 
 const UpdateForm = ({ order }: { order: CompleteOrders }) => {
   const queryClient = useQueryClient();
+  const orderQueryClient = useOrderQueryClient();
+
+  const { mutate: updateOrderMutate, isLoading: updateOrderLoading } =
+    orderQueryClient.updateOrders.useMutation({
+      onSuccess: async () => {
+        toast.success("Done!");
+        await queryClient.invalidateQueries({
+          queryKey: ["allOrders"],
+        });
+        //set selected rows to empty
+        // @ts-ignore
+        setRowSelection({});
+      },
+      onError: (e) => {
+        console.log("Error");
+        toast.error(`Error ${e}`);
+      },
+    });
 
   const form = useForm<z.infer<typeof OrderShippingUpdateSchema>>({
     resolver: zodResolver(OrderShippingUpdateSchema),
@@ -113,8 +132,6 @@ const UpdateForm = ({ order }: { order: CompleteOrders }) => {
       weight: order.weight ?? "",
     },
   });
-
-  const [loading, setLoading] = useState(false);
 
   const [allowUpdating, setAllowUpdating] = useState(false);
 
@@ -131,23 +148,12 @@ const UpdateForm = ({ order }: { order: CompleteOrders }) => {
 
   // 2. Define a submit handler.
   async function onSubmit(values: z.infer<typeof OrderShippingUpdateSchema>) {
-    setLoading(true);
-    try {
-      const req = await fetch(`/api/admin/`, {
-        method: "PUT",
-        body: JSON.stringify({ id: order.id, ...values }),
-      });
-      if (req.ok) {
-        console.log({ req });
-        console.log("Updated!");
-        await queryClient.invalidateQueries(["allOrders"]);
-        toast.success("Order updated successfully!");
-      }
-    } catch (e) {
-      console.log(e);
-    } finally {
-      setLoading(false);
-    }
+    updateOrderMutate({
+      body: {
+        update: values,
+        order_ids: order.id,
+      },
+    });
   }
 
   // @ts-ignore
@@ -299,9 +305,11 @@ const UpdateForm = ({ order }: { order: CompleteOrders }) => {
           />
           <Button className={"w-full"} type="submit">
             <span>
-              {loading && <Loader2 className={"mr-2 animate-spin text-xs"} />}
+              {updateOrderLoading && (
+                <Loader2 className={"mr-2 animate-spin text-xs"} />
+              )}
             </span>
-            {!loading && <p>Update</p>}
+            {!updateOrderLoading && <p>Update</p>}
           </Button>
         </form>
       </Form>
@@ -329,10 +337,10 @@ export const SizeSelection = ({ form }: { form: any }) => {
             <Button
               type="button"
               onClick={() => {
-                form.setValue("weight", order.weight);
-                form.setValue("length", order.length);
-                form.setValue("breadth", order.breadth);
-                form.setValue("height", order.height);
+                form.setValue("weight", order?.weight);
+                form.setValue("length", order?.length);
+                form.setValue("breadth", order?.breadth);
+                form.setValue("height", order?.height);
               }}
               className={cn(
                 "cursor-pointer",
@@ -352,51 +360,58 @@ export const SizeSelection = ({ form }: { form: any }) => {
 export function DashboardOrderDetailSheet({
   order,
 }: {
-  order: CompleteOrders;
+  order: CompleteOrders | null;
 }) {
   return (
-    <SheetContent
-      side={"right"}
-      className={"max-h-screen w-full overflow-y-scroll pb-10 lg:w-full"}
-    >
-      <SheetHeader className="top-0 bg-background px-3 pb-4 pt-6 dark:bg-background">
-        <div className="flex justify-end">
-          <SheetClose>
-            <Button variant={"ghost"}>
-              <X className="h-4 w-4" />
-            </Button>
-          </SheetClose>
-        </div>
-        <div className="flex flex-col items space-y-2 text-left">
-          <div className="flex items-center gap-3">
-            <SheetTitle>
-              {order.id.replace(/^(.{8}).+(.{8})$/, "$1").toUpperCase()}
-            </SheetTitle>
-            <StatusBadge
-              size="xs"
-              color={pillColors[order.status] as Color}
-              className={"text-xs font-medium"}
-            >
-              {order.status.slice(0, 1) + order.status.slice(1).toLowerCase()}
-            </StatusBadge>
-          </div>
-          <div
-            onClick={async () => {
-              if (navigator.clipboard) {
-                await navigator.clipboard.writeText(order.id);
-                toast.success("Copied to clipboard");
-              } else {
-                console.log("Clipboard API not available");
-              }
-            }}
-          >
-            <SheetDescription>{order.id}</SheetDescription>
-          </div>
-        </div>
-      </SheetHeader>
-      <DetailsContent order={order} />
-      <SheetFooter className={"text-left"}></SheetFooter>
-    </SheetContent>
+    <>
+      <SheetContent
+        side={"right"}
+        className={"max-h-screen w-full overflow-y-scroll pb-10 lg:w-full"}
+      >
+        {!order ? (
+          <div>Order not found</div>
+        ) : (
+          <SheetHeader className="top-0 bg-background px-3 pb-4 pt-6 dark:bg-background">
+            <div className="flex justify-end">
+              <SheetClose>
+                <Button variant={"ghost"}>
+                  <X className="h-4 w-4" />
+                </Button>
+              </SheetClose>
+            </div>
+            <div className="items flex flex-col space-y-2 text-left">
+              <div className="flex items-center gap-3">
+                <SheetTitle>
+                  {order.id.replace(/^(.{8}).+(.{8})$/, "$1").toUpperCase()}
+                </SheetTitle>
+                <StatusBadge
+                  size="xs"
+                  color={pillColors[order.status] as Color}
+                  className={"text-xs font-medium"}
+                >
+                  {order.status.slice(0, 1) +
+                    order.status.slice(1).toLowerCase()}
+                </StatusBadge>
+              </div>
+              <div
+                onClick={async () => {
+                  if (navigator.clipboard) {
+                    await navigator.clipboard.writeText(order.id);
+                    toast.success("Copied to clipboard");
+                  } else {
+                    console.log("Clipboard API not available");
+                  }
+                }}
+              >
+                <SheetDescription>{order.id}</SheetDescription>
+              </div>
+            </div>
+          </SheetHeader>
+        )}
+        <DetailsContent order={order} />
+        <SheetFooter className={"text-left"}></SheetFooter>
+      </SheetContent>
+    </>
   );
 }
 

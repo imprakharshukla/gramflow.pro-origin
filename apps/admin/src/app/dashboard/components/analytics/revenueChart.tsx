@@ -1,86 +1,89 @@
-import { AreaChart, Text, Title } from "@tremor/react";
+"use client";
 
-import { prisma } from "~/lib/prismaClient";
+import { useEffect } from "react";
+import { AreaChart, BarList, Card, Grid, Text, Title } from "@tremor/react";
+import { subDays } from "date-fns";
+
+import useAnalyticsQueryClient from "~/features/hooks/use-analytics-query-client";
+import NumberOfOrdersChart from "./numberOfOrderChart";
 
 export default async function RevenueChart() {
+  const analyticsQueryClient = useAnalyticsQueryClient();
 
-
-  const numberOfDays = 20;
-
-  const fetchData = async () => {
-    const orders = await prisma.orders.findMany({
-      where: {
-        created_at: {
-          lte: new Date(),
-          gte: new Date(
-            new Date().getTime() - numberOfDays * 24 * 60 * 60 * 1000,
-          ),
+  const { data: revenueChartData } =
+    analyticsQueryClient.getRevenueAnalyticsOverTimeAnalytics.useQuery(
+      ["timeRevenue"],
+      {
+        query: {
+          start: subDays(new Date(), 400).valueOf().toString(),
+          end: new Date().valueOf().toString(),
         },
+      },
+    );
+  const { data: orderChartData } =
+    analyticsQueryClient.getNumberOfOrdersOverTimeAnalytics.useQuery(
+      ["timeOrders"],
+      {
+        query: {
+          start: subDays(new Date(), 400).valueOf().toString(),
+          end: new Date().valueOf().toString(),
+        },
+      },
+    );
+
+  const { data: topCustomersChartData } =
+    analyticsQueryClient.getTopCustomersAnalytics.useQuery(["topCustomers"], {
+      query: {
+        start: subDays(new Date(), 400).valueOf().toString(),
+        end: new Date().valueOf().toString(),
       },
     });
 
-    const startDate = new Date(
-      new Date().getTime() - numberOfDays * 24 * 60 * 60 * 1000,
-    );
-    const endDate = new Date();
-    const dateArray = [];
-    const orderCountByDay = {};
-
-    // Create date array
-    const currentDate = new Date(startDate);
-    while (currentDate <= endDate) {
-      const formattedDate = `${currentDate.getDate()}/${
-        currentDate.getMonth() + 1
-      }`;
-      dateArray.push(formattedDate);
-      orderCountByDay[formattedDate] = 0;
-      currentDate.setDate(currentDate.getDate() + 1);
-    }
-
-    // Populate order count by day
-    orders.forEach((order) => {
-      const orderDate = order.created_at.toISOString().split("T")[0];
-      const formattedDate = `${order.created_at.getDate()}/${
-        order.created_at.getMonth() + 1
-      }`;
-      //get the total price of the order
-      let totalPrice = order.price;
-      orderCountByDay[formattedDate] += totalPrice;
-    });
-
-    const data = dateArray.map((day) => ({
-      day,
-      Revenue: orderCountByDay[day],
-    }));
-    return data;
-  };
-
-  const weekBack = new Date(
-    new Date().getTime() - numberOfDays * 24 * 60 * 60 * 1000,
-  );
-  const today = new Date();
-  const weekBackFormatted = `${weekBack.getDate()}/${weekBack.getMonth() + 1}`;
-  const todayFormatted = `${today.getDate()}/${today.getMonth() + 1}`;
-  const dateRange = `${weekBackFormatted} - ${todayFormatted}`;
-
-  const data = await fetchData();
-  const dataFormatter = (value: number) => {
-    return "₹ " + Intl.NumberFormat("en-IN").format(number).toString();
-  };
-
   return (
     <div>
-      <Title>Revenue</Title>
-      <Text>{dateRange}</Text>
-      <AreaChart
-        className="mt-6"
-        data={data}
-        index="day"
-        categories={["Revenue"]}
-        colors={["purple"]}
-        // valueFormatter={dataFormatter}
-        yAxisWidth={40}
-      />
+      <Grid numItemsMd={1} numItemsLg={2} className="mt-6 gap-6">
+        <Card>
+          <Title>Revenue</Title>
+          <Text>{revenueChartData?.body.total}</Text>
+          <AreaChart
+            curveType={"natural"}
+            className="mt-6"
+            noDataText="No data available"
+            showLegend={false}
+            data={revenueChartData?.body.data ?? []}
+            index="date"
+            connectNulls={true}
+            categories={["total"]}
+            colors={["purple"]}
+            // valueFormatter={dataFormatter}
+            yAxisWidth={40}
+          />
+        </Card>{" "}
+        <Card>
+          <Title>Orders</Title>
+          <Text>{orderChartData?.body.total}</Text>
+          <AreaChart
+            curveType={"natural"}
+            className="mt-6"
+            noDataText="No data available"
+            showLegend={false}
+            data={orderChartData?.body.data ?? []}
+            index="date"
+            connectNulls={true}
+            categories={["total"]}
+            colors={["purple"]}
+            // valueFormatter={dataFormatter}
+            yAxisWidth={40}
+          />
+        </Card>{" "}
+      </Grid>
+      <Card className="mt-6">
+        <Title>Top Customers</Title>
+        <BarList
+          data={topCustomersChartData?.body ?? []}
+          className="mx-auto max-w-sm"
+        />
+      </Card>
     </div>
   );
 }

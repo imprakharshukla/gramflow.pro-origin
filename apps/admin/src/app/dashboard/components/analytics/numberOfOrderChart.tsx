@@ -68,6 +68,7 @@ export default async function NumberOfOrdersChart() {
       <Title>Number of Orders </Title>
       <Text>{dateRange}</Text>
       <AreaChart
+        curveType="natural"
         className="mt-6"
         data={data}
         index="day"

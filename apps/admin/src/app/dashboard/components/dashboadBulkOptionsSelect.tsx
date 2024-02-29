@@ -444,10 +444,10 @@ export default function DashboardBulkOptionsSelectComponent({
         </CommandList>
       </CommandDialog>
       <DropdownMenuTrigger>
-        <Button variant={"outline"}>Bulk Actions</Button>
+        <Button variant={"outline"}>Actions</Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent>
-        <DropdownMenuLabel>Bulk Actions</DropdownMenuLabel>
+        <DropdownMenuLabel>Actions</DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuItem
           disabled={advancedDisabled}

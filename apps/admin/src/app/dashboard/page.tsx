@@ -49,7 +49,6 @@ export default async function Dashboard({
 }) {
   // get search params from the page:
   console.log({ searchParams });
-  const currentTab = (searchParams?.tab as string) ?? "1";
   const redis = new Redis({
     url: env.UPSTASH_URL,
     token: env.UPSTASH_TOKEN,
@@ -57,7 +56,7 @@ export default async function Dashboard({
   const areBundlesAvailable = (await redis.get<boolean>("bundles")) ?? false;
   return (
     <>
-     
+    
     </>
   );
 }
