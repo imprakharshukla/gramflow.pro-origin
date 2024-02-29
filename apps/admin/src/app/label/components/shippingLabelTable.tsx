@@ -1,14 +1,16 @@
 import Image from "next/image";
 
 import { CompleteOrders } from "@gramflow/db/prisma/zod";
-import { AppConfig } from "@gramflow/utils";
+import { AppConfig, cn } from "@gramflow/utils";
 
 import { type OrderUserType } from "~/app/label/page";
 
 export default function ShippingLabelTable({
   order,
+  isLastIndex,
 }: {
   order: OrderUserType;
+  isLastIndex: boolean;
 }) {
   const user = order?.user;
   const awb = order?.awb;
@@ -101,6 +103,7 @@ export default function ShippingLabelTable({
                   <div>
                     <img
                       width={300}
+                      className={cn(isLastIndex && "last-image")}
                       src={`http://bwipjs-api.metafloor.com/?bcid=code128&text=${awb}&scaleX=10&scaleY=3`}
                       alt=""
                     />

@@ -6,6 +6,7 @@ import {
   DelhiveryPickupRequestSchema,
   DelhiveryPickupResponseSchema,
 } from "../../apps/backend/src/api/schema/delhivery";
+
 const c = initContract();
 
 export const shipContract = c.router({
@@ -18,9 +19,22 @@ export const shipContract = c.router({
       }),
     },
     body: z.object({
-      order_id: z.string(),
+      order_ids: z.string(),
     }),
     summary: "Create a shipment",
+  },
+  syncShipments: {
+    method: "POST",
+    path: "/shipment/sync",
+    body: z.object({
+      order_ids: z.string().optional()
+    }),
+    responses: {
+      200: z.object({
+        response: z.string(),
+      }),
+    },
+    summary: "Sync shipments",
   },
   createPickup: {
     method: "POST",
@@ -47,7 +61,7 @@ export const shipContract = c.router({
       200: DelhiveryPickupResponseSchema.nullable(),
     },
     query: z.object({
-        date: string(),
+      date: string(),
     }),
     summary: "Get all pickups",
   },

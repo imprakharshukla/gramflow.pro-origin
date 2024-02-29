@@ -3,7 +3,7 @@ import { superContract } from "@gramflow/contract";
 
 export const openApiDocument = generateOpenApi(superContract, {
   info: {
-    title: "Posts API",
+    title: "Gramflo API",
     version: "1.0.0",
   },
 });

@@ -66,7 +66,13 @@ export default async function LabelPage({
     <div className="container mx-auto py-10">
       {!order_ids && <p>No order ids</p>}
       {orders.map((order) => {
-        return <ShippingLabelTable order={order} key={order.id} />;
+        return (
+          <ShippingLabelTable
+            order={order}
+            key={order.id}
+            isLastIndex={orders.indexOf(order) === orders.length - 1}
+          />
+        );
       })}
     </div>
   );

@@ -18,7 +18,7 @@ export const DelhiveryShipmentSchema = z.object({
   return_add: z.string().default(""),
   return_state: z.string().default(""),
   return_country: z.string().default(""),
-  products_desc: z.string(),
+  products_desc: z.string().default(""),
   hsn_code: z.string().default(""),
   cod_amount: z.string().default("0"),
   order_date: z.date(),
@@ -96,18 +96,27 @@ export const DelhiveryDeliveryCostRequestSchema = z.object({
 
 export const DelhiveryPackageCreationRequestSchema = z.object({
   shipments: z.array(DelhiveryShipmentSchema),
-  pickup_location: z.object({
-    name: z.string().default(AppConfig.WarehouseDetails.name),
-    add: z
-      .string()
-      .default(
-        `${AppConfig.WarehouseDetails.house_number}, ${AppConfig.WarehouseDetails.locality}`,
-      ),
-    city: z.string().default(AppConfig.WarehouseDetails.city),
-    pin_code: z.string().default(AppConfig.WarehouseDetails.pincode),
-    country: z.string().default(AppConfig.WarehouseDetails.country),
-    phone: z.string().default(AppConfig.WarehouseDetails.phone_no),
-  }),
+  pickup_location: z
+    .object({
+      name: z.string().default(AppConfig.WarehouseDetails.name),
+      add: z
+        .string()
+        .default(
+          `${AppConfig.WarehouseDetails.house_number}, ${AppConfig.WarehouseDetails.locality}`,
+        ),
+      city: z.string().default(AppConfig.WarehouseDetails.city),
+      pin_code: z.string().default(AppConfig.WarehouseDetails.pincode),
+      country: z.string().default(AppConfig.WarehouseDetails.country),
+      phone: z.string().default(AppConfig.WarehouseDetails.phone_no),
+    })
+    .default({
+      name: AppConfig.WarehouseDetails.name,
+      add: `${AppConfig.WarehouseDetails.house_number}, ${AppConfig.WarehouseDetails.locality}`,
+      city: AppConfig.WarehouseDetails.city,
+      pin_code: AppConfig.WarehouseDetails.pincode,
+      country: AppConfig.WarehouseDetails.country,
+      phone: AppConfig.WarehouseDetails.phone_no,
+    }),
 });
 
 export const DelhiveryPackageCreationResponseSchema = z.object({

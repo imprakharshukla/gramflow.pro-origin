@@ -13,7 +13,7 @@ datasource db {
 
 model Posts {
   id              String   @id @default(cuid())
-  post_link       String   @unique
+  post_link       String
   caption         String
   slides          String[]
   post_created_at DateTime
@@ -75,7 +75,7 @@ model Bundles {
 
 model Orders {
   id                  String    @id @default(uuid()) /// @zod.uuid()
-  instagram_post_urls String[]  @unique
+  instagram_post_urls String[]
   user                Users?    @relation(fields: [user_id], references: [id])
   user_id             String?
   price               Int       @default(0)
@@ -94,6 +94,7 @@ model Orders {
   pickup              Pickups[]
   bundle_id           String?   @unique
   bundles             Bundles?  @relation(fields: [bundle_id], references: [id])
+
   @@index([user_id, id])
 }
 

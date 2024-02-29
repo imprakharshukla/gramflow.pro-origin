@@ -61,13 +61,14 @@ async function fetchParentData(parentPostId: string) {
     }
     const data = (await response.json()) as ChildRoot;
     const arrayWithoutId = data.data
-      .filter(({ media_type }) => media_type === 'IMAGE')
+      .filter(({ media_type }) => media_type === "IMAGE")
       .map(({ media_url }) => media_url);
     console.log({ arrayWithoutId });
     return arrayWithoutId;
   } catch (error) {
     console.error(
       `Error fetching data for parent post ${parentPostId}:`,
+      //@ts-ignore
       error.message,
     );
     return [];

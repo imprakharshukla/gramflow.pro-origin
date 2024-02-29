@@ -13,30 +13,36 @@ export const downloadBulkOrderFiles = async (
   order_ids: string[],
   setLoading: Dispatch<SetStateAction<boolean>>,
 ) => {
-  const toastId = toast.loading("Downloading CSV file...");
   try {
     setLoading(true);
-
-    const res = await fetch(`/api/ship`, {
-      method: "PUT",
-      body: JSON.stringify({ order_ids }),
-    });
-    if (!res.ok) {
-      throw new Error(res.statusText);
-    }
-    //get text of the response
-    const text = await res.text();
-    const isResponseAUrl = z.string().url().safeParse(text);
-    if (isResponseAUrl.success) {
-      window.open(isResponseAUrl.data);
-    } else {
-      toast.error(text);
-    }
-    return text;
+    const selected = order_ids;
+    return fetch(
+      `http://localhost:3002/api/document/shipment?order_ids=${selected.join(
+        ",",
+      )}`,
+      {
+        method: "GET",
+        headers: {
+          responseType: "blob",
+        },
+      },
+    )
+      .then((res) => res.blob())
+      .then((blob) => URL.createObjectURL(blob))
+      .then((href) => {
+        Object.assign(document.createElement("a"), {
+          href,
+          download: `${
+            new Date().toDateString() +
+            " " +
+            new Date().toLocaleTimeString() +
+            "_shipment"
+          }.csv`,
+        }).click();
+      });
   } catch (e) {
-    toast.error(e);
+    toast.error(`Error ${e}`);
   } finally {
-    toast.dismiss(toastId);
     setLoading(false);
   }
 };
@@ -73,10 +79,7 @@ export default function DashboardBulkCsvDownloadButton({
           toast.error("Please select at least one order to create shipment");
           return;
         }
-        setConfirmMessage(
-          `Are you sure you want to download CSV file for ${selected.length} orders?`,
-        );
-        setShowConfirmation(true);
+        setShowConfirmation(false);
         setOnConfirmFunction(
           wrapConfirmFunction(async () => {
             const order_ids = getSelectedOrderIds();

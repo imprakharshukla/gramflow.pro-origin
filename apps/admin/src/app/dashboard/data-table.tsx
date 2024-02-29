@@ -18,6 +18,7 @@ import {
   type SortingState,
   type Table as TsTable,
 } from "@tanstack/react-table";
+import { initQueryClient } from "@ts-rest/react-query";
 import { addDays, format, set, subDays } from "date-fns";
 import { useAtom } from "jotai";
 import {
@@ -33,6 +34,7 @@ import { DateRange } from "react-day-picker";
 import { toast } from "sonner";
 import { date } from "zod";
 
+import { orderContract } from "@gramflow/contract";
 import { type CompleteOrders } from "@gramflow/db/prisma/zod";
 import {
   Button,
@@ -65,6 +67,7 @@ import {
 } from "@gramflow/ui";
 import { AppConfig, cn } from "@gramflow/utils";
 
+import useAuthToken from "~/features/hooks/use-auth-token";
 import { DatePickerWithRange } from "~/features/ui/components/dateRangePicker";
 import DashboardBulkOptionsSelectComponent from "./components/dashboadBulkOptionsSelect";
 import DashboardBulkCsvDownloadButton from "./components/dashboardBulkCsvDownloadButton";
@@ -112,8 +115,6 @@ export function DataTable<TData, TValue>({
   const [onConfirmFunction, setOnConfirmFunction] =
     useState<NullableVoidFunction>(null);
   const [confirmMessage, setConfirmMessage] = useState("");
-  const queryClient = useQueryClient();
-
   useEffect(() => {
     setEstimatedPackageCount(getSelectedOrderIds().length);
   }, [rowSelection]);
@@ -122,7 +123,6 @@ export function DataTable<TData, TValue>({
     pageIndex: 0,
     pageSize: 20,
   });
-
   const fetchDataOptions = {
     pageIndex,
     pageSize,
@@ -135,7 +135,7 @@ export function DataTable<TData, TValue>({
   const [dateRange, setDateRange] = useState<DateRange | undefined>({
     from: subDays(new Date(), 30),
     to: new Date(),
-  }); 
+  });
   const { mutate: createPickupMutation, isLoading: createPickupLoading } =
     useMutation(
       async (data: { pickup_date: Date; expected_package_count: number }) => {
@@ -146,7 +146,6 @@ export function DataTable<TData, TValue>({
           },
           body: JSON.stringify({ order_ids: getSelectedOrderIds(), ...data }),
         });
-
         if (response.ok) {
           return response.json();
         } else {
@@ -166,53 +165,49 @@ export function DataTable<TData, TValue>({
       },
     );
 
-  const fetchData = async (options: {
-    pageIndex: number;
-    pageSize: number;
-    search: string;
-  }) => {
-    const response = await fetch(
-      `/api/admin?page=${pageIndex}&pageSize=${pageSize}&search=${
-        options.search
-      }&from=${dateRange?.from?.valueOf() ?? subDays(new Date(), 30).valueOf()}&to=${
-        dateRange?.to?.valueOf() ?? new Date().valueOf()
-      }`,
-    );
-    console.log({
-      pageIndex,
-      pageSize,
-      search: options.search,
-      from: dateRange?.from ?? subDays(new Date(), 30),
-      to: dateRange?.to ?? new Date().toISOString(),
-    });
-    if (response.ok) {
-      const data = (await response.json()) as ResponseType;
-      return {
-        rows: data.orders,
-        pageCount: Math.ceil(data.count / options.pageSize),
-      };
-    } else {
-      throw new Error("Something went wrong");
-    }
-  };
+  const { token } = useAuthToken();
+  const client = initQueryClient(orderContract, {
+    baseUrl: "http://localhost:3002/api",
+    baseHeaders: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
 
-  const dataQuery = useQuery(
-    ["allOrders", fetchDataOptions],
-    () => fetchData(fetchDataOptions),
-    { keepPreviousData: true },
-  );
+  //@TODO rename the query to something more meaningful
+  const { data, isLoading, error, isFetching, refetch } =
+    client.getOrders.useQuery(
+      ["allOrders"],
+      {
+        query: {
+          page: pageIndex.toString(),
+          pageSize: pageSize.toString(),
+          from:
+            dateRange?.from?.valueOf().toString() ??
+            subDays(new Date(), 30).valueOf().toString(),
+          to:
+            dateRange?.to?.valueOf().toString() ??
+            new Date().valueOf().toString(),
+        },
+      },
+      {
+        // refetchInterval: 10000,
+      },
+    );
 
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
 
   useEffect(() => {
     if (searchTerm === "") {
       setPagination({ pageIndex: 0, pageSize: 20 });
-      dataQuery.refetch();
     } else {
       fetchDataOptions.search = searchTerm;
-      dataQuery.refetch();
     }
+    // queryClient.refetchQueries(["allOrders"]);
+    refetch();
   }, [searchTerm]);
+  useEffect(() => {
+    refetch();
+  }, [pageIndex, pageSize]);
   const pagination = useMemo(
     () => ({
       pageIndex,
@@ -222,7 +217,7 @@ export function DataTable<TData, TValue>({
   );
 
   const table = useReactTable({
-    data: dataQuery.data?.rows ?? [],
+    data: data?.body?.orders ?? [],
     columns,
     getCoreRowModel: getCoreRowModel(),
     onSortingChange: setSorting,
@@ -231,7 +226,7 @@ export function DataTable<TData, TValue>({
     getFilteredRowModel: getFilteredRowModel(),
     onRowSelectionChange: setRowSelection,
     getPaginationRowModel: getPaginationRowModel(),
-    pageCount: dataQuery.data?.pageCount ?? -1,
+    pageCount: data?.body?.count ?? -1,
     manualPagination: true,
     onPaginationChange: setPagination,
     onColumnVisibilityChange: setColumnVisibility,
@@ -282,7 +277,7 @@ export function DataTable<TData, TValue>({
     const order_ids: string[] = [];
     order_ids_index.map((order_index) => {
       // @ts-ignore
-      order_ids.push(dataQuery.data?.rows[order_index].id);
+      order_ids.push(data?.body.orders[order_index].id);
     });
     return order_ids;
   };
@@ -320,15 +315,14 @@ export function DataTable<TData, TValue>({
       ></DashboardConfirmModal>
       <Card className={"flex w-fit items-center justify-center lg:hidden"}>
         <DashboardSelectedRowDisplayCard
-          data={dataQuery.data?.rows}
+          data={data?.body?.orders}
           rowSelection={rowSelection}
         />
       </Card>
 
       <div className="flex flex-col gap-2 py-4 md:flex-row md:items-center md:justify-between">
         <div className="flex flex-wrap gap-2">
-          <div className="flex w-full items-center gap-2 flex-wrap">
-
+          <div className="flex w-full flex-wrap items-center gap-2">
             <Select
               onValueChange={(value) => {
                 setSearchParam(value);
@@ -370,10 +364,15 @@ export function DataTable<TData, TValue>({
                 </SelectItem>
               </SelectContent>
             </Select>
-            <DatePickerWithRange onClickFunction={()=>{
-              console.log({dateRange})
-              dataQuery.refetch();
-            }} date={dateRange} setDate={setDateRange} />
+            <DatePickerWithRange
+              onClickFunction={() => {
+                console.log({ dateRange });
+                // queryClient.refetchQueries(["allOrders"]);
+                refetch();
+              }}
+              date={dateRange}
+              setDate={setDateRange}
+            />
           </div>
           <Input
             placeholder={`Search with ${Object.keys(SearchParams)
@@ -396,15 +395,16 @@ export function DataTable<TData, TValue>({
         >
           <Button
             // eslint-disable-next-line @typescript-eslint/no-misused-promises
-            disabled={dataQuery.isLoading || dataQuery.isFetching}
+            disabled={isLoading || isFetching}
             onClick={async () => {
               setLoading(true);
-              await dataQuery.refetch();
+              // await queryClient.refetchQueries(["allOrders"]);
+              refetch();
               setLoading(false);
             }}
             variant="outline"
           >
-            {!(loading || dataQuery.isLoading || dataQuery.isFetching) ? (
+            {!(loading || isLoading || isFetching) ? (
               <RefreshCcw className={"text-sm"} size={18} />
             ) : (
               <Loader />
@@ -414,7 +414,7 @@ export function DataTable<TData, TValue>({
           <>
             <Card className={"hidden items-center justify-center lg:flex"}>
               <DashboardSelectedRowDisplayCard
-                data={dataQuery.data?.rows}
+                data={data?.body?.orders}
                 rowSelection={rowSelection}
               ></DashboardSelectedRowDisplayCard>
             </Card>
@@ -425,7 +425,7 @@ export function DataTable<TData, TValue>({
               setOnConfirmFunction={setOnConfirmFunction}
               setShowConfirmation={setShowConfirmation}
               setRowSelection={setRowSelection}
-              data={dataQuery.data?.rows}
+              data={data?.body?.orders}
               setPickupDialogOpen={setPickupDialogOpen}
               setLoading={setLoading}
             ></DashboardBulkOptionsSelectComponent>
@@ -577,9 +577,11 @@ export function DataTable<TData, TValue>({
                     colSpan={columns.length}
                     className="h-24 text-center"
                   >
-                    {dataQuery.data?.rows.length === 0
-                      ? "No orders"
-                      : "Loading..."}
+                    {isLoading || isFetching
+                      ? "Loading..."
+                      : error
+                      ? "An error occurred"
+                      : "No data found"}
                   </TableCell>
                 </TableRow>
               )}

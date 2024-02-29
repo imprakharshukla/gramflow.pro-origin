@@ -3,8 +3,9 @@ import { Inject, Service } from "typedi";
 import { Logger } from "winston";
 import { z } from "zod";
 
-import { Orders, Users, db } from "@gramflow/db";
+import { Orders, Status, Users, db } from "@gramflow/db";
 
+import order from "../api/routes/order";
 import {
   DelhiveryDeliveryCostRequestSchema,
   DelhiveryPackageCreationRequestSchema,
@@ -13,6 +14,7 @@ import {
   DelhiveryPickupResponseSchema,
   DelhiveryPickupSuccessResponseSchema,
   DelhiveryShipmentSchema,
+  DelhiveryTrackingSchema,
   ShippingCostResponseSchema,
 } from "../api/schema/delhivery";
 import { env } from "../config";
@@ -20,70 +22,153 @@ import { AppConfig } from "../config/app-config";
 import { ShippingService } from "../interfaces/IShipping";
 
 const fetch = require("node-fetch");
-const FetchResponse = fetch.Response;
-
 type DelhiveryShipment = z.infer<typeof DelhiveryShipmentSchema>;
 type DelhiveryPickupRequest = z.infer<typeof DelhiveryPickupRequestSchema>;
 
 @Service()
 export default class DelhiveryService implements ShippingService {
   constructor(@Inject("logger") private logger: Logger) {}
+
+  public async syncOrdersWithDelhivery(
+    orders: (Orders & { user: Users | null })[],
+  ) {
+    this.logger.info("Syncing orders with Delhivery", {
+      orders: orders.map((order) => order.id),
+    });
+    const options = {
+      method: "GET",
+      headers: {
+        Accept: "application/json",
+        Authorization: `Token ${env.DELHIVERY_API_KEY}`,
+        "Content-Type": "text/plain; charset=utf-8",
+      },
+    };
+    try {
+      const response = await fetch(
+        `https://track.delhivery.com/api/v1/packages/json/?ref_ids=${orders
+          .map((order) => order.id)
+          .join(",")}`,
+        options,
+      );
+      const responseData = await response.json();
+      if (responseData && responseData.ShipmentData) {
+        const validated = DelhiveryTrackingSchema.parse(responseData);
+        this.logger.info({ validated: JSON.stringify(validated) });
+        const shipments = validated.ShipmentData;
+        shipments.forEach(async (shipment) => {
+          const status = shipment.Shipment.Status.Status;
+          const order_id = shipment.Shipment.ReferenceNo;
+          let statusToBeUpdated;
+          if (status === "Delivered") {
+            statusToBeUpdated = Status.DELIVERED;
+          } else if (status === "In Transit") {
+            statusToBeUpdated = Status.SHIPPED;
+          } else if (status === "Manifested") {
+            statusToBeUpdated = Status.MANIFESTED;
+          } else if (
+            status === "Dispatched" &&
+            shipment.Shipment.Status.Instructions === "Out for delivery"
+          ) {
+            statusToBeUpdated = Status.OUT_FOR_DELIVERY;
+          }
+
+          //check if the order already has the status
+          if (!statusToBeUpdated) {
+            this.logger.info(
+              `The order ${order_id} has no status to be updated`,
+            );
+          } else if (
+            statusToBeUpdated ===
+            orders.find((order) => order.id === order_id)?.status
+          ) {
+            this.logger.info(
+              `The order ${order_id} already has the status ${statusToBeUpdated}`,
+            );
+          } else {
+            await db.orders.update({
+              where: {
+                id: order_id,
+              },
+              data: {
+                status: statusToBeUpdated,
+                awb: shipment.Shipment.AWB,
+              },
+            });
+            this.logger.info(
+              `The order ${order_id} is now ${statusToBeUpdated}`,
+            );
+          }
+        });
+      }
+    } catch (error) {
+      this.logger.error({ error });
+      throw error;
+    }
+  }
+
   public async createShipmemt(
     orders: (Orders & { user: Users | null })[],
   ): Promise<z.infer<typeof DelhiveryPackageCreationResponseSchema>> {
-    const shipments: DelhiveryShipment[] = [];
-    orders.map((order) => {
-      const shipment = DelhiveryShipmentSchema.parse({
-        order: order.id,
-        order_date: order.created_at,
-        name: order.user?.name,
-        add: `${order.user?.house_number}, ${order.user?.locality}`,
-        pin: order.user?.pincode,
-        country: order.user?.country,
-        state: order.user?.state,
-        city: order.user?.city,
-        total_amount: order.price.toString(),
-        phone: order.user?.phone_no,
-        shipment_width: order.breadth,
-        shipment_length: order.length,
-        shipment_height: order.height,
-      });
-      shipments.push(shipment);
-      this.logger.info(`Shipment queued for order: ${order.id}`);
-    });
-
-    const packageCreationData = DelhiveryPackageCreationRequestSchema.parse({
-      shipments: shipments,
-    });
-
-    const requestOptions = {
-      method: "POST",
-      headers: new Headers({
-        "Content-Type": "application/json",
-        Accept: "application/json",
-        Authorization: `Token ${env.DELHIVERY_API_KEY}`,
-      }),
-      body: "format=json&data=" + JSON.stringify(packageCreationData),
-    };
-
-    const response = await fetch(
-      env.isDev
-        ? "https://staging-express.delhivery.com/api/cmu/create.json"
-        : "https://track.delhivery.com/api/cmu/create.json",
-      requestOptions,
-    );
-
-    if (!response.ok) {
-      throw new Error("Failed to create orders");
-    }
-
     try {
-      const res = await response.json();
-      console.log({ res: JSON.stringify(res) });
-      return DelhiveryPackageCreationResponseSchema.parse(res);
+      const shipments: DelhiveryShipment[] = [];
+      orders.map((order) => {
+        const shipment = DelhiveryShipmentSchema.parse({
+          order: order.id,
+          order_date: order.created_at,
+          name: order.user?.name,
+          add: `${order.user?.house_number}, ${order.user?.locality}`,
+          pin: order.user?.pincode,
+          country: order.user?.country,
+          state: order.user?.state,
+          city: order.user?.city,
+          total_amount: order.price.toString(),
+          phone: order.user?.phone_no,
+          shipment_width: order.breadth,
+          weight: order.weight,
+          shipment_length: order.length,
+          shipment_height: order.height,
+        });
+        shipments.push(shipment);
+        this.logger.info(`Shipment queued for order: ${order.id}`);
+      });
+
+      const packageCreationData = DelhiveryPackageCreationRequestSchema.parse({
+        shipments: shipments,
+      });
+
+      const requestOptions = {
+        method: "POST",
+        headers: new Headers({
+          "Content-Type": "application/json",
+          Accept: "application/json",
+          Authorization: `Token ${env.DELHIVERY_API_KEY}`,
+        }),
+        body: "format=json&data=" + JSON.stringify(packageCreationData),
+      };
+
+      const response = await fetch(
+        env.isDev
+          ? //@TODO change this to dev url
+            "https://track.delhivery.com/api/cmu/create.json"
+          : "https://track.delhivery.com/api/cmu/create.json",
+        requestOptions,
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to create orders");
+      }
+
+      try {
+        const res = await response.json();
+        console.log({ res: JSON.stringify(res) });
+        return DelhiveryPackageCreationResponseSchema.parse(res);
+      } catch (e) {
+        console.log({ validationError: e });
+        throw new Error("Error validating response");
+      }
     } catch (e) {
-      console.log({ validationError: e });
-      throw new Error("Error validating response");
+      console.log({ error: e });
+      throw new Error("Error creating shipment");
     }
   }
   public async getPickup(

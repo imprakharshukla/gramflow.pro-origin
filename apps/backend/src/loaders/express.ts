@@ -1,3 +1,4 @@
+import { apiReference } from "@scalar/express-api-reference";
 import { initServer } from "@ts-rest/express";
 import cors from "cors";
 import express, {
@@ -37,13 +38,21 @@ export default ({ app }: { app: express.Application }) => {
   const router = routes();
   app.use("/api", router);
 
-  // Load OpenAPI document
-  app.use(
-    "/api-docs",
-    swaggerUi.serve,
-    swaggerUi.setup(openApiDocument),
-  );
+  // // Load OpenAPI document
+  // app.use(
+  //   "/api-docs",
+  //   swaggerUi.serve,
+  //   swaggerUi.setup(openApiDocument),
+  // );
 
+  app.use(
+    "/reference",
+    apiReference({
+      spec: {
+        content: openApiDocument,
+      },
+    }),
+  );
   /// catch 404 and forward to error handler
   app.use((req, res, next) => {
     const err: any = new Error("Not Found");

@@ -49,15 +49,13 @@ export default class DocumentService {
     this.logger.info(`Generating PDF for ${url}`);
     const browser = await chromium.launch();
     const page = await browser.newPage();
-    await page.goto("https://checklyhq.com/learn/headless");
+    await page.goto(url);
     // save pdf to the temp directory, making it OS independent
+    const filePath = path.join(os.tmpdir(), `lable-${randomUUID()}.pdf`);
 
-    const filePath = path.join(
-      os.tmpdir(),
-      `lable-${randomUUID()}.pdf`,
-    );
-    // add a delay to ensure the page is fully loaded
-    await page.waitForTimeout(3000);
+    // Wait for the element with the specified class name to appear on the page
+    await page.waitForSelector(".last-image");
+    await page.waitForTimeout(5000);
     await page.pdf({ path: filePath });
     this.logger.info(`PDF saved to ${filePath}`);
     await browser.close();

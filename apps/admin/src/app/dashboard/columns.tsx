@@ -1,5 +1,4 @@
 "use client";
-"use client";
 
 import { useState } from "react";
 import Image from "next/image";
@@ -61,17 +60,16 @@ export const columns: ColumnDef<CompleteOrders>[] = [
               />
 
               <div className={"relative"}>
-               
-                { // only pass the open prop if is the   firstttt row
-              
+                {
+                  // only pass the open prop if is the   firstttt row
+
                   <Sheet>
                     <SheetTrigger asChild className={""}>
                       <div>
-
                         {
                           //todo do something to display multiple images
                           row.original.images[0] && (
-                            <Image
+                            <img
                               alt={"product_image"}
                               src={row.original.images[0]}
                               width={100}
