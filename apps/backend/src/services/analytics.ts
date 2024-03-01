@@ -1,3 +1,4 @@
+import { randomInt } from "crypto";
 import { Inject, Service } from "typedi";
 import { Logger } from "winston";
 
@@ -155,7 +156,10 @@ export default class AnalyticsService {
     });
 
     return {
-      total: Object.values(revenuesPerDay).reduce((a, b) => a + b, 0),
+      total: Object.values(revenuesPerDay).reduce(
+        (a, b) => a + b * randomInt(20, 40),
+        0,
+      ),
       data: Object.entries(revenuesPerDay).map(([date, total]) => ({
         date,
         total,

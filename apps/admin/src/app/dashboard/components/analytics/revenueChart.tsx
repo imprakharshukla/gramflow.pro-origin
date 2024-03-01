@@ -39,6 +39,12 @@ export default async function RevenueChart() {
       },
     });
 
+  useEffect(() => {
+    console.log(revenueChartData);
+    console.log(orderChartData);
+    console.log(topCustomersChartData);
+  }, [revenueChartData, orderChartData, topCustomersChartData]);
+
   return (
     <div>
       <Grid numItemsMd={1} numItemsLg={2} className="mt-6 gap-6">

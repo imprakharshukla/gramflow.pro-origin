@@ -1,5 +1,6 @@
 "use client";
 
+import { Dispatch, SetStateAction } from "react";
 
 import {
   AlertDialog,
@@ -11,7 +12,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@gramflow/ui";
-import { Dispatch, SetStateAction } from "react";
+
 import { NullableVoidFunction } from "../data-table";
 
 export default function DashboardConfirmModal({
