@@ -21,5 +21,15 @@ export const superContract = c.router({
   post: postContract,
   analytics: analyticsContract,
 });
-
+export enum SearchParam {
+  order_id,
+  user_id,
+  instagram_id,
+  name,
+  email,
+  phone,
+  city,
+  state,
+  bundle
+}
 export { type AppRouter };

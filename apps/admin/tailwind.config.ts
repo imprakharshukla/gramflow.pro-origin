@@ -21,7 +21,7 @@ export default withUt({
             muted: "hsl(var(--primary))", // blue-200
             subtle: "hsl(var(--primary))", // blue-400
             DEFAULT: "hsl(var(--primary))", // blue-500
-            emphasis: "hsl(var(--primary-foreground))", // blue-700
+            emphasis: "hsl(var(--primary))", // blue-700
             inverted: "hsl(var(--primary))", // white
           },
           background: {
@@ -48,7 +48,7 @@ export default withUt({
         "dark-tremor": {
           brand: {
             faint: "hsl(var(--primary))", // blue-50
-            muted: "hsl(var(--primary-foreground))", // blue-200
+            muted: "hsl(var(--input))", // blue-200
             subtle: "hsl(var(--primary))", // blue-400
             DEFAULT: "hsl(var(--primary))", // blue-500
             emphasis: "hsl(var(--primary-foreground))", // blue-700

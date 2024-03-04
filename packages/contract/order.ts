@@ -3,6 +3,7 @@ import { z } from "zod";
 
 import { OrderInputZodSchema } from "../../apps/backend/src/interfaces/IOrder";
 import { OrdersModel } from "../db/prisma/zod";
+import { SearchParam } from ".";
 
 const c = initContract();
 

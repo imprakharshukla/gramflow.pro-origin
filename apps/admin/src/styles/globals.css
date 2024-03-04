@@ -1,6 +1,7 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
 @layer base {
   :root {
     --background: 0 0% 100%;
@@ -33,7 +34,7 @@
 
     --radius: 0.75rem;
   }
-  
+
   .dark {
     --background: 0 12% 5%;
     --foreground: 0 14% 90%;
@@ -64,24 +65,30 @@
     --ring: 0 50% 43%;
   }
 }
+
 @media print {
   @page {
     margin: 0;
   }
+
   body {
     padding: 0 50px;
     zoom: 75%;
   }
 }
+
 @layer base {
+
   input[type="number"]::-webkit-inner-spin-button,
   input[type="number"]::-webkit-outer-spin-button {
     -webkit-appearance: none;
     margin: 0;
   }
+
   * {
     @apply border-border;
   }
+
   body {
     @apply bg-background text-foreground;
     font-feature-settings: "rlig" 1, "calt" 1;

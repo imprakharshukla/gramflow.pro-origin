@@ -6,7 +6,7 @@ import { z } from "zod";
 
 import { Status, db } from "@gramflow/db";
 import { OrdersModel, RelatedOrdersModel } from "@gramflow/db/prisma/zod";
-
+import { SearchParam } from "@gramflow/contract";
 
 
 import { AppConfig } from "../config/app-config";
@@ -21,7 +21,7 @@ type OptionalOrdersModelType = z.infer<typeof optionalOrdersModelType>;
 
 @Service()
 export default class OrderService {
-  constructor(@Inject("logger") private logger: Logger) {}
+  constructor(@Inject("logger") private logger: Logger) { }
 
   public async createOrder(order: IOrderInputDTO): Promise<OrdersModelType> {
     return db.orders.create({
@@ -239,14 +239,31 @@ export default class OrderService {
   ): Promise<OrdersModelType[]> {
     this.logger.debug(page?.toString());
     this.logger.debug(pageSize?.toString());
+    this.logger.debug(searchTerm);
 
-    if (searchTerm) {
-      this.logger.debug("Search term is present");
+    if (searchTerm && searchTerm === "bundle") {
+      this.logger.debug("Search term is present and searchParam is bundle");
       // Handle search functionality here if needed
-      // Return empty array for now
-      return [];
+      // return all the data for front-end filtering
+      return db.orders.findMany({
+        include: {
+          user: true,
+          bundles: {
+            include: {
+              user: true,
+            },
+          },
+        },
+        where: {
+          NOT: {
+            bundles: null,
+          }
+        },
+        orderBy: {
+          created_at: "desc",
+        },
+      });
     }
-
     if (from === undefined || to === undefined) {
       this.logger.debug("from and to are not present");
       // from and to are not present, so we are returning all the orders
