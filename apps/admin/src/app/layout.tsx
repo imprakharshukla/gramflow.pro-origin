@@ -3,6 +3,8 @@ import { cn } from "@gramflow/utils";
 
 import { siteConfig } from "~/config/site";
 import { fontSans } from "~/lib/fonts";
+import localFont from 'next/font/local'
+
 import { ThemeProvider } from "~/providers/theme-provider";
 import "~/styles/globals.css";
 import { Metadata } from "next";
@@ -12,6 +14,7 @@ import { Toaster } from "sonner";
 import { PageLoaderProvider } from "~/providers/page-loader-provider";
 import QueryProvider from "~/providers/query-provider";
 import { DayPickerProvider } from "react-day-picker";
+import { AuthSessionProvider } from "~/providers/auth-session-provider";
 
 export const metadata: Metadata = {
   viewport: "width=device-width, initial-scale=1, maximum-scale=1",
@@ -67,20 +70,40 @@ export const metadata: Metadata = {
   manifest: `${siteConfig.url}/site.webmanifest`,
 };
 
+
+// const interFont = localFont({
+//   src: [{
+//     path: '../fonts/Inter-Black.ttf',
+//     weight: '900',
+//   }, {
+//     path: '../fonts/Inter-Bold.ttf',
+//     weight: '700',
+//   }, {
+//     path: '../fonts/Inter-SemiBold.ttf',
+//     weight: '600',
+//   }, {
+//     path: '../fonts/Inter-Medium.ttf',
+//     weight: '500',
+//   }, {
+//     path: '../fonts/Inter-Regular.ttf',
+//     weight: '400',
+//   }, {
+//     path: '../fonts/Inter-Light.ttf',
+//     weight: '300',
+//   }],
+//   variable: "--font-sans",
+//   display: "swap",
+//   adjustFontFallback: false,
+// })
+
 export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
   return (
-    <ClerkProvider
-      appearance={{
-        elements: {
-          footerAction__signIn: {
-            display: "none",
-          },
-        },
-      }}
+    <
+      AuthSessionProvider
     >
       <html lang="en" suppressHydrationWarning>
         <QueryProvider>
@@ -88,22 +111,22 @@ export default async function RootLayout({
           <body
             className={cn(
               "min-h-screen bg-background font-sans antialiased",
-              fontSans.className,
             )}
           >
-            <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
-              <Toaster theme="dark" />
-              <PageLoaderProvider>
-                <div className={`relative flex min-h-screen flex-col`}>
-                  {children}
-                </div>
-              </PageLoaderProvider>
-            </ThemeProvider>
-
-            <TailwindIndicator />
+            <main className={fontSans.className}>
+              <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
+                <Toaster theme="dark" />
+                <PageLoaderProvider>
+                  <div className={`relative flex min-h-screen flex-col`}>
+                    {children}
+                  </div>
+                </PageLoaderProvider>
+              </ThemeProvider>
+              <TailwindIndicator />
+            </main>
           </body>
         </QueryProvider>
       </html>
-    </ClerkProvider>
+    </AuthSessionProvider>
   );
 }

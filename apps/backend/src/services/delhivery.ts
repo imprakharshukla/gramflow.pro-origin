@@ -27,7 +27,7 @@ type DelhiveryPickupRequest = z.infer<typeof DelhiveryPickupRequestSchema>;
 
 @Service()
 export default class DelhiveryService implements ShippingService {
-  constructor(@Inject("logger") private logger: Logger) {}
+  constructor(@Inject("logger") private logger: Logger) { }
 
   public async syncOrdersWithDelhivery(
     orders: (Orders & { user: Users | null })[],
@@ -149,7 +149,7 @@ export default class DelhiveryService implements ShippingService {
       const response = await fetch(
         env.isDev
           ? //@TODO change this to dev url
-            "https://track.delhivery.com/api/cmu/create.json"
+          "https://track.delhivery.com/api/cmu/create.json"
           : "https://track.delhivery.com/api/cmu/create.json",
         requestOptions,
       );
@@ -218,13 +218,22 @@ export default class DelhiveryService implements ShippingService {
       }
       const json = await pickupResponse.json();
       const validated = DelhiveryPickupSuccessResponseSchema.parse(json);
+      const orderIds = pickupRequestData.order_ids.map((order_id) => {
+        return {
+          id: order_id,
+        };
+      })
       await db.pickups.upsert({
         where: {
           pickup_id: validated.pickup_id,
         },
         update: {
           pickup_location: pickupRequestData.pickup_location,
-          order_id: pickupRequestData.order_ids,
+          Orders: {
+            connect: [
+              ...orderIds
+            ]
+          },
           pickup_date: format(
             new Date(validated.pickup_date),
             "yyyy-MM-dd",
@@ -232,8 +241,12 @@ export default class DelhiveryService implements ShippingService {
         },
         create: {
           pickup_id: validated.pickup_id,
+          Orders: {
+            connect: [
+              ...orderIds
+            ]
+          },
           pickup_location: pickupRequestData.pickup_location,
-          order_id: pickupRequestData.order_ids,
           pickup_date: format(
             new Date(validated.pickup_date),
             "yyyy-MM-dd",

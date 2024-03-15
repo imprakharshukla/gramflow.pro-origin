@@ -19,12 +19,13 @@ export const OrdersModel = z.object({
   height: z.string().nullish(),
   weight: z.string().nullish(),
   shipping_cost: z.number().nullish(),
+  pickup_id: z.string().nullish(),
   bundle_id: z.string().nullish(),
 })
 
 export interface CompleteOrders extends z.infer<typeof OrdersModel> {
   user?: CompleteUsers | null
-  pickup: CompletePickups[]
+  pickup?: CompletePickups | null
   bundles?: CompleteBundles | null
 }
 
@@ -35,6 +36,6 @@ export interface CompleteOrders extends z.infer<typeof OrdersModel> {
  */
 export const RelatedOrdersModel: z.ZodSchema<CompleteOrders> = z.lazy(() => OrdersModel.extend({
   user: RelatedUsersModel.nullish(),
-  pickup: RelatedPickupsModel.array(),
+  pickup: RelatedPickupsModel.nullish(),
   bundles: RelatedBundlesModel.nullish(),
 }))

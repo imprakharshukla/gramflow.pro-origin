@@ -3,19 +3,12 @@
 import { useEffect, useState, type Dispatch, type SetStateAction } from "react";
 import { useRouter } from "next/navigation";
 import { Status } from "@prisma/client";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useQueryClient } from "@tanstack/react-query";
 import { useTheme } from "next-themes";
 import { toast } from "sonner";
 
 import {
   Button,
-  CommandDialog,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-  CommandList,
-  CommandSeparator,
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
@@ -27,6 +20,7 @@ import {
   DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from "@gramflow/ui";
+import useBundleQueryClient from "~/features/hooks/use-bundle-query-client";
 
 export default function DashboardBundlesBulkOptionsSelectComponent({
   advancedDisabled,
@@ -52,47 +46,23 @@ export default function DashboardBundlesBulkOptionsSelectComponent({
   const { setTheme } = useTheme();
   const router = useRouter();
   const queryClient = useQueryClient();
-
+  const bundleQueryClient = useBundleQueryClient();
   const {
-    mutate: updateOrderMutate,
-    isLoading: updateOrderLoading,
-    error: updateOrderError,
-  } = useMutation(
-    async (params: { order_ids: string[]; status: Status; del: boolean }) => {
-      const { order_ids, status, del } = params;
-
-      const res = await fetch(
-        `/api/bundle?order_ids=${order_ids.join(
-          ",",
-        )}&status=${status}&delete=${del}`,
-        {
-          method: "PUT",
-        },
-      );
-      if (!res.ok) {
-        throw new Error(res.status.toString());
-      }
-
-      return res.json();
+    mutate: deleteBundleMutate,
+    isLoading: deleteOrderLoading,
+    error: deleteOrderError,
+  } = bundleQueryClient.deleteBundles.useMutation({
+    onSuccess: async () => {
+      toast.success("Done!");
+      await queryClient.invalidateQueries({
+        queryKey: ["allBundles"],
+      });
+      setRowSelection({});
     },
-    {
-      onSuccess: async () => {
-        console.log("Success");
-        toast.success("Done!");
-        await queryClient.invalidateQueries({
-          queryKey: ["allOrders"],
-        });
-        //set selected rows to empty
-        // @ts-ignore
-        setRowSelection({});
-      },
-      onError: (e) => {
-        console.log("Error");
-        toast.error(`Error ${e}`);
-      },
-    },
-  );
-
+    onError: (e) => {
+      toast.error(`Error ${e}`);
+    }
+  });
 
   const wrapConfirmFunction = (func: any) => {
     return () => {
@@ -100,10 +70,6 @@ export default function DashboardBundlesBulkOptionsSelectComponent({
       setShowConfirmation(true);
     };
   };
-
-  useEffect(() => {
-    setLoading(updateOrderLoading);
-  }, [updateOrderLoading]);
 
   const [open, setOpen] = useState(false);
   useEffect(() => {
@@ -132,114 +98,13 @@ export default function DashboardBundlesBulkOptionsSelectComponent({
     }
   };
 
-  const updateOrders = ({
-    order_ids,
-    status,
-    del,
-  }: {
-    order_ids: string[];
-    status: Status;
-    del: boolean;
-  }) => {
-    updateOrderMutate({
-      order_ids,
-      status,
-      del: del,
-    });
-  };
   return (
     <DropdownMenu>
-      <CommandDialog open={open} onOpenChange={setOpen}>
-        <CommandInput placeholder="Type a command or search..." />
-        <CommandList>
-          <CommandEmpty>No results found.</CommandEmpty>
-          <CommandGroup heading="Selection">
-            <CommandItem
-              onSelect={() => {
-                router.push(`/new`);
-                setOpen(false);
-              }}
-            >
-              Create Order
-            </CommandItem>
-            {Object.keys(Status).map((status) => {
-              return (
-                <CommandItem
-                  onSelect={() => {
-                    selectStatusOrders(status as Status);
-                    setOpen(false);
-                  }}
-                  key={status}
-                >
-                  Select all{" "}
-                  {status.charAt(0).toUpperCase() +
-                    status.slice(1).toLowerCase()}{" "}
-                  orders.
-                </CommandItem>
-              );
-            })}
-          </CommandGroup>
-          <CommandSeparator />
-          <CommandGroup heading="Themes">
-            <CommandItem
-              onSelect={() => {
-                setTheme("light");
-                setOpen(false);
-              }}
-            >
-              Light
-            </CommandItem>
-            <CommandItem
-              onSelect={() => {
-                setTheme("dark");
-                setOpen(false);
-              }}
-            >
-              Dark
-            </CommandItem>
-          </CommandGroup>
-          <CommandSeparator />
-          <CommandGroup heading="Orders">
-            {Object.keys(Status).map((status) => {
-              return (
-                <CommandItem
-                  onSelect={() => {
-                    updateOrders({
-                      order_ids: getSelectedOrderIds(),
-                      status: status as Status,
-                      del: false,
-                    });
-                    setOpen(false);
-                  }}
-                  key={status}
-                >
-                  Mark order(s) as{" "}
-                  {status.charAt(0).toUpperCase() +
-                    status.slice(1).toLowerCase()}
-                  .
-                </CommandItem>
-              );
-            })}
-            <CommandItem
-              onSelect={() => {
-                updateOrders({
-                  order_ids: getSelectedOrderIds(),
-                  status: Status.PENDING,
-                  del: true,
-                });
-                setOpen(false);
-              }}
-            >
-              Delete Order
-            </CommandItem>
-          </CommandGroup>
-        </CommandList>
-      </CommandDialog>
       <DropdownMenuTrigger>
-        <Button variant={"outline"}>Bulk Actions</Button>
+        <Button variant={"outline"}>Actions</Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent>
-        <DropdownMenuLabel>Bulk Actions</DropdownMenuLabel>
+        <DropdownMenuLabel>Actions</DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuSub>
           <DropdownMenuSubTrigger>Select all...</DropdownMenuSubTrigger>
@@ -265,36 +130,6 @@ export default function DashboardBundlesBulkOptionsSelectComponent({
           </DropdownMenuPortal>
         </DropdownMenuSub>
         <DropdownMenuSeparator />
-
-        <DropdownMenuItem
-          disabled={advancedDisabled}
-          onClick={() => {
-            const selected = getSelectedOrderIds();
-            if (selected.length === 0) {
-              toast.error(
-                "Please select at least one order to create shipment",
-              );
-              return;
-            }
-            setConfirmMessage(
-              `Are you sure you want to mark ${selected.length} order as delivered?`,
-            );
-            setShowConfirmation(true);
-
-            setOnConfirmFunction(
-              wrapConfirmFunction(() => {
-                updateOrderMutate({
-                  order_ids: getSelectedOrderIds(),
-                  status: Status.ACCEPTED,
-                  del: false,
-                });
-              }),
-            );
-          }}
-        >
-          Mark as Accepted
-        </DropdownMenuItem>
-        <DropdownMenuSeparator />
         <DropdownMenuItem
           disabled={advancedDisabled}
           className="text-red-600 dark:text-red-300"
@@ -312,11 +147,8 @@ export default function DashboardBundlesBulkOptionsSelectComponent({
             setShowConfirmation(true);
             setOnConfirmFunction(
               wrapConfirmFunction(() => {
-                updateOrderMutate({
-                  order_ids: getSelectedOrderIds(),
-                  status: Status.PENDING,
-                  del: true,
-                });
+                const selected = getSelectedOrderIds();
+                deleteBundleMutate({ query: { bundle_ids: selected.join(",") } });
               }),
             );
           }}

@@ -3,7 +3,7 @@ import { auth } from "@clerk/nextjs";
 import { Redis } from "@upstash/redis";
 import { z } from "zod";
 
-import { Status } from "@gramflow/db";
+import { Status } from "@prisma/client";
 import { AppConfig } from "@gramflow/utils/config.mjs";
 
 import { env } from "~/env.mjs";
@@ -18,10 +18,7 @@ const baseUrl =
   env.ENV === "dev" ? "http://localhost:3000" : AppConfig.BaseAdminUrl;
 
 export async function POST(req: Request) {
-  const { userId }: { userId: string | null } = auth();
-  if (!userId) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
+
 
   const { searchParams } = new URL(req.url);
   const schema = z.object({
@@ -101,10 +98,6 @@ export async function POST(req: Request) {
 }
 
 export async function PUT(req: Request) {
-  const { userId }: { userId: string | null } = auth();
-  if (!userId) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
 
   const { searchParams } = new URL(req.url);
   const schema = z.object({
@@ -155,10 +148,7 @@ export async function PUT(req: Request) {
 }
 
 export async function OPTIONS(req: Request) {
-  const { userId }: { userId: string | null } = auth();
-  if (!userId) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
+
 
   const { searchParams } = new URL(req.url);
   const areBundlesEnabled = searchParams.get("bundles_enabled") ?? "";

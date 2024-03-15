@@ -33,6 +33,7 @@ import {
 import useOrderQueryClient from "~/features/hooks/use-order-query-client";
 import useShippingQueryClient from "~/features/hooks/use-ship-query-client";
 import { downloadBulkOrderFiles } from "./dashboardBulkCsvDownloadButton";
+import useRestClient from "~/features/hooks/use-rest-client";
 
 export default function DashboardBulkOptionsSelectComponent({
   advancedDisabled,
@@ -57,17 +58,16 @@ export default function DashboardBulkOptionsSelectComponent({
 }) {
   const { setTheme } = useTheme();
   const router = useRouter();
+  const { client } = useRestClient();
+  const queryClient = useQueryClient()
 
-  const orderQueryClient = useOrderQueryClient();
-  const queryClient = useQueryClient();
-  const shippingQueryClient = useShippingQueryClient();
 
   const [isFileDownloadLoading, setIsFileDownloadLoading] = useState(false);
   const {
     mutate: createShipmentMutate,
     isLoading: createShipmentLoading,
     error: createShipmentError,
-  } = shippingQueryClient.createShipment.useMutation({
+  } = client.ship.createShipment.useMutation({
     onSuccess: async () => {
       toast.success("Shipment Created");
 
@@ -91,7 +91,7 @@ export default function DashboardBulkOptionsSelectComponent({
         },
       });
       await queryClient.invalidateQueries({
-        queryKey: ["allOrders"],
+        queryKey: ["orders"],
       });
     },
     onError: (e) => {
@@ -120,12 +120,11 @@ export default function DashboardBulkOptionsSelectComponent({
         .then((href) => {
           Object.assign(document.createElement("a"), {
             href,
-            download: `${
-              new Date().toDateString() +
+            download: `${new Date().toDateString() +
               " " +
               new Date().toLocaleTimeString() +
               "_shipping"
-            }.pdf`,
+              }.pdf`,
           }).click();
         });
     } catch (e) {
@@ -139,11 +138,11 @@ export default function DashboardBulkOptionsSelectComponent({
     mutate: mergeOrderMutate,
     isLoading: mergeOrderLoading,
     error: mergeOrderError,
-  } = orderQueryClient.mergeOrders.useMutation({
+  } = client.order.mergeOrders.useMutation({
     onSuccess: async () => {
       toast.success("Done!");
       await queryClient.invalidateQueries({
-        queryKey: ["allOrders"],
+        queryKey: ["orders"],
       });
       //set selected rows to empty
       // @ts-ignore
@@ -159,11 +158,11 @@ export default function DashboardBulkOptionsSelectComponent({
     mutate: syncOrdersMutate,
     isLoading: syncOrdersLoading,
     error: syncOrdersError,
-  } = shippingQueryClient.syncShipments.useMutation({
+  } = client.ship.syncShipments.useMutation({
     onSuccess: async () => {
       toast.success("Done!");
       await queryClient.invalidateQueries({
-        queryKey: ["allOrders"],
+        queryKey: ["orders"],
       });
     },
 
@@ -177,11 +176,11 @@ export default function DashboardBulkOptionsSelectComponent({
     mutate: deleteOrderMutate,
     isLoading: deleteOrderLoading,
     error: deleteOrderError,
-  } = orderQueryClient.deleteOrders.useMutation({
+  } = client.order.deleteOrders.useMutation({
     onSuccess: async () => {
       toast.success("Done!");
       await queryClient.invalidateQueries({
-        queryKey: ["allOrders"],
+        queryKey: ["orders"],
       });
       //set selected rows to empty
       // @ts-ignore
@@ -197,11 +196,11 @@ export default function DashboardBulkOptionsSelectComponent({
     mutate: updateOrderMutate,
     isLoading: updateOrderLoading,
     error: updateOrderError,
-  } = orderQueryClient.updateOrders.useMutation({
+  } = client.order.updateOrders.useMutation({
     onSuccess: async () => {
       toast.success("Done!");
       await queryClient.invalidateQueries({
-        queryKey: ["allOrders"],
+        queryKey: ["orders"],
       });
       //set selected rows to empty
       // @ts-ignore
@@ -223,11 +222,11 @@ export default function DashboardBulkOptionsSelectComponent({
   useEffect(() => {
     setLoading(
       createShipmentLoading ||
-        updateOrderLoading ||
-        isFileDownloadLoading ||
-        mergeOrderLoading ||
-        syncOrdersLoading ||
-        deleteOrderLoading,
+      updateOrderLoading ||
+      isFileDownloadLoading ||
+      mergeOrderLoading ||
+      syncOrdersLoading ||
+      deleteOrderLoading,
     );
   }, [
     createShipmentLoading,

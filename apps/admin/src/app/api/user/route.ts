@@ -4,10 +4,7 @@ import { auth } from "@clerk/nextjs";
 import { prisma } from "../../../lib/prismaClient";
 
 export async function GET(req: Request) {
-  const { userId }: { userId: string | null } = auth();
-  if (!userId) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
+
 
   const { searchParams } = new URL(req.url);
   console.log(req.url);

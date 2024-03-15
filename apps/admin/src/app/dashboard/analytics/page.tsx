@@ -1,7 +1,7 @@
 "use client"
-import {Card, Grid} from "@tremor/react";
+import { Card, Grid } from "@tremor/react";
 
-import RevenueChart from "../components/analytics/revenueChart";
+import AnanlyticCharts from "../components/analytics/revenueChart";
 
 export default function AnalyticsPage() {
 
@@ -12,7 +12,7 @@ export default function AnalyticsPage() {
             {/*</div>*/}
 
             <Grid numItemsMd={1} numItemsLg={1} className="mt-6 gap-6">
-                <RevenueChart/>
+                <AnanlyticCharts />
             </Grid>
         </>
     );

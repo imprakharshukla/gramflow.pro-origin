@@ -10,3 +10,12 @@ export const OrderEmailSchema = z.object({
   state: z.string().default("New York City"),
   country: z.string().default("USA"),
 });
+
+export const EmailBaseZodSchema = z.object({
+  storeName: z.string(),
+  storeInstagramUsername: z.string(),
+  baseOrderUrl: z.string(),
+  warehouseCity: z.string(),
+  warehouseCountry: z.string(),
+  warehouseState: z.string(),
+})

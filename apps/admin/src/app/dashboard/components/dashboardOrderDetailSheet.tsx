@@ -1,17 +1,14 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Image from "next/image";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { Email } from "@clerk/nextjs/dist/types/server";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { COURIER, Status } from "@prisma/client";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQueryClient } from "@tanstack/react-query";
 import { Badge as StatusBadge, type Color } from "@tremor/react";
+import useRestClient from "~/features/hooks/use-rest-client";
 import { format } from "date-fns";
 import {
-  ArrowRight,
   ChevronRight,
   Instagram,
   Loader2,
@@ -29,12 +26,6 @@ import {
   Button,
   Card,
   CardContent,
-  Drawer,
-  DrawerClose,
-  DrawerContent,
-  DrawerDescription,
-  DrawerHeader,
-  DrawerTitle,
   Form,
   FormControl,
   FormField,
@@ -55,13 +46,11 @@ import {
   SheetFooter,
   SheetHeader,
   SheetTitle,
-  useMediaQuery,
 } from "@gramflow/ui";
 import { SheetClose, SheetTrigger } from "@gramflow/ui/src/sheet";
 import { AppConfig, cn } from "@gramflow/utils";
 import { OrderShippingUpdateSchema } from "@gramflow/utils/src/schema";
 
-import useOrderQueryClient from "~/features/hooks/use-order-query-client";
 import { DashboardBundleDetailSheet } from "./bundles/dashboardBundleDetailSheet";
 import { RecordText } from "./recordText";
 
@@ -100,19 +89,15 @@ export const pillColors: { [key: string]: Color } = {
 };
 
 const UpdateForm = ({ order }: { order: CompleteOrders }) => {
+  const { client } = useRestClient();
   const queryClient = useQueryClient();
-  const orderQueryClient = useOrderQueryClient();
-
   const { mutate: updateOrderMutate, isLoading: updateOrderLoading } =
-    orderQueryClient.updateOrders.useMutation({
+    client.order.updateOrders.useMutation({
       onSuccess: async () => {
         toast.success("Done!");
         await queryClient.invalidateQueries({
-          queryKey: ["allOrders"],
+          queryKey: ["orders"],
         });
-        //set selected rows to empty
-        // @ts-ignore
-        setRowSelection({});
       },
       onError: (e) => {
         console.log("Error");
@@ -219,7 +204,6 @@ const UpdateForm = ({ order }: { order: CompleteOrders }) => {
                       }) || []}
                     </SelectContent>
                   </Select>
-
                   <FormMessage />
                 </FormItem>
               )}
@@ -362,6 +346,25 @@ export function DashboardOrderDetailSheet({
 }: {
   order: CompleteOrders | null;
 }) {
+
+  const height = order?.height;
+  const length = order?.length;
+  const weight = order?.weight;
+  const breadth = order?.breadth;
+  let packageSize = "Custom";
+  Object.entries(AppConfig.DefaultPackageDetails).forEach(
+    ([key, value]) => {
+      if (
+        value.height === height &&
+        value.length === length &&
+        value.weight === weight &&
+        value.breadth === breadth
+      ) {
+        packageSize = key;
+      }
+    },
+  );
+
   return (
     <>
       <SheetContent
@@ -391,6 +394,9 @@ export function DashboardOrderDetailSheet({
                 >
                   {order.status.slice(0, 1) +
                     order.status.slice(1).toLowerCase()}
+                </StatusBadge>
+                <StatusBadge className="-ml-1" color="orange">
+                  {packageSize.slice(0, 1) + packageSize.slice(1).toLowerCase()}
                 </StatusBadge>
               </div>
               <div

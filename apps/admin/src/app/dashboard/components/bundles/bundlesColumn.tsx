@@ -1,11 +1,9 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import { type ColumnDef } from "@tanstack/react-table";
 import { Badge as StatusBadge, type Color } from "@tremor/react";
 import { format } from "date-fns";
-import { useAtom } from "jotai";
 import { ArrowUpDown, ExternalLink } from "lucide-react";
 
 import { type CompleteBundles } from "@gramflow/db/prisma/zod";
@@ -16,31 +14,24 @@ import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-  Sheet,
-  SheetTrigger,
 } from "@gramflow/ui";
-import { AppConfig } from "@gramflow/utils";
 
-import { isBundleDetailOpenAtom } from "~/stores/dashboardStore";
-import Dashboard from "../../page";
 import {
-  DashboardBundleDetailSheet,
   pillColors,
   sizePillColors,
 } from "./dashboardBundleDetailSheet";
 
 export const columns: ColumnDef<CompleteBundles>[] = [
   {
-    accessorKey: "image",
-    id: "image",
+    accessorKey: "check",
+    id: "check",
     header: ({ table }) => (
-      <div className={"pointer-cursor flex w-40 items-center space-x-4"}>
+      <div className={"pointer-cursor flex items-center space-x-4"}>
         <Checkbox
           checked={table.getIsAllPageRowsSelected()}
           onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
           aria-label="Select all"
         />
-        <p className={"ml-4"}>Product</p>
       </div>
     ),
     cell: ({ row }) => {
@@ -54,50 +45,54 @@ export const columns: ColumnDef<CompleteBundles>[] = [
                 onCheckedChange={(value) => row.toggleSelected(!!value)}
                 aria-label="Select row"
               />
+            </div>
+          }
+        </div>
 
+
+      );
+    },
+  },
+  {
+    accessorKey: "image",
+    id: "image",
+    cell: ({ row }) => {
+      return (
+        <div className="w-32">
+          {
+            <div className={"flex"}>
               <div className={"relative"}>
-                <Sheet key={row.id}>
-                  <SheetTrigger asChild className={""}>
+                {
+                  row.original.images[0] ? (
                     <div>
-                      {/*// row.original.images.map((image, index) => (*/}
-                      {/*// <Image*/}
-                      {/*//     key={index}*/}
-                      {/*//     className={`absolute top-0 left-0 mt-${6 * index} ml-${6 * index} hover:shadow-outline cursor-pointer`}*/}
-                      {/*//     src={image}*/}
-                      {/*//     alt={`product_image_${index}`}*/}
-                      {/*//     width={100}*/}
-                      {/*//     height={100}*/}
-                      {/*//     style={{zIndex: row.original.images.length - index}}*/}
-                      {/*//   />*/}
-                      {/*// ))*/}
+                      <img
+                        alt={"product_image"}
+                        src={row.original.images[0]}
+                        width={100}
+                        height={100}
+                        className="rounded-md"
+                      />
                       {
-                        //todo do something to display multiple images
-                        row.original.images[0] ? (
-                          <Image
-                            alt={"product_image"}
-                            src={row.original.images[0]}
-                            width={100}
-                            height={50}
-                            className="rounded-md"
-                          />
-                        ) : (
-                          <p className="mx-auto w-full rounded-md text-center font-medium">
-                            No Image
-                          </p>
-                        )
+                        row.original.images.length > 1 &&
+                        <Badge variant={"secondary"} className="absolute rounded-full top-2 right-2">
+                          {`${row.original.images.length}`}
+                        </Badge>
                       }
                     </div>
-                  </SheetTrigger>
-                  <DashboardBundleDetailSheet bundle={row.original} />
-                </Sheet>
+                  ) : (
+                    <p className="mx-auto w-full rounded-md text-center font-medium">
+                      No Image
+                    </p>
+                  )
+                }
               </div>
             </div>
           }
         </div>
+
+
       );
     },
-
-    minSize: 800,
   },
   {
     accessorKey: "bundle_size",

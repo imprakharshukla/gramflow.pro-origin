@@ -1,28 +1,9 @@
 import { type Metadata } from "next";
-import { useSearchParams } from "next/navigation";
-import {
-  Card,
-  Grid,
-  Tab,
-  TabGroup,
-  TabList,
-  TabPanel,
-  TabPanels,
-  Text,
-  Title,
-} from "@tremor/react";
 import { Redis } from "@upstash/redis";
 import { format } from "date-fns";
-import { useAtom } from "jotai";
 
-import { OrderTable } from "~/app/dashboard/components/orderTableComponent";
 import { env } from "~/env.mjs";
 import { prisma } from "~/lib/prismaClient";
-import KpiCards from "./components/analytics/kpiCards";
-import NumberOfOrdersChart from "./components/analytics/numberOfOrderChart";
-import RevenueChart from "./components/analytics/revenueChart";
-import { BundlesTable } from "./components/bundles/bundleTableComponent";
-import { DashboardNavigation } from "./components/dashboardNavigation";
 
 export const metadata: Metadata = {
   title: "Dashboard",
@@ -56,7 +37,7 @@ export default async function Dashboard({
   const areBundlesAvailable = (await redis.get<boolean>("bundles")) ?? false;
   return (
     <>
-    
+
     </>
   );
 }

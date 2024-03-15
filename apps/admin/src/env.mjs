@@ -11,6 +11,8 @@ export const env = createEnv({
     DATABASE_URL: z.string().url(),
     DIRECT_URL: z.string().url(),
 
+    NEXTAUTH_SECRET: z.string(),
+
     //upstash
     UPSTASH_URL: z.string(),
     UPSTASH_TOKEN: z.string(),
@@ -80,6 +82,8 @@ export const env = createEnv({
     NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY:
       process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY,
     NEXT_PUBLIC_CLERK_SIGN_IN_URL: process.env.NEXT_PUBLIC_CLERK_SIGN_IN_URL,
+
+    NEXTAUTH_SECRET: process.env.NEXTAUTH_SECRET,
 
     //prisma
     DATABASE_URL: process.env.DATABASE_URL,

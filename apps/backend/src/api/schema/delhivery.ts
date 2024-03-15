@@ -204,7 +204,7 @@ export const DelhiveryTrackingSchema = z.object({
         ReturnPromisedDeliveryDate: z.string().nullish(),
         Ewaybill: z.array(z.unknown()),
         InvoiceAmount: z.number(),
-        ChargedWeight: z.string().nullish(),
+        ChargedWeight: z.number().nullish(),
         PickedupDate: z.string().nullish(),
         DeliveryDate: z.string().nullish(),
         SenderName: z.string(),

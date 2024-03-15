@@ -10,8 +10,8 @@ export default withUt({
     "./src/**/*.{ts,tsx,mdx}",
   ],
   presets: [baseConfig],
-  theme:{
-    extend:{
+  theme: {
+    extend: {
       backgroundImage: {
         'bg': "url('/bg.png')",
       }

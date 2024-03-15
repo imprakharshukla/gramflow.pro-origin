@@ -21,10 +21,7 @@ import { prisma } from "../../../lib/prismaClient";
 
 const resend = new Resend(env.RESEND_API_KEY);
 export async function GET(req: Request) {
-  const { userId }: { userId: string | null } = auth();
-  if (!userId) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
+
 
   const { searchParams } = new URL(req.url);
   console.log(req.url);
@@ -61,10 +58,7 @@ export async function GET(req: Request) {
 }
 
 export function DELETE(req: Request) {
-  const { userId }: { userId: string | null } = auth();
-  if (!userId) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
+
 
   const { searchParams } = new URL(req.url);
   const schema = z.object({
@@ -88,10 +82,7 @@ export function DELETE(req: Request) {
 }
 
 export async function PUT(req: Request) {
-  const { userId }: { userId: string | null } = auth();
-  if (!userId) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
+
 
   const { searchParams } = new URL(req.url);
   const schema = z.object({
@@ -142,20 +133,13 @@ export async function PUT(req: Request) {
 }
 
 export async function POST(req: Request) {
-  const { userId }: { userId: string | null } = auth();
-  if (!userId) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
+
   try {
     // @ts-ignore
     const data = await req.json();
     const headers = req.headers;
     // check if user is authenticated
-    const { userId }: { userId: string | null } = auth();
 
-    if (!userId) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
     console.log({ data });
     const validated = AddOrderPostSchema.parse(data);
     console.log({ validated });
@@ -194,10 +178,7 @@ export async function POST(req: Request) {
 }
 
 export async function OPTIONS(req: Request) {
-  const { userId }: { userId: string | null } = auth();
-  if (!userId) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
+
   //send emails to the selected users
   try {
     //get data from request as url params

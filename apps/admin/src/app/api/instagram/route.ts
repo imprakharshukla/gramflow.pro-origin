@@ -123,10 +123,7 @@ export const GET = async (req: Request) => {
   try {
     // get the count from the query
     // await kv.set("total_posts", 84);
-    const { userId }: { userId: string | null } = auth();
-    if (!userId) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
+
     const { searchParams } = new URL(req.url);
     const count = searchParams.get("count") ?? 0;
     if (!count) {

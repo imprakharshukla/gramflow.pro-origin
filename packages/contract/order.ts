@@ -3,7 +3,6 @@ import { z } from "zod";
 
 import { OrderInputZodSchema } from "../../apps/backend/src/interfaces/IOrder";
 import { OrdersModel } from "../db/prisma/zod";
-import { SearchParam } from ".";
 
 const c = initContract();
 
@@ -22,6 +21,7 @@ export const orderContract = c.router({
     path: "/order",
     responses: {
       200: z.string(),
+      400: z.string(),
     },
     body: z.object({
       update: OrdersModel.partial().omit({ id: true }),
@@ -32,6 +32,7 @@ export const orderContract = c.router({
   deleteOrders: {
     method: "DELETE",
     path: "/order",
+
     responses: {
       200: z.string(),
     },

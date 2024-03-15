@@ -11,10 +11,7 @@ import {
 
 export async function GET(req: Request) {
   try {
-    const { userId }: { userId: string | null } = auth();
-    if (!userId) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
+
     const { searchParams } = new URL(req.url);
     console.log({ url: req.url });
     const pageIndex = searchParams.get("page");
@@ -50,10 +47,7 @@ export async function GET(req: Request) {
 
 export async function PUT(req: Request) {
   try {
-    const { userId }: { userId: string | null } = auth();
-    if (!userId) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
+
     const body = await req.json();
     console.log({ body });
     const validated = BundleShippingUpdateSchemaWithOrderId.parse(body);

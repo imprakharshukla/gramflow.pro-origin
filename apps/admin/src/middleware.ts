@@ -1,9 +1,13 @@
-import { authMiddleware } from "@clerk/nextjs";
+import { withAuth } from "next-auth/middleware"
 
-export default authMiddleware({
-  // "/" will be accessible to all users
-  publicRoutes: ["/api/trigger", "/api/status", "/api/uploadthing", "/label"],
-});
 export const config = {
-  matcher: ["/((?!.*\\..*|_next).*)", "/", "/(api|trpc)(.*)"],
+    matcher: ["/((?!.+\\.[\\w]+$|_next).*)", "/", "/(api|trpc)(.*)"],
 };
+
+export default withAuth({
+    // Matches the pages config in `[...nextauth]`
+    pages: {
+        signIn: '/login',
+        error: '/error',
+    }
+})

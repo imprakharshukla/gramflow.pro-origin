@@ -15,49 +15,60 @@ import {
   Section,
   Tailwind,
   Text,
+  render,
 } from "@react-email/components";
+import { z } from "zod";
+import { EmailBaseZodSchema } from "./schema";
 
-import { AppConfig } from "@gramflow/utils";
+const OtpEmailZodSchema = EmailBaseZodSchema.extend({
+  otp: z.string().optional(),
+  loginLink: z.string().optional(),
+})
 
-export const OtpEmail = ({ otp = "0000" }: { otp: string }) => {
+const OtpEmail = (emailDetails: z.infer<typeof OtpEmailZodSchema>) => {
   return (
     <Html>
       <Head />
-      <Preview>
-       Your OTP from {AppConfig.StoreName} (@{AppConfig.InstagramUsername}) is {otp}.
-      </Preview>
+      {emailDetails.otp ?
+        <Preview>
+          Your OTP from {emailDetails.storeName} (@{emailDetails.storeInstagramUsername}) is {emailDetails.otp}.
+        </Preview>
+        : <Preview>Continue with your {emailDetails.storeName}'s order</Preview>
+      }
       <Tailwind>
         <Body className="mx-auto my-auto bg-white font-sans">
           <Container className="mx-auto my-[40px] w-[465px] rounded border border-solid border-[#eaeaea] p-[20px]">
             <Section className="mt-[32px]">
               <Img
-                src={`${AppConfig.BaseOrderUrl}/cl_email_logo.png`}
+                src={`${emailDetails.baseOrderUrl}/cl_email_logo.png`}
                 height="80"
-                alt={`${AppConfig.StoreName} Logo`}
+                alt={`${emailDetails.storeName} Logo`}
                 className="mx-auto my-0"
               />
               <Heading className="pt-3 text-center text-2xl">
-                Here is your OTP
+                {emailDetails.otp ? "Here is your OTP" : "Continue with your order"}
               </Heading>
               <Text className="text-center text-xs text-gray-500">
-                Please use this OTP to verify your email address.
+                {emailDetails.otp ? "Please use this OTP to verify your email address." : "Please click the button below to continue with your order."}
               </Text>
             </Section>
             <Hr />
-            <Section className="mx-auto gap-2">
-              <Section style={codeContainer}>
-                <Text style={code}>{otp}</Text>
-              </Section>
-            </Section>
+            {emailDetails.otp ?
+              <Section className="mx-auto gap-2">
+                <Section style={codeContainer}>
+                  <Text style={code}>{emailDetails.otp}</Text>
+                </Section>
+              </Section> : <Button className="mx-auto" href={emailDetails.loginLink}>Continue with your order</Button>
+            }
             <Hr />
 
             <Section>
               <Text className="-mb-2 font-semibold">Not Requested?</Text>
               <Text className="text-sm text-gray-500">
-                If you have not requested the OTP, please let us know at {" "}
+                If you have not requested the {emailDetails.otp ? "OTP" : "link"}, please let us know at {" "}
                 <Link
                   className="text-pink-600 underline"
-                  href={`https://instagram.com/${AppConfig.InstagramUsername}`}
+                  href={`https://instagram.com/${emailDetails.storeInstagramUsername}`}
                 >
                   @re_skinn
                 </Link>
@@ -66,10 +77,10 @@ export const OtpEmail = ({ otp = "0000" }: { otp: string }) => {
             </Section>
             <Hr className="-mb-2 mt-6" />
             <Section style={paddingY}>
-                         <Img
-                src={`${AppConfig.BaseOrderUrl}/cl_email_logo.png`}
+              <Img
+                src={`${emailDetails.baseOrderUrl}/cl_email_logo.png`}
                 height="80"
-                alt={`${AppConfig.StoreName} Logo`}
+                alt={`${emailDetails.storeName} Logo`}
                 className="mx-auto my-0 shadow rounded-full"
               />
               <Row>
@@ -94,13 +105,13 @@ export const OtpEmail = ({ otp = "0000" }: { otp: string }) => {
                 this email, we won't be able to see it)
               </Text>
               <Text style={footer.text}>
-                © {new Date().getFullYear()} {AppConfig.StoreName}, All Rights
+                © {new Date().getFullYear()} {emailDetails.storeName}, All Rights
                 Reserved.
               </Text>
               <Text style={footer.text}>
-                {AppConfig.StoreName}, {AppConfig.WarehouseDetails.city},{" "}
-                {AppConfig.WarehouseDetails.state},{" "}
-                {AppConfig.WarehouseDetails.country}.
+                {emailDetails.storeName}, {emailDetails.warehouseCity},{" "}
+                {emailDetails.warehouseState},{" "}
+                {emailDetails.warehouseCountry}.
               </Text>
             </Section>
           </Container>
@@ -224,3 +235,9 @@ const footer = {
     textAlign: "center",
   } as React.CSSProperties,
 };
+
+export const OtpEmailHtml = ({
+  emailDetails
+}: {
+  emailDetails: z.infer<typeof OtpEmailZodSchema>
+}) => render(OtpEmail(emailDetails), {});

@@ -2,8 +2,9 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useUser } from "@clerk/nextjs";
-import { Status } from "@prisma/client";
 import { useMutation } from "@tanstack/react-query";
+import { motion } from "framer-motion"
+
 import {
     VisibilityState,
     flexRender,
@@ -36,6 +37,7 @@ import { toast } from "sonner";
 import { orderContract } from "@gramflow/contract";
 import { type CompleteOrders } from "@gramflow/db/prisma/zod";
 import {
+    Badge,
     Button,
     Calendar,
     Card,
@@ -65,14 +67,19 @@ import {
     TableRow,
 } from "@gramflow/ui";
 import { AppConfig, cn } from "@gramflow/utils";
-
-import useAuthToken from "~/features/hooks/use-auth-token";
 import { DatePickerWithRange } from "~/features/ui/components/dateRangePicker";
 import DashboardBulkOptionsSelectComponent from "./components/dashboadBulkOptionsSelect";
 import DashboardBulkCsvDownloadButton from "./components/dashboardBulkCsvDownloadButton";
 import DashboardConfirmModal from "./components/dashboardConfirmModal";
 import DashboardSelectedRowDisplayCard from "./components/dashboardSelectedRowDisplayCard";
+import useSessionWithLoading from "~/features/hooks/use-session-auth";
+import useOrderQueryClient from "~/features/hooks/use-order-query-client";
 type SearchParamKey = keyof typeof SearchParams;
+import { useInView } from "react-intersection-observer";
+import { useCallback } from "react";
+import useAuthToken from "~/features/hooks/use-auth-token";
+import useRestClient from "~/features/hooks/use-rest-client";
+import { Status } from "@prisma/client";
 
 export const SearchParams = {
     Order_ID: "id",
@@ -80,8 +87,7 @@ export const SearchParams = {
     Email: "user.email",
     Name: "user.name",
     Username: "user.instagram_username",
-    Phone_Number: "user.phone_number",
-    Bundle: "bundle",
+    Phone_Number: "user.phone_no",
 };
 
 interface DataTablePaginationProps<TData> {
@@ -104,18 +110,23 @@ export function DataTable<TData, TValue>({
     columns,
     onRowClick,
 }: DataTableProps<TData, TValue>) {
-    const { user } = useUser();
-
+    const { loading: isAuthLoading, session } = useSessionWithLoading();
+    const { token: authToken, error: authTokenError, loading: isAuthTokenLoading } = useAuthToken();
+    const { ref, inView } = useInView();
+    const tableContainerRef = useRef<HTMLDivElement>(null)
+    const LIMIT = 20;
     const [sorting, setSorting] = useState<SortingState>([]);
     const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
     const [rowSelection, setRowSelection] = useState({});
+    const [orderData, setOrderData] = useState<CompleteOrders[]>([]);
+    const [orderCount, setOrderCount] = useState<number>(-1);
 
     const [advancedDisabled, setAdvancedDisabled] = useState(true);
 
     const [showConfirmation, setShowConfirmation] = useState(false);
 
     const [loading, setLoading] = useState(false);
-
+    const { client } = useRestClient();
     const [onConfirmFunction, setOnConfirmFunction] =
         useState<NullableVoidFunction>(null);
     const [confirmMessage, setConfirmMessage] = useState("");
@@ -127,11 +138,6 @@ export function DataTable<TData, TValue>({
         pageIndex: 0,
         pageSize: 20,
     });
-    const fetchDataOptions = {
-        pageIndex,
-        pageSize,
-        search: "",
-    };
     const [searchTerm, setSearchTerm] = useState("");
     const [selectedStatus, setSelectedStatus] = useState<Status | "All" | "Bundle">("All");
     const [searchParam, setSearchParam] = useState(SearchParams.Order_ID);
@@ -140,79 +146,89 @@ export function DataTable<TData, TValue>({
         from: subDays(new Date(), 30),
         to: new Date(),
     });
-    const { mutate: createPickupMutation, isLoading: createPickupLoading } =
-        useMutation(
-            async (data: { pickup_date: Date; expected_package_count: number }) => {
-                const response = await fetch("/api/pickup", {
-                    method: "POST",
+
+
+    const { isLoading, error, isFetching, refetch: refetchOrderData, isRefetching, hasNextPage, fetchNextPage, isFetchingNextPage } =
+        client?.order.getOrders.useInfiniteQuery(
+            ["orders", pageIndex, pageSize, dateRange, searchTerm],
+            ({ pageParam = 1 }) => {
+                return {
                     headers: {
-                        "Content-Type": "application/json",
+                        authorization: `Bearer ${authToken}`
                     },
-                    body: JSON.stringify({ order_ids: getSelectedOrderIds(), ...data }),
-                });
-                if (response.ok) {
-                    return response.json();
-                } else {
-                    const error = await response.json();
-                    console.log(error);
-                    throw new Error(error.error);
-                }
+                    query: {
+                        page: pageParam.toString(),
+                        pageSize: pageSize.toString(),
+                        from:
+                            dateRange?.from?.valueOf().toString() ??
+                            subDays(new Date(), 30).valueOf().toString(),
+                        to:
+                            dateRange?.to?.valueOf().toString() ??
+                            new Date().valueOf().toString(),
+                        searchTerm: searchTerm.length > 0 ? searchTerm : undefined,
+                    },
+                };
             },
             {
+
+                getNextPageParam: (lastPage, allPages) => {
+                    const nextPage =
+                        lastPage.body.orders.length === LIMIT ? allPages.length + 1 : undefined;
+                    return nextPage;
+                },
                 onSuccess: (data) => {
-                    toast.success("Pickup request created successfully");
-                    setPickupDialogOpen(false);
+                    setOrderData(data.pages.flatMap((page) => page.body.orders));
+                    console.log({ count: data.pages.flatMap((page) => page.body.count)[0] })
+                    setOrderCount(data.pages.flatMap((page) => page.body.count)[0] ?? -1);
                 },
-                onError: (error: any) => {
-                    toast.error("" + error);
-                },
-            },
-        );
-
-    const { token } = useAuthToken();
-    const client = initQueryClient(orderContract, {
-        baseUrl: "http://localhost:3002/api",
-        baseHeaders: {
-            Authorization: `Bearer ${token}`,
-        },
-    });
-
-    //@TODO rename the query to something more meaningful
-    const { data, isLoading, error, isFetching, refetch, isRefetching } =
-        client.getOrders.useQuery(
-            ["allOrders", pageIndex, pageSize, dateRange, searchTerm],
-            {
-                query: {
-                    page: pageIndex.toString(),
-                    pageSize: pageSize.toString(),
-                    from:
-                        dateRange?.from?.valueOf().toString() ??
-                        subDays(new Date(), 30).valueOf().toString(),
-                    to:
-                        dateRange?.to?.valueOf().toString() ??
-                        new Date().valueOf().toString(),
-                    searchTerm: searchTerm.length > 0 ? searchTerm : undefined,
-                },
-            },
-            {
+                enabled: authToken !== null, // Assuming authToken check is done inside the async function
                 // refetchInterval: 10000,
             },
         );
+
+    const totalDBRowCount = orderCount
+    const totalFetched = orderData.length
+
+
+    // called on scroll and possibly on mount to fetch more data as the user scrolls and reaches bottom of table
+    const fetchMoreOnBottomReached = useCallback(
+        (containerRefElement?: HTMLDivElement | null) => {
+            if (containerRefElement) {
+                const { scrollHeight, scrollTop, clientHeight } = containerRefElement
+                console.log({ totalDBRowCount, totalFetched, scrollHeight, scrollTop, clientHeight, diff: scrollHeight - scrollTop - clientHeight < 500 })
+                //once the user has scrolled within 500px of the bottom of the table, fetch more data if we can
+                if (
+                    scrollHeight - scrollTop - clientHeight < 500 &&
+                    !isFetching &&
+                    totalFetched <= totalDBRowCount &&
+                    authToken
+                ) {
+                    fetchNextPage()
+                }
+            }
+        },
+        [fetchNextPage, isFetching, totalFetched, totalDBRowCount]
+    )
+
+    //a check on mount and after a fetch to see if the table is already scrolled to the bottom and immediately needs to fetch more data
+    useEffect(() => {
+        fetchMoreOnBottomReached(tableContainerRef.current)
+    }, [fetchMoreOnBottomReached])
+
 
     const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
 
     useEffect(() => {
         if (searchTerm === "") {
-            toast.info("No search term set")
             setPagination({ pageIndex: 0, pageSize: 20 });
-        } else {
-            toast.info("Search term set:" + searchTerm);
         }
-        refetch();
-    }, [searchTerm]);
+        if (authToken)
+            refetchOrderData();
+    }, [searchTerm, authToken]);
     useEffect(() => {
-        refetch();
-    }, [pageIndex, pageSize]);
+        if (authToken)
+            refetchOrderData();
+    }, [pageIndex, pageSize, authToken]);
     const pagination = useMemo(
         () => ({
             pageIndex,
@@ -221,8 +237,9 @@ export function DataTable<TData, TValue>({
         [pageIndex, pageSize],
     );
 
+
     const table = useReactTable({
-        data: data?.body?.orders ?? [],
+        data: orderData ?? [],
         columns,
         getCoreRowModel: getCoreRowModel(),
         onSortingChange: setSorting,
@@ -230,10 +247,10 @@ export function DataTable<TData, TValue>({
         onColumnFiltersChange: setColumnFilters,
         getFilteredRowModel: getFilteredRowModel(),
         onRowSelectionChange: setRowSelection,
-        getPaginationRowModel: getPaginationRowModel(),
-        pageCount: data?.body?.count ?? -1,
+        // getPaginationRowModel: getPaginationRowModel(),
+        // pageCount: orderCount,
         manualPagination: true,
-        onPaginationChange: setPagination,
+        // onPaginationChange: setPagination,
         onColumnVisibilityChange: setColumnVisibility,
         state: {
             sorting,
@@ -246,24 +263,34 @@ export function DataTable<TData, TValue>({
 
     useEffect(() => {
         if (
-            user &&
-            user.primaryEmailAddress &&
-            AppConfig.MasterEmails.includes(user.primaryEmailAddress.emailAddress)
+            session &&
+            session.user?.email && AppConfig.AdminEmails.includes(session.user?.email)
         ) {
             setAdvancedDisabled(false);
         } else {
             setAdvancedDisabled(true);
         }
-    }, [user]);
+    }, [session]);
+    useEffect(() => {
+        if (authToken) {
+            refetchOrderData()
+        }
+    }, [pageIndex, pageSize]);
 
     useEffect(() => {
         if (selectedStatus === "bundle") {
             // set the table to only show the bundles
             setSearchTerm("bundle");
         } else if (selectedStatus === "All") {
+            if (searchTerm === "bundle") {
+                setSearchTerm("")
+            }
             table.resetColumnFilters();
             table.resetGlobalFilter();
         } else {
+            if (searchTerm === "bundle") {
+                setSearchTerm("")
+            }
             table
                 .setColumnFilters([
                     {
@@ -282,7 +309,7 @@ export function DataTable<TData, TValue>({
         const order_ids: string[] = [];
         order_ids_index.map((order_index) => {
             // @ts-ignore
-            order_ids.push(data?.body.orders[order_index].id);
+            order_ids.push(orderData[order_index].id);
         });
         return order_ids;
     };
@@ -310,10 +337,6 @@ export function DataTable<TData, TValue>({
                 column.toggleVisibility(false);
             });
     }, [table]);
-
-    useEffect(() => {
-        toast.info("Refetching Data")
-    }, [isRefetching])
     return (
         <div>
             <DashboardConfirmModal
@@ -324,7 +347,7 @@ export function DataTable<TData, TValue>({
             ></DashboardConfirmModal>
             <Card className={"flex w-fit items-center justify-center lg:hidden"}>
                 <DashboardSelectedRowDisplayCard
-                    data={data?.body?.orders}
+                    data={orderData}
                     rowSelection={rowSelection}
                 />
             </Card>
@@ -337,7 +360,7 @@ export function DataTable<TData, TValue>({
                                 setSearchParam(value);
                             }}
                         >
-                            <SelectTrigger className="w-fit">
+                            <SelectTrigger className="w-1/4 lg:w-fit">
                                 <SelectValue placeholder="Search by" />
                             </SelectTrigger>
                             <SelectContent>
@@ -351,7 +374,6 @@ export function DataTable<TData, TValue>({
                                         </SelectItem>
                                     ),
                                 )}
-
                             </SelectContent>
                         </Select>
                         <Select
@@ -359,8 +381,8 @@ export function DataTable<TData, TValue>({
                                 setSelectedStatus(value);
                             }}
                         >
-                            <SelectTrigger className="w-fit">
-                                <SelectValue placeholder="Filter Status" />
+                            <SelectTrigger className="w-1/4 lg:w-fit">
+                                <SelectValue placeholder="Filter" />
                             </SelectTrigger>
                             <SelectContent>
                                 {Object.keys(Status).map((status) => (
@@ -381,9 +403,9 @@ export function DataTable<TData, TValue>({
                             </SelectContent>
                         </Select>
                         <DatePickerWithRange
+                            className="w-fit"
                             onClickFunction={() => {
-                                console.log({ dateRange });
-                                refetch();
+                                refetchOrderData();
                             }}
                             date={dateRange}
                             setDate={setDateRange}
@@ -401,10 +423,9 @@ export function DataTable<TData, TValue>({
                             setSearchTerm(event.target.value);
                             table.getColumn(searchParam)?.setFilterValue(event.target.value);
                         }}
-                        className="order-2 w-fit md:order-1"
+                        className="order-2 lg:w-fit w-full md:order-1"
                     />
                 </div>
-                <div></div>
                 <div
                     className={"order-1 mb-4 flex items-center gap-1 md:order-2 md:mb-0"}
                 >
@@ -413,8 +434,7 @@ export function DataTable<TData, TValue>({
                         disabled={isLoading || isFetching}
                         onClick={async () => {
                             setLoading(true);
-                            // await queryClient.refetchQueries(["allOrders"]);
-                            refetch();
+                            refetchOrderData();
                             setLoading(false);
                         }}
                         variant="outline"
@@ -429,7 +449,7 @@ export function DataTable<TData, TValue>({
                     <>
                         <Card className={"hidden items-center justify-center lg:flex"}>
                             <DashboardSelectedRowDisplayCard
-                                data={data?.body?.orders}
+                                data={orderData}
                                 rowSelection={rowSelection}
                             ></DashboardSelectedRowDisplayCard>
                         </Card>
@@ -440,7 +460,7 @@ export function DataTable<TData, TValue>({
                             setOnConfirmFunction={setOnConfirmFunction}
                             setShowConfirmation={setShowConfirmation}
                             setRowSelection={setRowSelection}
-                            data={data?.body?.orders}
+                            data={orderData}
                             setPickupDialogOpen={setPickupDialogOpen}
                             setLoading={setLoading}
                         ></DashboardBulkOptionsSelectComponent>
@@ -519,14 +539,15 @@ export function DataTable<TData, TValue>({
                                 </DialogHeader>
                                 <DialogFooter>
                                     <Button
+                                        // @TODO fix this
                                         onClick={() => {
-                                            createPickupMutation({
-                                                pickup_date: date,
-                                                expected_package_count: estimatedPackageCount,
-                                            });
+                                            // createPickupMutation({
+                                            //     pickup_date: date,
+                                            //     expected_package_count: estimatedPackageCount,
+                                            // });
                                         }}
                                     >
-                                        {createPickupLoading ? (
+                                        {true ? (
                                             <Loader2 className="h-4 w-4 animate-spin" />
                                         ) : (
                                             "Create Pickup"
@@ -550,141 +571,110 @@ export function DataTable<TData, TValue>({
             </div>
             <div>
                 <div className="rounded-md border">
-                    <Table>
-                        <TableHeader>
-                            {table.getHeaderGroups().map((headerGroup) => (
-                                <TableRow key={headerGroup.id}>
-                                    {headerGroup.headers.map((header) => {
-                                        return (
-                                            <TableHead key={header.id}>
-                                                {header.isPlaceholder
-                                                    ? null
-                                                    : flexRender(
-                                                        header.column.columnDef.header,
-                                                        header.getContext(),
-                                                    )}
-                                            </TableHead>
-                                        );
-                                    })}
-                                </TableRow>
-                            ))}
-                        </TableHeader>
-                        <TableBody>
-                            {table.getRowModel().rows?.length ? (
-                                table.getRowModel().rows.map((row) => (
-                                    <TableRow
-                                        key={row.id}
-                                        onClick={() => onRowClick && onRowClick(row.original)}
-                                        data-state={row.getIsSelected() && "selected"}
-                                    >
-                                        {row.getVisibleCells().map((cell) => (
-                                            <TableCell key={cell.id}>
-                                                {flexRender(
-                                                    cell.column.columnDef.cell,
-                                                    cell.getContext(),
-                                                )}
-                                            </TableCell>
-                                        ))}
+                    {/* <InfiniteScroll
+                        dataLength={table.getRowModel().rows.length}
+                        next={() => {
+                            if (table.getPageCount() > pageIndex + 1) {
+                                setPagination({
+                                    pageIndex: pageIndex + 1,
+                                    pageSize,
+                                });
+                            }
+                        }}
+                        hasMore={table.getPageCount() > pageIndex + 1}
+                        loader={<div><Loader /></div>}
+                    > */}
+                    {/* ({flatData.length} of {totalDBRowCount} rows fetched) */}
+
+                    <div
+                        className="no-scrollbar w-full overflow-x-scroll"
+                        onScroll={e => fetchMoreOnBottomReached(e.target as HTMLDivElement)}
+                        ref={tableContainerRef}
+                        style={{
+                            overflowY: "scroll",
+                            position: 'relative',
+                            height: '600px',
+                        }}
+                    >
+                        <Table>
+                            <TableHeader >
+                                {table.getHeaderGroups().map((headerGroup) => (
+                                    <TableRow key={headerGroup.id}>
+                                        {headerGroup.headers.map((header) => {
+                                            return (
+                                                <TableHead key={header.id}>
+                                                    {header.isPlaceholder
+                                                        ? null
+                                                        : flexRender(
+                                                            header.column.columnDef.header,
+                                                            header.getContext(),
+                                                        )}
+                                                </TableHead>
+                                            );
+                                        })}
                                     </TableRow>
-                                ))
-                            ) : (
-                                <TableRow>
-                                    <TableCell
-                                        colSpan={columns.length}
-                                        className="h-24 text-center"
-                                    >
-                                        {isLoading || isFetching
-                                            ? "Loading..."
-                                            : error
-                                                ? "An error occurred"
-                                                : "No data found"}
-                                    </TableCell>
-                                </TableRow>
-                            )}
-                        </TableBody>
-                    </Table>
+                                ))}
+                            </TableHeader>
+
+                            <TableBody>
+                                {table.getRowModel().rows?.length ? (
+                                    table.getRowModel().rows.map((row, index) => (
+                                        <TableRow
+                                            key={row.id}
+                                            className=""
+                                            //apply the ref to the last row to trigger the fetchNextPage function using index
+                                            ref={(table.getRowModel().rows.length === index + 1 ? ref : null)}
+                                            data-state={row.getIsSelected() && "selected"}
+                                        >
+                                            {row.getVisibleCells().map((cell) => (
+                                                <TableCell key={cell.id} onClick={() => {
+                                                    if (cell.column.id === "image") { onRowClick && onRowClick(row.original) }
+                                                }}>
+
+                                                    {flexRender(
+                                                        cell.column.columnDef.cell,
+                                                        cell.getContext(),
+                                                    )}
+                                                </TableCell>
+                                            ))}
+                                        </TableRow>
+
+                                    ))
+                                ) : (
+
+                                    <TableRow>
+                                        <TableCell
+                                            colSpan={columns.length}
+                                            className="h-24 text-center"
+                                        >
+                                            {isLoading || isFetching
+                                                ? <div className="flex items-center justify-center w-full"><Loader /></div>
+                                                : error
+                                                    ? "An error occurred"
+                                                    : "No data found"}
+                                        </TableCell>
+                                    </TableRow>
+                                )}
+                            </TableBody>
+                        </Table>
+
+                    </div>
                 </div>
-                <div className="my-4 py-5">
-                    <DataTablePagination table={table}></DataTablePagination>
-                </div>
+                {isFetchingNextPage &&
+                    <div className="flex items-center justify-center my-5">
+                        <Loader />
+                    </div>
+                }
+                {
+                    totalFetched === totalDBRowCount &&
+                    <div className="flex items-center justify-center my-5">
+                        <Badge variant={"outline"} className="">
+                            All rows fetched
+                        </Badge>
+                    </div>
+                }
             </div>
-        </div>
+        </div >
     );
 }
 
-export function DataTablePagination<TData>({
-    table,
-}: DataTablePaginationProps<TData>) {
-    return (
-        <div className="flex items-center justify-between px-2">
-            <div className="hidden flex-1 text-sm text-muted-foreground md:block">
-                {table.getFilteredSelectedRowModel().rows.length} of{" "}
-                {table.getFilteredRowModel().rows.length} row(s) selected.
-            </div>
-            <div className="flex items-center space-x-6 lg:space-x-8">
-                <div className="flex items-center space-x-2">
-                    <p className="hidden text-sm font-medium md:block">Rows per page</p>
-                    <Select
-                        value={`${table.getState().pagination.pageSize}`}
-                        onValueChange={(value) => {
-                            table.setPageSize(Number(value));
-                        }}
-                    >
-                        <SelectTrigger className="h-8 w-[70px]">
-                            <SelectValue placeholder={table.getState().pagination.pageSize} />
-                        </SelectTrigger>
-                        <SelectContent side="top">
-                            {[10, 20, 30, 40, 50, 100, 200].map((pageSize) => (
-                                <SelectItem key={pageSize} value={`${pageSize}`}>
-                                    {pageSize}
-                                </SelectItem>
-                            ))}
-                        </SelectContent>
-                    </Select>
-                </div>
-                <div className="flex w-[100px] items-center justify-center text-sm font-medium">
-                    Page {table.getState().pagination.pageIndex + 1} of{" "}
-                    {table.getPageCount()}
-                </div>
-                <div className="flex items-center space-x-2">
-                    <Button
-                        variant="outline"
-                        className="hidden h-8 w-8 p-0 lg:flex"
-                        onClick={() => table.setPageIndex(0)}
-                        disabled={!table.getCanPreviousPage()}
-                    >
-                        <span className="sr-only">Go to first page</span>
-                        <ChevronsLeft className="h-4 w-4" />
-                    </Button>
-                    <Button
-                        variant="outline"
-                        className="h-8 w-8 p-0"
-                        onClick={() => table.previousPage()}
-                        disabled={!table.getCanPreviousPage()}
-                    >
-                        <span className="sr-only">Go to previous page</span>
-                        <ChevronLeftIcon className="h-4 w-4" />
-                    </Button>
-                    <Button
-                        variant="outline"
-                        className="h-8 w-8 p-0"
-                        onClick={() => table.nextPage()}
-                        disabled={!table.getCanNextPage()}
-                    >
-                        <span className="sr-only">Go to next page</span>
-                        <ChevronRightIcon className="h-4 w-4" />
-                    </Button>
-                    <Button
-                        variant="outline"
-                        className="hidden h-8 w-8 p-0 lg:flex"
-                        onClick={() => table.setPageIndex(table.getPageCount() - 1)}
-                        disabled={!table.getCanNextPage()}
-                    >
-                        <span className="sr-only">Go to last page</span>
-                        <ChevronsRight className="h-4 w-4" />
-                    </Button>
-                </div>
-            </div>
-        </div>
-    );
-}

@@ -103,10 +103,7 @@ export async function GET(req: Request) {
 }
 
 export async function PUT(req: Request) {
-  const { userId }: { userId: string | null } = auth();
-  if (!userId) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
+
 
   try {
     //get data from request
@@ -316,10 +313,7 @@ export async function PUT(req: Request) {
 }
 
 export async function POST(req: Request) {
-  const { userId }: { userId: string | null } = auth();
-  if (!userId) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
+
 
   try {
     //get data from request
@@ -342,10 +336,7 @@ export async function POST(req: Request) {
 }
 
 export async function OPTIONS(req: Request) {
-  const { userId }: { userId: string | null } = auth();
-  if (!userId) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
+
 
   try {
     //get data from request as url params

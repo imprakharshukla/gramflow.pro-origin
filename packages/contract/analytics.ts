@@ -74,7 +74,6 @@ export const analyticsContract = c.router({
   },
   getNumberOfCustomersOverTimeAnalytics: {
     description: "Get number of customers over time",
-
     method: "GET",
     path: "/analytics/time/customer",
     query: z.object({

@@ -84,6 +84,7 @@ interface DataTablePaginationProps<TData> {
 
 export interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
+  onRowClick?: (row: TData) => void;
 }
 
 export type NullableVoidFunction = (() => void) | null;
@@ -93,10 +94,8 @@ interface ResponseType {
 }
 export function DataTable<TData, TValue>({
   columns,
-  searchBundleId,
-}: DataTableProps<TData, TValue> & {
-  searchBundleId: string | null | undefined;
-}) {
+  onRowClick,
+}: DataTableProps<TData, TValue>) {
   const { user } = useUser();
 
   const [sorting, setSorting] = useState<SortingState>([]);
@@ -253,13 +252,6 @@ export function DataTable<TData, TValue>({
     getSelectedOrderIds().length,
   );
 
-  useEffect(() => {
-    if (searchBundleId) {
-      setSearchTerm(searchBundleId);
-      toast.info(`Finding ${searchParam} ${searchBundleId}`);
-      table.getColumn(searchParam)?.setFilterValue(searchBundleId);
-    }
-  }, [searchBundleId]);
 
   useEffect(() => {
     table
@@ -400,9 +392,9 @@ export function DataTable<TData, TValue>({
                         {header.isPlaceholder
                           ? null
                           : flexRender(
-                              header.column.columnDef.header,
-                              header.getContext(),
-                            )}
+                            header.column.columnDef.header,
+                            header.getContext(),
+                          )}
                       </TableHead>
                     );
                   })}
@@ -417,7 +409,10 @@ export function DataTable<TData, TValue>({
                     data-state={row.getIsSelected() && "selected"}
                   >
                     {row.getVisibleCells().map((cell) => (
-                      <TableCell key={cell.id}>
+                      <TableCell key={cell.id} onClick={() => {
+                        if (cell.column.id === "image") { onRowClick && onRowClick(row.original) }
+                      }}>
+
                         {flexRender(
                           cell.column.columnDef.cell,
                           cell.getContext(),

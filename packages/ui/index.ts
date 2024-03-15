@@ -210,7 +210,7 @@ export {
 } from "./src/drawer";
 
 export { reducer, toast, useToast } from "./src/hooks/use-toast";
-export { useMediaQuery} from "./src/hooks/use-media-query";
+export { useMediaQuery } from "./src/hooks/use-media-query";
 
 export {
   type CarouselApi,
@@ -220,3 +220,8 @@ export {
   CarouselPrevious,
   CarouselNext,
 } from "./src/carousel";
+
+
+export {
+  OtpInputComponent
+} from "./src/otp-input"

@@ -1,28 +1,26 @@
 "use client";
 
-import {useEffect, useState} from "react";
-import {AreaChart, BarList, Card, Grid, Text, Title} from "@tremor/react";
-import {subDays} from "date-fns";
+import { useEffect, useState } from "react";
+import { AreaChart, BarList, Card, Grid, Title } from "@tremor/react";
+import { subDays } from "date-fns";
 
-import useAnalyticsQueryClient from "~/features/hooks/use-analytics-query-client";
-import NumberOfOrdersChart from "./numberOfOrderChart";
-import {Button, Loader, Skeleton} from "@gramflow/ui";
-import {DatePickerWithRange} from "~/features/ui/components/dateRangePicker";
-import {DateRange} from "react-day-picker";
-import {useQueryClient} from "@tanstack/react-query";
-import {Eye, EyeOff, ShareIcon} from "lucide-react";
-import {cn} from "@gramflow/utils";
+import { Button, Loader } from "@gramflow/ui";
+import { DatePickerWithRange } from "~/features/ui/components/dateRangePicker";
+import { DateRange } from "react-day-picker";
+import { Eye, EyeOff } from "lucide-react";
+import { cn } from "@gramflow/utils";
+import useRestAPI from "~/features/hooks/use-rest-client";
 
 
-export default function RevenueChart() {
+export default function AnanlyticCharts() {
     const [dateRange, setDateRange] = useState<DateRange | undefined>({
         from: subDays(new Date(), 30),
         to: new Date(),
     })
     const [isDataVisible, setIsDataVisible] = useState<boolean>(false);
-    const analyticsQueryClient = useAnalyticsQueryClient();
-    const {data: revenueChartData, isLoading: isRevenueChartLoading, refetch: revenueChartDataRefetch} =
-        analyticsQueryClient.getRevenueAnalyticsOverTimeAnalytics.useQuery(
+    const { client } = useRestAPI();
+    const { data: revenueChartData, isLoading: isRevenueChartLoading, refetch: revenueChartDataRefetch } =
+        client.analytics.getRevenueAnalyticsOverTimeAnalytics.useQuery(
             ["timeRevenue", dateRange],
             {
                 query: {
@@ -34,8 +32,8 @@ export default function RevenueChart() {
                 refetchOnWindowFocus: false
             }
         );
-    const {data: orderChartData, isLoading: isOrderCharDataLoading, refetch: orderChartDataRefetch} =
-        analyticsQueryClient.getNumberOfOrdersOverTimeAnalytics.useQuery(
+    const { data: orderChartData, isLoading: isOrderCharDataLoading, refetch: orderChartDataRefetch } =
+        client.analytics.getNumberOfOrdersOverTimeAnalytics.useQuery(
             ["timeOrders", dateRange],
             {
                 query: {
@@ -48,8 +46,8 @@ export default function RevenueChart() {
             }
         );
 
-    const {data: topCustomersChartData, isLoading: isTopCustomerChartDataLoading} =
-        analyticsQueryClient.getTopCustomersAnalytics.useQuery(["topCustomers"], {
+    const { data: topCustomersChartData, isLoading: isTopCustomerChartDataLoading } =
+        client.analytics.getTopCustomersAnalytics.useQuery(["topCustomers"], {
             query: {
                 start: dateRange?.from?.valueOf().toString() ?? "",
                 end: dateRange?.to?.valueOf().toString() ?? "",
@@ -60,13 +58,13 @@ export default function RevenueChart() {
         });
 
 
-    const {data: topCitiesAndStatesChartData, isLoading: isTopCitiesAndStatesChartDataLoading} =
-        analyticsQueryClient.getTopStatesAndCitiesAnalytics.useQuery(["topCities"], {
-                query: {
-                    start: dateRange?.from?.valueOf().toString() ?? "",
-                    end: dateRange?.to?.valueOf().toString() ?? "",
-                },
+    const { data: topCitiesAndStatesChartData, isLoading: isTopCitiesAndStatesChartDataLoading } =
+        client.analytics.getTopStatesAndCitiesAnalytics.useQuery(["topCities"], {
+            query: {
+                start: dateRange?.from?.valueOf().toString() ?? "",
+                end: dateRange?.to?.valueOf().toString() ?? "",
             },
+        },
             {
                 refetchOnWindowFocus: false
             });
@@ -78,7 +76,7 @@ export default function RevenueChart() {
 
     return (
         <div className={"my-5"}>
-            <div className={"w-full items-center flex justify-end gap-3"}>
+            <div className={"w-full items-end lg:justify-end lg:items-center flex flex-col lg:flex-row gap-3"}>
                 <Button
                     onClick={() => {
                         setIsDataVisible((lastValue) => {
@@ -86,16 +84,16 @@ export default function RevenueChart() {
                         })
                     }}
                     size={"sm"}
-                    className="flex items-center space-x-2"
+                    className="flex w-fit items-center space-x-2"
                     variant={"outline"}
                 >
                     <span>{
                         isDataVisible ? "Hide Data" : "Show Data"
                     }</span>
                     {isDataVisible ?
-                        <EyeOff className="h-4 w-4"/>
+                        <EyeOff className="h-4 w-4" />
                         :
-                        <Eye className="h-4 w-4"/>
+                        <Eye className="h-4 w-4" />
                     }
 
                 </Button>
@@ -133,7 +131,7 @@ export default function RevenueChart() {
                             />
                         </div>
                         : <div className={"flex items-center justify-center h-[70%] mb-20"}>
-                            <Loader/>
+                            <Loader />
                         </div>
                     }
                 </Card>
@@ -161,7 +159,7 @@ export default function RevenueChart() {
                             />
                         </div>
                         : <div className={"flex items-center justify-center h-[70%] mb-20"}>
-                            <Loader/>
+                            <Loader />
                         </div>
                     }
                 </Card>{" "}
@@ -175,7 +173,7 @@ export default function RevenueChart() {
                             className="mx-auto max-w-sm mt-6"
                         />
                         : <div className={"flex items-center justify-center h-[70%] mb-20"}>
-                            <Loader/>
+                            <Loader />
                         </div>
                     }
                 </Card>
@@ -187,7 +185,7 @@ export default function RevenueChart() {
                             className="mx-auto max-w-sm mt-6"
                         />
                         : <div className={"flex items-center justify-center h-[70%] mb-20"}>
-                            <Loader/>
+                            <Loader />
                         </div>
                     }
                 </Card>
@@ -200,7 +198,7 @@ export default function RevenueChart() {
                             className="mx-auto max-w-sm mt-6"
                         />
                         : <div className={"flex items-center justify-center h-[70%] mb-20"}>
-                            <Loader/>
+                            <Loader />
                         </div>
                     }
                 </Card>

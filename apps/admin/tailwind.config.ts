@@ -8,6 +8,7 @@ export default withUt({
     "./src/**/*.{js,ts,jsx,tsx}",
     "../../packages/ui/**/*.{js,ts,jsx,tsx}",
     "./node_modules/@tremor/**/*.{js,ts,jsx,tsx}",
+    "node_modules/@lemonsqueezy/wedges/dist/**/*.{js,ts,jsx,tsx}",
   ],
   theme: {
     transparent: "transparent",

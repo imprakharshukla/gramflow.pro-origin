@@ -12,7 +12,7 @@ datasource db {
 }
 
 model Posts {
-  id              String   @id @default(cuid())
+  id              String   @id @default(uuid())
   post_link       String
   caption         String
   slides          String[]
@@ -34,23 +34,44 @@ model Otp {
 
 model Users {
   id                 String    @id @default(uuid()) /// @zod.uuid()
-  name               String
+  name               String?
   email              String    @unique
-  house_number       String
-  pincode            String /// @zod.max(6).min(6)
+  house_number       String?
+  pincode            String? /// @zod.max(6).min(6)
   landmark           String?
-  locality           String
-  instagram_username String
-  city               String
-  state              String
-  country            String
-  phone_no           String /// @zod.max(10).min(10)
+  locality           String?
+  instagram_username String?
+  city               String?
+  role               USER_ROLE @default(USER)
+  state              String?
+  country            String?
+  phone_no           String? /// @zod.max(10).min(10)
   orders             Orders[]
   created_at         DateTime  @default(now())
   updated_at         DateTime  @updatedAt
   Bundles            Bundles[]
+  emailVerified      DateTime?
+  image              String?
+  accounts           Account[]
+  sessions           Session[]
 
   @@index([id])
+}
+
+model Session {
+  id           String   @id @default(uuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         Users    @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
 }
 
 model Bundles {
@@ -74,26 +95,27 @@ model Bundles {
 }
 
 model Orders {
-  id                  String    @id @default(uuid()) /// @zod.uuid()
+  id                  String   @id @default(uuid()) /// @zod.uuid()
   instagram_post_urls String[]
-  user                Users?    @relation(fields: [user_id], references: [id])
+  user                Users?   @relation(fields: [user_id], references: [id])
   user_id             String?
-  price               Int       @default(0)
-  status              Status    @default(PENDING)
-  prebook             Boolean   @default(false)
-  courier             COURIER   @default(DEFAULT)
+  price               Int      @default(0)
+  status              Status   @default(PENDING)
+  prebook             Boolean  @default(false)
+  courier             COURIER  @default(DEFAULT)
   images              String[]
   awb                 String?
-  created_at          DateTime  @default(now())
-  updated_at          DateTime  @updatedAt
-  length              String?   @default("0")
-  breadth             String?   @default("0")
-  height              String?   @default("0")
-  weight              String?   @default("0")
-  shipping_cost       Float?    @default(0.0)
-  pickup              Pickups[]
-  bundle_id           String?   @unique
-  bundles             Bundles?  @relation(fields: [bundle_id], references: [id])
+  created_at          DateTime @default(now())
+  updated_at          DateTime @updatedAt
+  length              String?  @default("0")
+  breadth             String?  @default("0")
+  height              String?  @default("0")
+  weight              String?  @default("0")
+  shipping_cost       Float?   @default(0.0)
+  pickup_id           String?
+  pickup              Pickups? @relation(fields: [pickup_id], references: [id])
+  bundle_id           String?  @unique
+  bundles             Bundles? @relation(fields: [bundle_id], references: [id])
 
   @@index([user_id, id])
 }
@@ -103,9 +125,8 @@ model Pickups {
   pickup_id       Int      @unique
   pickup_location String
   pickup_date     String
-  order_id        String[]
-  Orders          Orders?  @relation(fields: [ordersId], references: [id])
-  ordersId        String?
+  Orders          Orders[]
+  created_at      DateTime @default(now())
 
   @@index([id, pickup_date])
 }
@@ -114,6 +135,12 @@ enum Size {
   SMALL
   MEDIUM
   LARGE
+}
+
+enum USER_ROLE {
+  USER
+  ADMIN
+  SUPER_ADMIN
 }
 
 enum Status {
@@ -136,6 +163,25 @@ enum COURIER {
   DELHIVERY
   DTDC
   OTHER
+}
+
+model Account {
+  id                String  @id @default(uuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+
+  user Users @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
 }
 
 generator zod {

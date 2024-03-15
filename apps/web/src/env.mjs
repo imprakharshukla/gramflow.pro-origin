@@ -32,6 +32,7 @@ export const env = createEnv({
     //slack
     SLACK_TOKEN: z.string(),
     SLACK_WEBHOOK_URL_ACCEPTED: z.string().url(),
+    NEXTAUTH_SECRET: z.string(),
   },
   /**
    * Specify your client-side environment variables schema here.
@@ -47,6 +48,7 @@ export const env = createEnv({
     //prisma
     DATABASE_URL: process.env.DATABASE_URL,
     DIRECT_URL: process.env.DIRECT_URL,
+    NEXTAUTH_SECRET: process.env.NEXTAUTH_SECRET,
 
     //upstash
     UPSTASH_URL: process.env.UPSTASH_URL,

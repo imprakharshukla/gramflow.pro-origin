@@ -1,52 +1,39 @@
 "use client";
 
-import {useState} from "react";
-import Image from "next/image";
 import Link from "next/link";
-import {type ColumnDef} from "@tanstack/react-table";
-import {Badge as StatusBadge, type Color} from "@tremor/react";
-import {format} from "date-fns";
-import {ArrowUpDown, ExternalLink} from "lucide-react";
-
-import {type CompleteOrders} from "@gramflow/db/prisma/zod";
+import { type ColumnDef } from "@tanstack/react-table";
+import { Badge as StatusBadge, type Color } from "@tremor/react";
+import { format } from "date-fns";
+import { ArrowUpDown, ExternalLink } from "lucide-react";
+import { type CompleteOrders } from "@gramflow/db/prisma/zod";
 import {
     Badge,
     Button,
     Checkbox,
-    Drawer,
-    DrawerContent,
-    DrawerTrigger,
     Popover,
     PopoverContent,
     PopoverTrigger,
-    Sheet,
-    SheetTrigger,
-    useMediaQuery,
 } from "@gramflow/ui";
-import {AppConfig, cn} from "@gramflow/utils";
+import { AppConfig } from "@gramflow/utils";
 
-import {isOrderDetailOpenAtom} from "~/stores/dashboardStore";
 import {
-    DashboardOrderDetailSheet,
-    orderStatus,
     pillColors,
 } from "./components/dashboardOrderDetailSheet";
 
 export const columns: ColumnDef<CompleteOrders>[] = [
     {
-        accessorKey: "image",
-        id: "image",
-        header: ({table}) => (
-            <div className={"pointer-cursor flex w-40 items-center space-x-4"}>
+        accessorKey: "check",
+        id: "check",
+        header: ({ table }) => (
+            <div className={"pointer-cursor flex items-center space-x-4"}>
                 <Checkbox
                     checked={table.getIsAllPageRowsSelected()}
                     onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
                     aria-label="Select all"
                 />
-                <p className={"ml-4"}>Product</p>
             </div>
         ),
-        cell: ({row}) => {
+        cell: ({ row }) => {
             return (
                 <div>
                     {
@@ -56,25 +43,37 @@ export const columns: ColumnDef<CompleteOrders>[] = [
                                 checked={row.getIsSelected()}
                                 onCheckedChange={(value) => row.toggleSelected(!!value)}
                                 aria-label="Select row"
-                                F
                             />
+                        </div>
+                    }
+                </div>
 
+
+            );
+        },
+    },
+    {
+        accessorKey: "image",
+        id: "image",
+        header: "Products",
+        cell: ({ row }) => {
+            return (
+                <div className="w-24">
+                    {
+                        <div className={"flex"}>
                             <div className={"relative"}>
+                                <img
+                                    alt={"product_image"}
+                                    src={row.original.images[0]}
+                                    width={100}
+                                    height={100}
+                                    className="rounded-md"
+                                />
                                 {
-                                    <div>
-                                        {
-                                            //todo do something to display multiple images
-                                            row.original.images[0] && (
-                                                <img
-                                                    alt={"product_image"}
-                                                    src={row.original.images[0]}
-                                                    width={100}
-                                                    height={100}
-                                                    className="rounded-md"
-                                                />
-                                            )
-                                        }
-                                    </div>
+                                    row.original.images.length > 1 &&
+                                    <Badge variant={"secondary"} className="absolute rounded-full top-2 right-2">
+                                        {`${row.original.images.length}`}
+                                    </Badge>
                                 }
                             </div>
                         </div>
@@ -82,55 +81,11 @@ export const columns: ColumnDef<CompleteOrders>[] = [
                 </div>
             );
         },
-
-        minSize: 800,
-    },
-    {
-        accessorKey: "number_of_items",
-        id: "number_of_items",
-        header: () => <div className={"w-12"}>Items</div>,
-        cell: ({row}) => {
-            const height = row.original.height;
-            const length = row.original.length;
-            const weight = row.original.weight;
-            const breadth = row.original.breadth;
-            let packageSize = "Custom";
-            Object.entries(AppConfig.DefaultPackageDetails).forEach(
-                ([key, value]) => {
-                    if (
-                        value.height === height &&
-                        value.length === length &&
-                        value.weight === weight &&
-                        value.breadth === breadth
-                    ) {
-                        packageSize = key;
-                    }
-                },
-            );
-            return (
-                <div
-                    className={"flex flex-col items-center justify-center gap-2 text-xs"}
-                >
-                    <p>{row.original.images.length}</p>
-                    <StatusBadge
-                        size="xs"
-                        // color={
-                        //   packageSize == "Custom"
-                        //     ? "gray"
-                        //     : (pillColors[row.original.status] as Color)
-                        // }
-                        className={"text-xs font-medium"}
-                    >
-                        {packageSize.slice(0, 1) + packageSize.slice(1).toLowerCase()}
-                    </StatusBadge>
-                </div>
-            );
-        },
     },
     {
         id: "user.name",
         accessorKey: "user.name",
-        cell: ({row}) => {
+        cell: ({ row }) => {
             return (
                 <div className={"flex items-center justify-start text-sm"}>
                     {row.original.user?.name}
@@ -142,20 +97,11 @@ export const columns: ColumnDef<CompleteOrders>[] = [
     {
         accessorKey: "status",
         header: "Status",
-        cell: ({row}) => {
+        cell: ({ row }) => {
             return (
                 <div
-                    className={"flex flex-col items-center justify-center gap-2 text-xs"}
+                    className={"flex flex-col items-center justify-center text-xs gap-2"}
                 >
-                    {row.original.prebook && (
-                        <StatusBadge
-                            size="xs"
-                            // color={"fuchsia" as Color}
-                            className={"text-xs font-medium"}
-                        >
-                            Prebook
-                        </StatusBadge>
-                    )}
                     {row.original.bundles && (
                         <StatusBadge
                             size="xs"
@@ -170,8 +116,9 @@ export const columns: ColumnDef<CompleteOrders>[] = [
                         color={pillColors[row.original.status] as Color}
                         className={"text-xs font-medium"}
                     >
-                        {row.original.status.slice(0, 1) +
-                            row.original.status.slice(1).toLowerCase()}
+                        {(row.original.status.slice(0, 1) +
+                            row.original.status.slice(1).toLowerCase()).replaceAll("_", " ")}
+
                     </StatusBadge>
                 </div>
             );
@@ -180,7 +127,7 @@ export const columns: ColumnDef<CompleteOrders>[] = [
     {
         accessorKey: "price",
         header: () => <div className={"w-16"}>Price</div>,
-        cell: ({row}) => {
+        cell: ({ row }) => {
             // fetch the price from the instagram_post_urls in which they are like this: https://www.instagram.com/p/CPQX0Y3nZ6I/?price=100 by adding all the prices of all the products in the array
             return (
                 <div className={"flex items-center justify-center break-keep text-sm"}>
@@ -190,7 +137,7 @@ export const columns: ColumnDef<CompleteOrders>[] = [
         },
     },
     {
-        header: ({column}) => {
+        header: ({ column }) => {
             return (
                 <Button
                     className={"w-32"}
@@ -198,11 +145,11 @@ export const columns: ColumnDef<CompleteOrders>[] = [
                     onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
                 >
                     Date
-                    <ArrowUpDown className="ml-2 h-4 w-4"/>
+                    <ArrowUpDown className="ml-2 h-4 w-4" />
                 </Button>
             );
         },
-        cell: ({row}) => {
+        cell: ({ row }) => {
             return (
                 <div className={"flex items-center justify-center break-all text-xs"}>
                     {format(
@@ -219,7 +166,7 @@ export const columns: ColumnDef<CompleteOrders>[] = [
         id: "awb",
         header: "AWB",
         accessorKey: "awb",
-        cell: ({row}) => {
+        cell: ({ row }) => {
             return (
                 <div className={"flex items-center justify-center text-sm"}>
                     {row.original.awb}
@@ -230,7 +177,7 @@ export const columns: ColumnDef<CompleteOrders>[] = [
     {
         id: "user.phone_number",
         accessorKey: "phone_number",
-        cell: ({row}) => {
+        cell: ({ row }) => {
             return (
                 <div className={"flex items-center justify-center text-sm"}>
                     {row.original.user?.phone_no}
@@ -241,7 +188,7 @@ export const columns: ColumnDef<CompleteOrders>[] = [
     {
         id: "user.email",
         accessorKey: "email",
-        cell: ({row}) => {
+        cell: ({ row }) => {
             return (
                 <div className={"flex items-center justify-center text-sm"}>
                     {row.original.user?.email}
@@ -250,21 +197,9 @@ export const columns: ColumnDef<CompleteOrders>[] = [
         },
     },
     {
-        id: "bundle",
-        accessorKey: "bundle",
-        cell: ({row}) => {
-            return (
-                <div className={"flex items-center justify-center text-sm"}>
-                    {row.original.bundle_id ? "Yes" : "No"}
-                </div>
-            );
-        },
-    },
-
-    {
         accessorKey: "id",
         header: () => <div className={"w-48"}>Order ID</div>,
-        cell: ({row}) => {
+        cell: ({ row }) => {
             const input = row.original.id;
             let short = input;
             const parts = input.split("-");
@@ -296,7 +231,7 @@ export const columns: ColumnDef<CompleteOrders>[] = [
         accessorKey: "user.instagram_username",
         id: "user.instagram_username",
         header: () => <div className={"w-32"}>Instagram User</div>,
-        cell: ({row}) => {
+        cell: ({ row }) => {
             const instagram_user_id = row.original.user?.instagram_username;
             return (
                 <div className="flex items-center justify-center space-x-2 text-sm">
@@ -304,8 +239,8 @@ export const columns: ColumnDef<CompleteOrders>[] = [
                         <Link href={`https://instagram.com/${instagram_user_id}`}>
                             {instagram_user_id}{" "}
                             <span>
-                <ExternalLink className={"inline-block"} size={16}/>
-              </span>
+                                <ExternalLink className={"inline-block"} size={16} />
+                            </span>
                         </Link>
                     )}
                 </div>

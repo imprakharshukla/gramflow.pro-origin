@@ -19,7 +19,6 @@ export const OrderTable = () => {
     setRowDetails(row);
   };
 
-  const [name, setName] = useQueryState("name");
 
   return (
     <motion.div

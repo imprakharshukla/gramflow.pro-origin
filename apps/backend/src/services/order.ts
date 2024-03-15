@@ -1,16 +1,11 @@
 import { Container, Inject, Service } from "typedi";
 import { Logger } from "winston";
 import { z } from "zod";
-
-
-
 import { Status, db } from "@gramflow/db";
-import { OrdersModel, RelatedOrdersModel } from "@gramflow/db/prisma/zod";
-import { SearchParam } from "@gramflow/contract";
-
-
+import { OrdersModel } from "@gramflow/db/prisma/zod";
 import { AppConfig } from "../config/app-config";
 import { IOrderInputDTO } from "../interfaces/IOrder";
+import DelhiveryService from "./delhivery";
 
 
 type OrdersModelType = z.infer<typeof OrdersModel>;
@@ -44,14 +39,53 @@ export default class OrderService {
     update: OptionalOrdersModelType;
     order_ids: string[];
   }) {
-    return db.orders.updateMany({
-      where: {
-        id: {
-          in: order_ids,
+
+    const updatePromiseArray = order_ids.map(async (order_id) => {
+      const orderUpdate = await db.orders.update({
+        where: {
+          id: order_id,
         },
-      },
-      data: update,
-    });
+        data: update,
+      });
+      if (orderUpdate.user_id) {
+        const user = await db.users.findUnique({
+          where: {
+            id: orderUpdate.user_id
+          }
+        })
+        if (!user) {
+          this.logger.error("User not found");
+          return;
+        }
+        if (!user?.pincode) {
+          this.logger.error("User does not have pincode");
+          return;
+        }
+        if (!orderUpdate.weight) {
+          this.logger.error("Weight is not present");
+          return;
+        }
+        if (update.weight) {
+          const delhiveryServiceInstance = Container.get(DelhiveryService);
+
+          const newDeliveryCost = await delhiveryServiceInstance.calculateShippingCost({
+            delivery_pincode: user?.pincode,
+            origin_pincode: AppConfig.WarehouseDetails.pincode,
+            weight: orderUpdate.weight,
+          });
+
+          return db.orders.update({
+            where: {
+              id: order_id,
+            },
+            data: {
+              shipping_cost: newDeliveryCost
+            },
+          });
+        }
+      }
+    })
+    return Promise.all(updatePromiseArray);
   }
   public async deleteOrder(id: string[]) {
     return db.orders.deleteMany({
@@ -217,7 +251,23 @@ export default class OrderService {
       },
     });
   }
-  public async getOrdersCount(from?: number, to?: number) {
+  public async getOrdersCount(from?: number, to?: number, searchTerm?: string) {
+    if (searchTerm) {
+      // Handle search functionality here if needed
+      // return all the data for front-end filtering
+      if (searchTerm === "bundle") {
+        return db.orders.count({
+          where: {
+            NOT: {
+              bundles: null,
+            }
+          },
+        });
+      } else {
+        return db.orders.count()
+      }
+    }
+
     if (from === undefined || to === undefined) {
       return db.orders.count();
     }
@@ -237,32 +287,45 @@ export default class OrderService {
     pageSize?: number,
     searchTerm?: string,
   ): Promise<OrdersModelType[]> {
-    this.logger.debug(page?.toString());
-    this.logger.debug(pageSize?.toString());
-    this.logger.debug(searchTerm);
 
-    if (searchTerm && searchTerm === "bundle") {
-      this.logger.debug("Search term is present and searchParam is bundle");
+    if (searchTerm) {
       // Handle search functionality here if needed
       // return all the data for front-end filtering
-      return db.orders.findMany({
-        include: {
-          user: true,
-          bundles: {
-            include: {
-              user: true,
+      if (searchTerm === "bundle") {
+        return db.orders.findMany({
+          include: {
+            user: true,
+            bundles: {
+              include: {
+                user: true,
+              },
             },
           },
-        },
-        where: {
-          NOT: {
-            bundles: null,
-          }
-        },
-        orderBy: {
-          created_at: "desc",
-        },
-      });
+          where: {
+            NOT: {
+              bundles: null,
+            }
+          },
+          orderBy: {
+            created_at: "desc",
+          },
+        });
+      }
+      else {
+        return db.orders.findMany({
+          include: {
+            user: true,
+            bundles: {
+              include: {
+                user: true,
+              },
+            },
+          },
+          orderBy: {
+            created_at: "desc",
+          },
+        });
+      }
     }
     if (from === undefined || to === undefined) {
       this.logger.debug("from and to are not present");
@@ -326,7 +389,7 @@ export default class OrderService {
       orderBy: {
         created_at: "desc",
       },
-      skip: offset,
+      skip: (page - 1) * pageSize,
       take: pageSize,
     });
   }

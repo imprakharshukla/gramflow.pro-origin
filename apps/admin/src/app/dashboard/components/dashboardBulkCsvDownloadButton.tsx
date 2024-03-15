@@ -32,12 +32,11 @@ export const downloadBulkOrderFiles = async (
       .then((href) => {
         Object.assign(document.createElement("a"), {
           href,
-          download: `${
-            new Date().toDateString() +
+          download: `${new Date().toDateString() +
             " " +
             new Date().toLocaleTimeString() +
             "_shipment"
-          }.csv`,
+            }.csv`,
         }).click();
       });
   } catch (e) {
@@ -50,7 +49,6 @@ export const downloadBulkOrderFiles = async (
 export default function DashboardBulkCsvDownloadButton({
   advandcedDisabled,
   getSelectedOrderIds,
-  setConfirmMessage,
   setShowConfirmation,
   setOnConfirmFunction,
 }: {

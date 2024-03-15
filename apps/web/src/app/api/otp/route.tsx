@@ -1,8 +1,6 @@
 import { NextResponse } from "next/server";
 import { Resend } from "resend";
 import { z } from "zod";
-
-import { OtpEmail } from "@gramflow/email";
 import { AppConfig } from "@gramflow/utils";
 
 import { env } from "~/env.mjs";
@@ -36,9 +34,8 @@ export async function GET(req: Request) {
     });
 
     const data = await resend.emails.send({
-      from: `${AppConfig.StoreName.replace(" ", "")} <no-reply@${
-        env.RESEND_DOMAIN
-      }>`,
+      from: `${AppConfig.StoreName.replace(" ", "")} <no-reply@${env.RESEND_DOMAIN
+        }>`,
       to: [email],
       subject: `${AppConfig.StoreName} OTP is ${otp}`,
       //@ts-ignore

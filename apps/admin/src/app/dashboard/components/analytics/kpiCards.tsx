@@ -185,7 +185,7 @@ export default async function KpiCards() {
   const customerDelta = Math.round(
     ((currentMonthCustomers - previousMonthCustomers) /
       previousMonthCustomers) *
-      100,
+    100,
   );
 
   const { currentMonthOrders, previousMonthOrders } = await fetchOrders();
@@ -198,7 +198,7 @@ export default async function KpiCards() {
   const deliveryDelta = Math.round(
     ((currentMonthDeliveries - previousMonthDeliveries) /
       previousMonthDeliveries) *
-      100,
+    100,
   );
 
   const { currentMonthRevenue, previousMonthRevenue } = await fetchRevenue();
@@ -221,42 +221,42 @@ export default async function KpiCards() {
     delta: string;
     deltaType: DeltaType;
   }[] = [
-    {
-      title: "Orders",
-      metric: currentMonthOrders,
-      metricPrev: previousMonthOrders,
-      delta: orderDelta.toString() + "%",
-      deltaType: getDeltaType(orderDelta),
-    },
-    {
-      title: "Revenue",
-      metric: dataFormatterRupee(currentMonthRevenue),
-      metricPrev: dataFormatterRupee(previousMonthRevenue),
-      delta: revenueDelta.toString() + "%",
-      deltaType: getDeltaType(revenueDelta),
-    },
-    {
-      title: "Customers",
-      metric: currentMonthCustomers.toString(),
-      metricPrev: previousMonthCustomers.toString(),
-      delta: customerDelta.toString() + "%",
-      deltaType: getDeltaType(customerDelta),
-    },
-    {
-      title: "Deliveries",
-      metric: currentMonthDeliveries.toString(),
-      metricPrev: previousMonthDeliveries.toString(),
-      delta: deliveryDelta.toString() + "%",
-      deltaType: getDeltaType(deliveryDelta),
-    },
-    // }, {
-    //   title: "Prebookings",
-    //   metric: currentMonthPrebookings.toString(),
-    //   metricPrev: previousMonthPrebookings.toString(),
-    //   delta: deliveryDelta.toString() + "%",
-    //   deltaType: getDeltaType(deliveryDelta),
-    // },
-  ];
+      {
+        title: "Orders",
+        metric: currentMonthOrders,
+        metricPrev: previousMonthOrders,
+        delta: orderDelta.toString() + "%",
+        deltaType: getDeltaType(orderDelta),
+      },
+      {
+        title: "Revenue",
+        metric: dataFormatterRupee(currentMonthRevenue),
+        metricPrev: dataFormatterRupee(previousMonthRevenue),
+        delta: revenueDelta.toString() + "%",
+        deltaType: getDeltaType(revenueDelta),
+      },
+      {
+        title: "Customers",
+        metric: currentMonthCustomers.toString(),
+        metricPrev: previousMonthCustomers.toString(),
+        delta: customerDelta.toString() + "%",
+        deltaType: getDeltaType(customerDelta),
+      },
+      {
+        title: "Deliveries",
+        metric: currentMonthDeliveries.toString(),
+        metricPrev: previousMonthDeliveries.toString(),
+        delta: deliveryDelta.toString() + "%",
+        deltaType: getDeltaType(deliveryDelta),
+      },
+      // }, {
+      //   title: "Prebookings",
+      //   metric: currentMonthPrebookings.toString(),
+      //   metricPrev: previousMonthPrebookings.toString(),
+      //   delta: deliveryDelta.toString() + "%",
+      //   deltaType: getDeltaType(deliveryDelta),
+      // },
+    ];
 
   return (
     <Grid numItemsSm={2} numItemsLg={3} className="gap-6">

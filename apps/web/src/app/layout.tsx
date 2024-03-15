@@ -79,7 +79,7 @@ export default function RootLayout({
                 defaultTheme="system"
                 enableSystem
               >
-                <Toaster />
+                <Toaster theme="dark" />
                 <NavMenu />
                 <div
                   className={

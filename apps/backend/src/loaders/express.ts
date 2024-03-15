@@ -7,10 +7,10 @@ import express, {
   Request,
   Response,
 } from "express";
-import * as swaggerUi from "swagger-ui-express";
-
+var { expressjwt: jwt } = require("express-jwt");
 import routes from "../api";
 import { openApiDocument } from "../loaders/open-api";
+import env from "../config";
 
 export default ({ app }: { app: express.Application }) => {
   /**
@@ -36,15 +36,15 @@ export default ({ app }: { app: express.Application }) => {
   app.use(express.json());
   // Load API routes
   const router = routes();
-  app.use("/api", router);
-
-  // // Load OpenAPI document
-  // app.use(
-  //   "/api-docs",
-  //   swaggerUi.serve,
-  //   swaggerUi.setup(openApiDocument),
-  // );
-  
+  app.use("/api",
+    jwt({
+      secret: env.NEXTAUTH_SECRET,
+      algorithms: ["HS256"],
+    }), (req, res, next) => {
+      // @ts-ignore
+      console.log(req.auth);
+      next();
+    }, router);
 
   app.use(
     "/reference",
@@ -54,6 +54,7 @@ export default ({ app }: { app: express.Application }) => {
       },
     }),
   );
+
   /// catch 404 and forward to error handler
   app.use((req, res, next) => {
     const err: any = new Error("Not Found");

@@ -11,6 +11,8 @@ export default async function Order({
 }: {
   params: { orderId: string };
 }) {
+
+
   const order = await prisma.orders.findUnique({
     where: {
       id: params.orderId,
@@ -19,6 +21,8 @@ export default async function Order({
       bundle_id: true,
       id: true,
       status: true,
+      instagram_post_urls: true,
+      price: true,
       images: true,
       awb: true,
     },

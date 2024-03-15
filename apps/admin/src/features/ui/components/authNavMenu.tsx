@@ -1,11 +1,17 @@
 "use client";
 
+
+import { AppConfig } from "@gramflow/utils"
+import { Avatar, AvatarImage, AvatarFallback, Button, DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuShortcut, DropdownMenuTrigger, Loader } from "@gramflow/ui";
+import { LogOut } from "lucide-react";
 import Link from "next/link";
-import { UserButton } from "@clerk/nextjs";
-import { AppConfig } from "@gramflow/utils";
+import { signOut } from "next-auth/react";
+import useSessionWithLoading from "~/features/hooks/use-session-auth";
 import { ThemeToggle } from "./theme-toggle";
 
 export default function AuthNavMenu() {
+  const { loading, session } = useSessionWithLoading();
+
   return (
     <nav className="z-20 w-full border dark:border-gray-900 dark:bg-gray-950">
       <div className="mx-auto flex max-w-screen-xl flex-wrap items-center justify-between p-4">
@@ -29,7 +35,32 @@ export default function AuthNavMenu() {
 
         <div className="flex items-center gap-x-3">
           <div className={"p-3"}>
-            <UserButton afterSignOutUrl="/" />
+            <div className="flex items-center gap-4">
+              {loading ? <Loader /> : session?.user ?
+                <DropdownMenu>
+                  <DropdownMenuTrigger className="border-border" asChild>
+                    <Avatar>
+                      <AvatarImage src={`https://api.dicebear.com/7.x/lorelei/svg?seed=${session.user.email}`} alt="user_img" />
+                      <AvatarFallback>{
+                        "RS"
+                      }
+                      </AvatarFallback>
+                    </Avatar>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent className="w-56 mx-3">
+                    <DropdownMenuItem onClick={() => {
+                      signOut()
+                    }}>
+                      <LogOut className="mr-2 h-4 w-4" />
+                      <span>Log out</span>
+                      <DropdownMenuShortcut>⇧⌘Q</DropdownMenuShortcut>
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+                : <Button size={"sm"}><Link href="/login">Login</Link></Button>
+              }
+              {/* <ThemeToggle /> */}
+            </div>
           </div>
           <div>
             <ThemeToggle />

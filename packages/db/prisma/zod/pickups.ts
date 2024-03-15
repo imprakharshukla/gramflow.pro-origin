@@ -6,12 +6,11 @@ export const PickupsModel = z.object({
   pickup_id: z.number().int(),
   pickup_location: z.string(),
   pickup_date: z.string(),
-  order_id: z.string().array(),
-  ordersId: z.string().nullish(),
+  created_at: z.date(),
 })
 
 export interface CompletePickups extends z.infer<typeof PickupsModel> {
-  Orders?: CompleteOrders | null
+  Orders: CompleteOrders[]
 }
 
 /**
@@ -20,5 +19,5 @@ export interface CompletePickups extends z.infer<typeof PickupsModel> {
  * NOTE: Lazy required in case of potential circular dependencies within schema
  */
 export const RelatedPickupsModel: z.ZodSchema<CompletePickups> = z.lazy(() => PickupsModel.extend({
-  Orders: RelatedOrdersModel.nullish(),
+  Orders: RelatedOrdersModel.array(),
 }))

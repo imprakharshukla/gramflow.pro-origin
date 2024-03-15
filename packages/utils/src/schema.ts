@@ -67,6 +67,16 @@ export const OrderPageOrderFetchSchema = z.object({
   status: z.nativeEnum(Status),
 });
 
+export const OrderPageOrderFetchSchemas = z.object({
+  bundle_id: z.string().nullable(),
+  id: z.string().uuid(),
+  price: z.number(),
+  images: z.string().array(),
+  instagram_post_urls: z.string().array(),
+  awb: z.string().nullish(),
+  status: z.nativeEnum(Status),
+});
+
 export const UpdateUserPutSchema = z.object({
   name: z.string(),
   id: z.string().uuid(),

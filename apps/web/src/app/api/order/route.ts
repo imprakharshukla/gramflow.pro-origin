@@ -1,5 +1,4 @@
 import { NextResponse } from "next/server";
-import { z } from "zod";
 
 import {
   GetOtp,
@@ -8,8 +7,7 @@ import {
   upsertUser,
 } from "@gramflow/db/dbHelper";
 import { UpdateUserPutSchema } from "@gramflow/utils/src/schema";
-import { sendMessageWithSectionsAndImages } from "@gramflow/utils/src/slackHelper";
-import { env } from "~/env.mjs";
+
 
 export async function PUT(req: Request) {
   try {

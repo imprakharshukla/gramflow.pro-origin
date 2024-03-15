@@ -117,7 +117,7 @@ export function AcceptForm({
       onSuccess: async () => {
         toast.success("Bundle Accepted");
         await queryClient.invalidateQueries({
-          queryKey: ["allOrders"],
+          queryKey: ["orders"],
         });
         await queryClient.invalidateQueries({
           queryKey: ["allBundles"],
@@ -171,7 +171,7 @@ export function AcceptForm({
 export function DashboardBundleDetailSheet({
   bundle,
 }: {
-  bundle: CompleteBundles;
+  bundle: CompleteBundles | null;
 }) {
   const [isLightboxOpen, setIsLightboxOpen] = useState(false);
   return (
@@ -180,44 +180,47 @@ export function DashboardBundleDetailSheet({
         side={"right"}
         className={"max-h-screen w-full overflow-y-scroll pb-10 lg:w-full"}
       >
-        <SheetHeader className="top-0 bg-background pb-4 pt-6 dark:bg-background">
-          <div className="flex justify-end">
-            <SheetClose>
-              <Button variant={"ghost"}>
-                <X className="h-4 w-4" />
-              </Button>
-            </SheetClose>
-          </div>
-          <div className="flex flex-col space-y-2 text-left">
-           <div className="flex items-center gap-3">
-            <SheetTitle>
-              {bundle.id.replace(/^(.{8}).+(.{8})$/, "$1").toUpperCase()}
-            </SheetTitle>
-            <StatusBadge
-              size="xs"
-              color={pillColors[bundle.status] as Color}
-              className={"text-xs font-medium"}
-            >
-              {bundle.status.slice(0, 1) + bundle.status.slice(1).toLowerCase()}
-            </StatusBadge>
-          </div>
-            <div
-              onClick={async () => {
-                if (navigator.clipboard) {
-                  await navigator.clipboard.writeText(bundle.id);
-                  toast.success("Copied to clipboard");
-                } else {
-                  console.log("Clipboard API not available");
-                }
-              }}
-            >
-              <SheetDescription>{bundle.id}</SheetDescription>
-            </div>
-          </div>
-        </SheetHeader>
-
-        <div className="flex flex-wrap items-center justify-between gap-4">
-          {/* <StatusBadge
+        {!bundle ? (
+          <div>Bundle not found</div>
+        ) : (
+          <>
+            <SheetHeader className="top-0 bg-background pb-4 pt-6 dark:bg-background">
+              <div className="flex justify-end">
+                <SheetClose>
+                  <Button variant={"ghost"}>
+                    <X className="h-4 w-4" />
+                  </Button>
+                </SheetClose>
+              </div>
+              <div className="flex flex-col space-y-2 text-left">
+                <div className="flex items-center gap-3">
+                  <SheetTitle>
+                    {bundle.id.replace(/^(.{8}).+(.{8})$/, "$1").toUpperCase()}
+                  </SheetTitle>
+                  <StatusBadge
+                    size="xs"
+                    color={pillColors[bundle.status] as Color}
+                    className={"text-xs font-medium"}
+                  >
+                    {bundle.status.slice(0, 1) + bundle.status.slice(1).toLowerCase()}
+                  </StatusBadge>
+                </div>
+                <div
+                  onClick={async () => {
+                    if (navigator.clipboard) {
+                      await navigator.clipboard.writeText(bundle.id);
+                      toast.success("Copied to clipboard");
+                    } else {
+                      console.log("Clipboard API not available");
+                    }
+                  }}
+                >
+                  <SheetDescription>{bundle.id}</SheetDescription>
+                </div>
+              </div>
+            </SheetHeader>
+            <div className="flex flex-wrap items-center justify-between gap-4">
+              {/* <StatusBadge
             size="xs"
             color={pillColors[order.status] as Color}
             className={"mt-2 text-xs font-medium"}
@@ -225,144 +228,147 @@ export function DashboardBundleDetailSheet({
             {order.status}
           </StatusBadge> */}
 
-          {bundle.user && (
-            <div className="flex flex-wrap items-center gap-2">
-              <Button size={"sm"} variant={"outline"}>
-                <Link
-                  href={`tel:${bundle.user?.phone_no}`}
-                  className="flex items-center space-x-2"
-                >
-                  <span>Call</span>
-                  <Phone className="h-4 w-4" />
-                </Link>
-              </Button>
-              <Button size={"sm"} variant={"outline"}>
-                <Link
-                  href={`mailto:${bundle.user?.email}`}
-                  className="flex items-center space-x-2"
-                >
-                  <span>Email</span>
-                  <Mail className="h-4 w-4" />
-                </Link>
-              </Button>
-              <Button size={"sm"} variant={"outline"}>
-                <Link
-                  href={`https://instagram.com/${bundle.user?.instagram_username}`}
-                  className="flex items-center space-x-2"
-                >
-                  <span>IG</span>
-                  <Instagram className="h-4 w-4" />
-                </Link>
-              </Button>
-              {bundle.link_input.includes("pin") ? (
-                <Button size={"sm"} variant={"outline"}>
-                  <Link
-                    href={bundle.link_input}
-                    className="flex items-center space-x-2"
-                  >
-                    <span>Pintrest Board</span>
-                    <ImPinterest2 className="h-4 w-4" />
-                  </Link>
-                </Button>
-              ) : (
-                <Button size={"sm"} variant={"outline"}>
-                  <Link
-                    href={`https://instagram.com/${bundle.user?.instagram_username}`}
-                    className="flex items-center space-x-2"
-                  >
-                    <span>User Link</span>
-                    <Globe className="h-4 w-4" />
-                  </Link>
-                </Button>
+              {bundle.user && (
+                <div className="flex flex-wrap items-center gap-2">
+                  <Button size={"sm"} variant={"outline"}>
+                    <Link
+                      href={`tel:${bundle.user?.phone_no}`}
+                      className="flex items-center space-x-2"
+                    >
+                      <span>Call</span>
+                      <Phone className="h-4 w-4" />
+                    </Link>
+                  </Button>
+                  <Button size={"sm"} variant={"outline"}>
+                    <Link
+                      href={`mailto:${bundle.user?.email}`}
+                      className="flex items-center space-x-2"
+                    >
+                      <span>Email</span>
+                      <Mail className="h-4 w-4" />
+                    </Link>
+                  </Button>
+                  <Button size={"sm"} variant={"outline"}>
+                    <Link
+                      href={`https://instagram.com/${bundle.user?.instagram_username}`}
+                      className="flex items-center space-x-2"
+                    >
+                      <span>IG</span>
+                      <Instagram className="h-4 w-4" />
+                    </Link>
+                  </Button>
+                  {bundle.link_input.includes("pin") ? (
+                    <Button size={"sm"} variant={"outline"}>
+                      <Link
+                        href={bundle.link_input}
+                        className="flex items-center space-x-2"
+                      >
+                        <span>Pintrest Board</span>
+                        <ImPinterest2 className="h-4 w-4" />
+                      </Link>
+                    </Button>
+                  ) : (
+                    <Button size={"sm"} variant={"outline"}>
+                      <Link
+                        href={`https://instagram.com/${bundle.user?.instagram_username}`}
+                        className="flex items-center space-x-2"
+                      >
+                        <span>User Link</span>
+                        <Globe className="h-4 w-4" />
+                      </Link>
+                    </Button>
+                  )}
+                </div>
               )}
             </div>
-          )}
-        </div>
-        <div className="text-wrap grid gap-6 overflow-x-auto">
-          <Card className={"mt-5 flex flex-col space-y-2"}>
-            <p className="p-3 text-xs font-medium text-muted-foreground">
-              Images in bundle
-            </p>
-            <CardContent className="flex items-center gap-3 flex-wrap">
-              {bundle.images.map((url, index) => {
-                return (
-                  <div className="flex flex-wrap items-center justify-between gap-2">
-                    <Image
-                      onClick={() => setIsLightboxOpen(true)}
-                      width={60}
-                      height={60}
-                      className="rounded-md"
-                      src={bundle.images[index] ?? ""}
+            <div className="text-wrap grid gap-6 overflow-x-auto">
+              <Card className={"mt-5 flex flex-col space-y-2"}>
+                <p className="p-3 text-xs font-medium text-muted-foreground">
+                  Images in bundle
+                </p>
+                <CardContent className="flex items-center gap-3 flex-wrap">
+                  {bundle.images.map((url, index) => {
+                    return (
+                      <div className="flex flex-wrap items-center justify-between gap-2">
+                        <Image
+                          onClick={() => setIsLightboxOpen(true)}
+                          width={60}
+                          height={60}
+                          className="rounded-md"
+                          src={bundle.images[index] ?? ""}
+                        />
+                      </div>
+                    );
+                  })}
+                </CardContent>
+              </Card>
+              <ImageViewer
+                isOpen={isLightboxOpen}
+                setIsOpen={setIsLightboxOpen}
+                images={bundle.images}
+              />
+              {bundle.user && (
+                <>
+                  <div className="item-center flex w-full justify-normal gap-10">
+                    <RecordText title="Name" value={bundle.user?.name ?? ""} />
+                    <RecordText
+                      title="Phone"
+                      value={`${bundle.user?.phone_no}` ?? ""}
                     />
                   </div>
-                );
-              })}
-            </CardContent>
-          </Card>
-          <ImageViewer
-            isOpen={isLightboxOpen}
-            setIsOpen={setIsLightboxOpen}
-            images={bundle.images}
-          />
-          {bundle.user && (
-            <>
-              <div className="item-center flex w-full justify-normal gap-10">
-                <RecordText title="Name" value={bundle.user?.name ?? ""} />
-                <RecordText
-                  title="Phone"
-                  value={`${bundle.user?.phone_no}` ?? ""}
-                />
+                  <RecordText title="Email" value={bundle.user?.email} />
+                  <RecordText
+                    title="Date"
+                    value={format(
+                      new Date(bundle.created_at ?? new Date()),
+                      "dd/MM/yy, hh:mm a",
+                    )}
+                  />
+                </>
+              )}
+              <div className="my-4">
+                <Separator />
               </div>
-              <RecordText title="Email" value={bundle.user?.email} />
-              <RecordText
-                title="Date"
-                value={format(
-                  new Date(bundle.created_at ?? new Date()),
-                  "dd/MM/yy, hh:mm a",
-                )}
-              />
-            </>
-          )}
-          <div className="my-4">
-            <Separator />
-          </div>
-          <div>
-            <div className="grid grid-cols-1 gap-3">
-              <RecordText
-                title="Description"
-                value={bundle.bundle_description}
-              />
-              <RecordText
-                title="Aesthetic"
-                value={
-                  bundle.aesthetics
-                    ? bundle.aesthetics
-                    : bundle.other_aesthetics ?? "Not provided"
-                }
-              />
-              <RecordText
-                title="Dislikes"
-                value={bundle.fashion_dislikes ?? "Not provided"}
-              />
-              <RecordText title="Top Size" value={bundle.top_size.toUpperCase()} />
-              <div className="flex items-center justify-normal gap-10">
-                <RecordText
-                  title="Bottom Length"
-                  value={bundle.length ?? "Not provided"}
-                />
-                <RecordText
-                  title="Bottom Waist"
-                  value={bundle.waist ?? "Not provided"}
-                />
+              <div>
+                <div className="grid grid-cols-1 gap-3">
+                  <RecordText
+                    title="Description"
+                    value={bundle.bundle_description}
+                  />
+                  <RecordText
+                    title="Aesthetic"
+                    value={
+                      bundle.aesthetics
+                        ? bundle.aesthetics
+                        : bundle.other_aesthetics ?? "Not provided"
+                    }
+                  />
+                  <RecordText
+                    title="Dislikes"
+                    value={bundle.fashion_dislikes ?? "Not provided"}
+                  />
+                  <RecordText title="Top Size" value={bundle.top_size.toUpperCase()} />
+                  <div className="flex items-center justify-normal gap-10">
+                    <RecordText
+                      title="Bottom Length"
+                      value={bundle.length ?? "Not provided"}
+                    />
+                    <RecordText
+                      title="Bottom Waist"
+                      value={bundle.waist ?? "Not provided"}
+                    />
+                  </div>
+                </div>
               </div>
+              <div className="my-4">
+                <Separator />
+              </div>
+              <AcceptForm params={{ bundle_id: bundle.id }} />
             </div>
-          </div>
-          <div className="my-4">
-            <Separator />
-          </div>
-          <AcceptForm params={{ bundle_id: bundle.id }} />
-        </div>
+          </>
+        )}
       </SheetContent>
+
     </>
   );
 }

@@ -21,4 +21,6 @@ export const fontSans = FontSans({
 export const fontMono = FontMono({
   subsets: ["latin"],
   variable: "--font-mono",
+  adjustFontFallback: false,
+  display: 'swap'
 });

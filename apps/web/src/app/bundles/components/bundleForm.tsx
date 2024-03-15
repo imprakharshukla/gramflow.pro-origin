@@ -39,6 +39,7 @@ import { AppConfig, cn } from "@gramflow/utils";
 import { bundleFormSchema } from "@gramflow/utils/src/schema";
 
 import { fontSerif } from "~/lib/fonts";
+import useBundleQueryClient from "~/features/ui/hooks/use-bundle-query-client";
 
 export const termsFormSchema = z.object({
   acceptTerms: z.boolean(),
@@ -50,6 +51,8 @@ export const verificationFormSchema = z.object({
   otp: z.string().length(4),
 });
 
+const bundleQueryClient = useBundleQueryClient();
+
 enum FormState {
   Terms,
   Verification,
@@ -60,36 +63,33 @@ enum FormState {
 }
 
 export default function BundleForm() {
-  const createBundle = async (data: z.infer<typeof bundleFormSchema>) => {
-    try {
-      setLoading(true);
-      const response = await fetch("/api/bundle", {
-        method: "POST",
-        body: JSON.stringify(data),
-      });
-      console.log({ response });
+  const {
+    mutate: createBundleMutation,
+    isLoading: createBundleLoading,
+  } = bundleQueryClient.createBundle.useMutation();
 
-      if (response.ok) {
-        const body = await response.json();
-        console.log(body);
-        if (body.response) {
-          setBundleId(body.response);
-          setFormStage(FormState.Success);
-        } else {
-          console.log("Something went wrong!");
-          toast.error("Something went wrong!");
-        }
-      } else {
+
+  const createBundle = async (data: z.infer<typeof bundleFormSchema>) => {
+
+    setLoading(true);
+    createBundleMutation({
+      body: {
+        bundle: data
+      }
+    }, {
+      onSuccess: (response) => {
+        setBundleId(response.body.id);
+        setFormStage(FormState.Success);
+        setLoading(false);
+      },
+      onError: (error) => {
+        console.log("Error", error);
         console.log("Something went wrong!");
         toast.error("Something went wrong!");
+        setLoading(false);
       }
-    } catch (e) {
-      console.log("Something went wrong!");
-      toast.error("Something went wrong!");
-    } finally {
-      setLoading(false);
-    }
-  };
+    });
+  }
 
   const sendOtp = async (email: string) => {
     try {
@@ -258,7 +258,7 @@ export default function BundleForm() {
 
   return (
     <div className="p-2 pb-10 text-justify md:p-10">
-      
+
       {formStage == FormState.Success && (
         <ReactConfetti
           width={windowSize.width}
@@ -310,12 +310,12 @@ export default function BundleForm() {
         {(formStage === FormState.Details ||
           formStage === FormState.Verification ||
           formStage === FormState.OtpSent) && (
-          <div className="flex flex-col gap-y-0.5">
-            <p className="md:text-md text-start md:text-center">
-              ⋆｡°✩ ✮ 𝓐 𝓫𝓾𝓷𝓭𝓵𝓮 𝓶𝓪𝓭𝓮 𝓳𝓾𝓼𝓽 𝓯𝓸𝓻 𝔂𝓸𝓾 ‧₊˚🖇️✩ ₊˚🎧⊹♡
-            </p>
-          </div>
-        )}
+            <div className="flex flex-col gap-y-0.5">
+              <p className="md:text-md text-start md:text-center">
+                ⋆｡°✩ ✮ 𝓐 𝓫𝓾𝓷𝓭𝓵𝓮 𝓶𝓪𝓭𝓮 𝓳𝓾𝓼𝓽 𝓯𝓸𝓻 𝔂𝓸𝓾 ‧₊˚🖇️✩ ₊˚🎧⊹♡
+              </p>
+            </div>
+          )}
 
         {formStage == FormState.Success && (
           <div>
@@ -888,9 +888,8 @@ export default function BundleForm() {
                       ) : (
                         <p>
                           {form.watch("pictures").length > 0
-                            ? `Uploaded ${
-                                form.watch("pictures").length
-                              } image(s)!`
+                            ? `Uploaded ${form.watch("pictures").length
+                            } image(s)!`
                             : "No images uploaded"}
                         </p>
                       )}

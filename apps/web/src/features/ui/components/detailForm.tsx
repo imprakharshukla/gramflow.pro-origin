@@ -1,15 +1,13 @@
 "use client";
 
-import {  useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { ca } from "date-fns/locale";
 import { Loader2 } from "lucide-react";
 import { useForm } from "react-hook-form";
-import { toast } from "sonner";
 import * as z from "zod";
+import Link from "next/link";
 
-import { UsersModel } from "@gramflow/db/prisma/zod";
 import {
   Button,
   Form,
@@ -22,6 +20,7 @@ import {
   Separator,
 } from "@gramflow/ui";
 import { motion } from "framer-motion";
+import useSessionWithLoading from "../hooks/use-session-auth";
 
 const addressFormSchema = z.object({
   name: z.string().min(2, {
@@ -48,16 +47,6 @@ const addressFormSchema = z.object({
   instagram_username: z.string().min(2, {}),
   landmark: z.string().nullish(),
   email: z.string().email(),
-});
-
-const emailFormSchema = z.object({
-  email: z.string().email(),
-});
-
-const otpFormSchema = z.object({
-  otp: z.string().min(4).max(4, {
-    message: "OTP must be at least 4 characters.",
-  }),
 });
 
 export type Root = Root2[];
@@ -97,7 +86,7 @@ async function getPincodeInfo(
   return new Promise(async (resolve, reject) => {
     try {
       const res = await fetch(
-        `https://api.postalpincode.in/pincode/${pincode}`,
+        `https://api.postalpincode.in/pincode/${pincode}`
       );
       if (res.ok) {
         const data = (await res.json()) as Root;
@@ -128,27 +117,12 @@ async function getPincodeInfo(
   });
 }
 
-export function DetailForm({ orderId }: { orderId: string }) {
-  const router = useRouter();
 
+
+
+
+const AddressForm = () => {
   const [loading, setLoading] = useState(false);
-
-  const [currentStep, setCurrentStep] = useState(FormState.EMAIL);
-  const [token, setToken] = useState("");
-
-  const description = {
-    [FormState.EMAIL]:
-      "Please enter your email address to pre-fill the saved details. We will send an OTP to verify your email address.",
-    [FormState.OTP]: "Please enter the OTP sent to your email address.",
-    [FormState.ADDRESS]: "Enter your address to get your order delivered.",
-  };
-
-  const otpHookForm = useForm<z.infer<typeof otpFormSchema>>({
-    resolver: zodResolver(otpFormSchema),
-    defaultValues: {
-      otp: "",
-    },
-  });
 
   const addressHookForm = useForm<z.infer<typeof addressFormSchema>>({
     resolver: zodResolver(addressFormSchema),
@@ -166,54 +140,10 @@ export function DetailForm({ orderId }: { orderId: string }) {
     },
   });
 
-  const emailHookForm = useForm<z.infer<typeof emailFormSchema>>({
-    resolver: zodResolver(emailFormSchema),
-    defaultValues: {
-      email: "",
-    },
-  });
-
-  useEffect(() => {
-    console.log(currentStep);
-  }, [currentStep]);
-
-  // 2. Define a submit handler.
   function onSubmit(values: z.infer<typeof addressFormSchema>) {
     setLoading(true);
     console.log(values);
-
-    // make a put request to the /api/order
-    // with the values
-    fetch("/api/order", {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: token,
-      },
-      body: JSON.stringify({ id: orderId, country: "India", ...values }),
-    })
-      .then((res) => {
-        if (res.ok) {
-          // show success
-          console.log("Success");
-          addressHookForm.reset();
-          emailHookForm.reset();
-          router.push(`/order/success/${orderId}`);
-          console.log(res);
-        } else {
-          // show error
-          toast.error("Error submitting the form");
-          console.log(res);
-        }
-      })
-      .catch((e) => {
-        console.log(e);
-      })
-      .finally(() => {
-        setLoading(false);
-      });
   }
-
   const setPincodeInfo = (pincode: string) => {
     getPincodeInfo(pincode)
       .then((data) => {
@@ -234,6 +164,18 @@ export function DetailForm({ orderId }: { orderId: string }) {
       });
   };
 
+  const { loading: authLoading, session } = useSessionWithLoading()
+  const router = useRouter();
+
+  useEffect(() => {
+    if (!authLoading && !session) {
+      router.push("/login")
+    }
+    if (session?.user) {
+      addressHookForm.setValue("email", session.user.email ?? "");
+    }
+  }, [authLoading, session]);
+
   useEffect(() => {
     const subscription = addressHookForm.watch((value, { name, type }) => {
       if (type === "change" && name === "pincode") {
@@ -245,402 +187,234 @@ export function DetailForm({ orderId }: { orderId: string }) {
     return () => subscription.unsubscribe();
   }, [addressHookForm.watch]);
 
-  async function onEmailSubmit(values: z.infer<typeof emailFormSchema>) {
-    setLoading(true);
-    console.log(values);
 
-    try {
-      addressHookForm.setValue("email", values.email);
-      //send otp
-      const otpJson = await generateOtp();
-      console.log(otpJson);
-      if (otpJson.success)
-        // show otp form
-        setCurrentStep(FormState.OTP);
-      else {
-        // show error
-        emailHookForm.setError("email", {
-          type: "custom",
-          message: "We couldn't generate an OTP for this email.",
-        });
-        console.log("Error");
-      }
-    } catch (e) {
-      console.log(e);
-    } finally {
-      setLoading(false);
-    }
-  }
 
-  async function generateOtp() {
-    const otpRes = await fetch(
-      `/api/otp?email=${emailHookForm.getValues("email")}&order_id=${orderId}`,
-    );
-    if (!otpRes.ok) {
-      otpHookForm.setError("otp", {
-        type: "custom",
-        message: "Couldn't generate OTP",
-      });
-    }
-    toast.success("OTP sent to your email address!");
-    return await otpRes.json();
-  }
+  return (
+    <Form {...addressHookForm}>
+      <form
+        onSubmit={addressHookForm.handleSubmit(onSubmit)}
+        className="w-5/6 space-y-8 animate-in fade-in duration-200 md:max-w-sm"
+      >
+        <FormField
+          control={addressHookForm.control}
+          name="email"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>
+                Email <span className={"text-pink-400"}>*</span>
+              </FormLabel>
+              <FormControl>
+                <Input disabled={true} placeholder="Your email" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={addressHookForm.control}
+          name="name"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>
+                Name <span className={"text-pink-400"}>*</span>
+              </FormLabel>
+              <FormControl>
+                <Input
+                  disabled={false}
+                  placeholder="Here Goes the Prettiest Name!"
+                  {...field}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
 
-  async function onOtpSubmit(values: z.infer<typeof otpFormSchema>) {
-    try {
-      setLoading(true);
-      console.log(values);
-      const res = await fetch(
-        `/api/otp?otp=${values.otp}&email=${emailHookForm.getValues("email")}`,
-        { method: "POST" },
-      );
-      if (!res.ok) {
-        otpHookForm.setError("otp", {
-          type: "custom",
-          message: "Invalid OTP",
-        });
-      }
-      const jsonRes = await res.json();
-      if (jsonRes.success) {
-        //checking if the token is present in the request
-        if (jsonRes.token) {
-          setToken(jsonRes.token);
-        } else {
-          //show error
-          otpHookForm.setError("otp", {
-            type: "custom",
-            message: "OTP Verification Failed",
-          });
-        }
-        if (jsonRes.user) {
-          // iterate the object and use the key value to set the form value in a loop
-          console.log({ userJson: jsonRes.user });
-          for (const [key, value] of Object.entries(jsonRes.user)) {
-            // @ts-ignore
-            if (value && !(value instanceof Date) && value.length > 0)
-              console.log(key, value);
-            // @ts-ignore
-            addressHookForm.setValue(key, value);
-          }
-        }
-        setCurrentStep(FormState.ADDRESS);
-      } else {
-        // show error
-        otpHookForm.setError("otp", {
-          type: "custom",
-          message: "Invalid OTP",
-        });
-        console.log("Error");
-      }
-    } catch (e) {
-      console.log(e);
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  const EmailForm = () => {
-    return (
-      <Form {...emailHookForm}>
-        <form
-          onSubmit={emailHookForm.handleSubmit(onEmailSubmit)}
-          className="w-5/6 space-y-8 md:max-w-sm"
-        >
-          <FormField
-            control={emailHookForm.control}
-            name="email"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Email</FormLabel>
-                <FormControl>
-                  <Input disabled={loading} placeholder="Email" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <Button className={"w-full"} type="submit">
-            <span>
-              {loading && <Loader2 className={"mr-2 animate-spin text-xs"} />}
-            </span>
-            {!loading && <p>Next</p>}
-          </Button>
-        </form>
-      </Form>
-    );
-  };
-  const AddressForm = () => {
-    return (
-      <Form {...addressHookForm}>
-        <form
-          onSubmit={addressHookForm.handleSubmit(onSubmit)}
-          className="w-5/6 space-y-8 animate-in fade-in duration-200 md:max-w-sm"
-        >
-          <FormField
-            control={addressHookForm.control}
-            name="email"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>
-                  Email <span className={"text-pink-400"}>*</span>
-                </FormLabel>
-                <FormControl>
-                  <Input disabled={true} placeholder="Your email" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={addressHookForm.control}
-            name="name"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>
-                  Name <span className={"text-pink-400"}>*</span>
-                </FormLabel>
-                <FormControl>
-                  <Input
-                    disabled={loading}
-                    placeholder="Here Goes the Prettiest Name!"
-                    {...field}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <FormField
-            control={addressHookForm.control}
-            name="house_number"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>
-                  House/Apartment No. <span className={"text-pink-400"}>*</span>
-                </FormLabel>
-                <FormControl>
-                  <Input
-                    placeholder="House/Apartment Number & Name"
-                    disabled={loading}
-                    {...field}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={addressHookForm.control}
-            name="locality"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>
-                  Locality <span className={"text-pink-400"}>*</span>
-                </FormLabel>
-                <FormControl>
-                  <Input placeholder="Sector/Locality" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={addressHookForm.control}
-            name="landmark"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Landmark</FormLabel>
-                <FormControl>
-                  {/*@ts-ignore*/}
-                  <Input placeholder="Landmark" disabled={loading} {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <div className={"grid grid-cols-3 space-x-3"}>
-            <div className={"col-span-1"}>
-              <FormField
-                control={addressHookForm.control}
-                name="pincode"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>
-                      Pincode <span className={"text-pink-400"}>*</span>
-                    </FormLabel>
-                    <FormControl>
-                      <Input
-                        maxLength={6}
-                        type={"number"}
-                        disabled={loading}
-                        placeholder="Pincode"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
-            <div className={"col-span-2"}>
-              <FormField
-                control={addressHookForm.control}
-                name="phone_no"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>
-                      Phone Number <span className={"text-pink-400"}>*</span>
-                    </FormLabel>
-                    <FormControl>
-                      <Input
-                        maxLength={10}
-                        type={"number"}
-                        disabled={loading}
-                        placeholder="Phone Number"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
-          </div>
-          <div className={"grid grid-cols-2 gap-x-3"}>
+        <FormField
+          control={addressHookForm.control}
+          name="house_number"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>
+                House/Apartment No. <span className={"text-pink-400"}>*</span>
+              </FormLabel>
+              <FormControl>
+                <Input
+                  placeholder="House/Apartment Number & Name"
+                  disabled={loading}
+                  {...field}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={addressHookForm.control}
+          name="locality"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>
+                Locality <span className={"text-pink-400"}>*</span>
+              </FormLabel>
+              <FormControl>
+                <Input placeholder="Sector/Locality" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={addressHookForm.control}
+          name="landmark"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Landmark</FormLabel>
+              <FormControl>
+                {/*@ts-ignore*/}
+                <Input placeholder="Landmark" disabled={loading} {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <div className={"grid grid-cols-3 space-x-3"}>
+          <div className={"col-span-1"}>
             <FormField
               control={addressHookForm.control}
-              name="city"
+              name="pincode"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>
-                    City <span className={"text-pink-400"}>*</span>
+                    Pincode <span className={"text-pink-400"}>*</span>
                   </FormLabel>
                   <FormControl>
-                    <Input disabled={true} placeholder="City" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={addressHookForm.control}
-              name="state"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>
-                    State <span className={"text-pink-400"}>*</span>
-                  </FormLabel>
-                  <FormControl>
-                    <Input disabled={true} placeholder="State" {...field} />
+                    <Input
+                      maxLength={6}
+                      type={"number"}
+                      disabled={loading}
+                      placeholder="Pincode"
+                      {...field}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
           </div>
-
-          <Separator className={"opacity-50"} />
+          <div className={"col-span-2"}>
+            <FormField
+              control={addressHookForm.control}
+              name="phone_no"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>
+                    Phone Number <span className={"text-pink-400"}>*</span>
+                  </FormLabel>
+                  <FormControl>
+                    <Input
+                      maxLength={10}
+                      type={"number"}
+                      disabled={loading}
+                      placeholder="Phone Number"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
+        </div>
+        <div className={"grid grid-cols-2 gap-x-3"}>
           <FormField
             control={addressHookForm.control}
-            name="instagram_username"
+            name="city"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>
-                  Instagram Username <span className={"text-pink-400"}>*</span>
+                  City <span className={"text-pink-400"}>*</span>
                 </FormLabel>
                 <FormControl>
-                  <Input disabled={loading} placeholder="Username" {...field} />
+                  <Input disabled={true} placeholder="City" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
             )}
           />
-
-          <Button className={"w-full"} type="submit">
-            <span>
-              {loading && <Loader2 className={"mr-2 animate-spin text-xs"} />}
-            </span>
-            {!loading && <p>Submit</p>}
-          </Button>
-        </form>
-      </Form>
-    );
-  };
-
-  const OtpForm = () => {
-    return (
-      <Form {...otpHookForm}>
-        <form
-          onSubmit={otpHookForm.handleSubmit(onOtpSubmit)}
-          className="w-5/6 space-y-8 md:max-w-sm"
-        >
           <FormField
-            control={otpHookForm.control}
-            name="otp"
+            control={addressHookForm.control}
+            name="state"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>OTP</FormLabel>
+                <FormLabel>
+                  State <span className={"text-pink-400"}>*</span>
+                </FormLabel>
                 <FormControl>
-                  <Input
-                    maxLength={4}
-                    disabled={loading}
-                    placeholder="4 digit OTP"
-                    {...field}
-                  />
+                  <Input disabled={true} placeholder="State" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
             )}
           />
-          <div className="flex items-center justify-between">
-            <p
-              className="my-1 cursor-pointer text-sm text-pink-700 underline"
-              onClick={() => {
-                generateOtp();
-              }}
-            >
-              Resend OTP
-            </p>
-            <p
-              className="my-1 cursor-pointer text-sm text-pink-700 underline"
-              onClick={() => {
-                //reload the page
-                if (window) window.location.reload();
-              }}
-            >
-              Change Email
-            </p>
-          </div>
-          <Button className={"w-full"} type="submit">
-            <span>
-              {loading && <Loader2 className={"mr-2 animate-spin text-xs"} />}
-            </span>
-            {!loading && <p>Next</p>}
-          </Button>
-        </form>
-      </Form>
-    );
-  };
+        </div>
+
+        <Separator className={"opacity-50"} />
+        <FormField
+          control={addressHookForm.control}
+          name="instagram_username"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>
+                Instagram Username <span className={"text-pink-400"}>*</span>
+              </FormLabel>
+              <FormControl>
+                <Input disabled={loading} placeholder="Username" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+
+        <Button className={"w-full"} type="submit">
+          <span>
+            {false && <Loader2 className={"mr-2 animate-spin text-xs"} />}
+          </span>
+          {true && <p>Submit</p>}
+        </Button>
+      </form>
+    </Form>
+  );
+};
+
+
+export function DetailForm({ orderId }: { orderId: string }) {
 
   return (
     <div className={"mt-32"}>
       <h1 className="bg-gradient-to-br from-black via-[#171717] to-[#4b4b4b] bg-clip-text pb-3 pt-4 text-center text-4xl font-medium tracking-tight text-transparent dark:text-white md:text-5xl">
-        {currentStep === FormState.OTP ? "Verify OTP" : "Details Required"}
+        Shipping Details
       </h1>
-      <p className={"text-center text-sm text-muted-foreground md:text-base"}>
-        {
-          // @ts-ignore
-          description[currentStep.valueOf()]
-        }
+      <p className={"text-center text-sm text-muted-foreground"}>
+        Please enter your address and other details.
       </p>
+      <div className={"flex items-center justify-center"}>
+        <Link
+          href="#"
+          className="dark:bg-gray-800/50 dark: group mt-5 flex w-fit space-x-1 rounded-full bg-white/30 px-5 py-2 text-center text-sm text-gray-600 shadow-sm ring-1 ring-gray-900/5 transition-all hover:shadow-lg active:shadow-sm sm:mt-0 md:mt-5"
+        >
+          <p className={"dark:text-white"}>
+            Order ID- <span className={"font-medium"}>{orderId}</span>
+          </p>
+        </Link>
+      </div>
       <motion.div
-        initial={{ x: -300, opacity: 0 }}
-        animate={{ x: 0, opacity: 1 }} className={"my-12 flex w-full items-center justify-center"}>
-        {currentStep === FormState.EMAIL && EmailForm()}
-        {currentStep === FormState.OTP && OtpForm()}
-        {currentStep === FormState.ADDRESS && AddressForm()}
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }} className={"my-12 flex w-full items-center justify-center"}>
+        <AddressForm />
       </motion.div>
     </div>
   );
 }
+
