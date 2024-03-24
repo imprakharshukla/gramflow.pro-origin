@@ -1,22 +1,22 @@
 import * as React from "react";
-import {addDays, format, subDays} from "date-fns";
-import {SetStateAction} from "jotai";
-import {CalendarIcon} from "lucide-react";
-import {Calendar} from "@gramflow/ui";
-import {DateRange} from "react-day-picker";
-import {Button} from "@gramflow/ui";
-import {Popover, PopoverContent, PopoverTrigger} from "@gramflow/ui";
-import {cn} from "@gramflow/utils";
+import { addDays, format, subDays } from "date-fns";
+import { SetStateAction } from "jotai";
+import { CalendarIcon } from "lucide-react";
+import { Calendar } from "@gramflow/ui";
+import { DateRange } from "react-day-picker";
+import { Button } from "@gramflow/ui";
+import { Popover, PopoverContent, PopoverTrigger } from "@gramflow/ui";
+import { cn } from "@gramflow/utils";
 
 export function DatePickerWithRange({
-                                        className,
-                                        date,
-                                        setDate,
-                                        onClickFunction,
-                                    }: {
+    className,
+    date,
+    setDate,
+    onClickFunction,
+}: {
     className?: string;
     date: DateRange | undefined;
-    setDate: React.Dispatch<SetStateAction<DateRange | undefined>>;
+    setDate: React.Dispatch<SetStateAction<DateRange>>;
     onClickFunction: () => void;
 }) {
     const [PopoverOpen, setPopoverOpen] = React.useState(false);
@@ -32,7 +32,7 @@ export function DatePickerWithRange({
                             !date && "text-muted-foreground",
                         )}
                     >
-                        <CalendarIcon className="mr-2 h-4 w-4"/>
+                        <CalendarIcon className="mr-2 h-4 w-4" />
                         {date?.from ? (
                             date.to ? (
                                 <>

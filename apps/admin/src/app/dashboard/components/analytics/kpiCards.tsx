@@ -1,4 +1,4 @@
-import { Status } from "@prisma/client";
+import { Status } from "@gramflow/db/types";
 import {
   BadgeDelta,
   Card,

@@ -1,13 +1,14 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { Dispatch, useEffect, useState } from "react";
 import Link from "next/link";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { COURIER, Status } from "@prisma/client";
+import { COURIER, Status } from "@gramflow/db/types"
 import { useQueryClient } from "@tanstack/react-query";
 import { Badge as StatusBadge, type Color } from "@tremor/react";
 import useRestClient from "~/features/hooks/use-rest-client";
 import { format } from "date-fns";
+import { CompleteBundles, CompleteUsers, UsersModel } from "@gramflow/db/prisma/zod";
 import {
   ChevronRight,
   Instagram,
@@ -17,7 +18,7 @@ import {
   ShareIcon,
   X,
 } from "lucide-react";
-import { useForm } from "react-hook-form";
+import { UseFormReturn, useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
 
@@ -53,28 +54,118 @@ import { OrderShippingUpdateSchema } from "@gramflow/utils/src/schema";
 
 import { DashboardBundleDetailSheet } from "./bundles/dashboardBundleDetailSheet";
 import { RecordText } from "./recordText";
+import { SetStateAction } from "jotai";
+import { fontSans } from "~/lib/fonts";
 
-export const RecordDisplay = ({
-  label,
-  value,
-  className,
-  ...restProps
+const SheetHeaderDetails = ({
+  title,
+  status,
+  size,
+  description,
+  id
 }: {
-  label: string;
-  value?: string | null;
-  className?: string;
-  onClick?: () => void;
-}) => (
-  <Card
-    className={`flex w-fit max-w-md cursor-pointer items-center border p-3 text-sm ${className}`}
-    {...restProps}
-  >
-    <Label className={"border-r pr-2"}>{label}</Label>
-    <p className="ml-2 break-all text-xs text-muted-foreground lg:text-base">
-      {value}
-    </p>
-  </Card>
-);
+  title: string, status: Status, size: string,
+  description: string,
+  id: string,
+}) => {
+  return (
+    <>
+      <div className="flex justify-end">
+        <SheetClose>
+          <Button variant={"ghost"}>
+            <X className="h-4 w-4" />
+          </Button>
+        </SheetClose>
+      </div>
+      <div className="items flex flex-col space-y-2 text-left">
+        <div className="flex items-center gap-3">
+          <SheetTitle>
+            {title}
+          </SheetTitle>
+          <StatusBadge
+            size="xs"
+            color={pillColors[status] as Color}
+            className={"text-xs font-medium"}
+          >
+            {(status.slice(0, 1) +
+              status.slice(1).toLowerCase()).replaceAll("_", " ")}
+          </StatusBadge>
+          <StatusBadge className="-ml-1" color="orange">
+            {size}
+          </StatusBadge>
+        </div>
+        <div
+          onClick={async () => {
+            if (navigator.clipboard) {
+              await navigator.clipboard.writeText(id);
+              toast.success("Copied to clipboard");
+            } else {
+              console.log("Clipboard API not available");
+            }
+          }}
+        >
+          <SheetDescription>{description}</SheetDescription>
+        </div>
+      </div>
+    </>
+  )
+}
+
+const DetailsContent = ({ order }: { order: CompleteOrders | null }) => {
+  if (order === null) return null;
+  const [editDetailsFormVisible, setEditDetailsFormVisible] = useState(false);
+  return (
+    <div className="px-3">
+      <ActionPanel user={order.user} id={order.id} />
+      <div className="grid gap-4 py-4">
+        <div className="flex flex-wrap items-center gap-3">
+          <AcceptButton id={order.id} status={order.status} />
+          <BundleDetails bundle={order.bundles} />
+        </div>
+      </div>
+
+      <div className="text-wrap grid gap-6 overflow-x-auto">
+        <ProductDetails post_urls={order.instagram_post_urls} images={order.images} price={order.price} />
+        <UserDetails user={order.user} />
+        <RecordText
+          title="Date"
+          value={format(
+            new Date(order.created_at ?? new Date()),
+            "dd/MM/yy, hh:mm a",
+          )}
+        />
+        <ShippingDetails user={order.user} height={order.height} weight={order.weight} length={order.length} breadth={order.breadth} awb={order.awb} shipping_cost={order.shipping_cost} />
+        <SheetFooter>
+          <EditButton setEditDetailsFormVisible={setEditDetailsFormVisible} editDetailsFormVisible={editDetailsFormVisible} />
+        </SheetFooter>
+        {editDetailsFormVisible && <UpdateForm order={order} />}
+      </div>
+    </div>
+  );
+};
+
+export const RecordDisplay =
+  ({
+    label,
+    value,
+    className,
+    ...restProps
+  }: {
+    label: string;
+    value?: string | null;
+    className?: string;
+    onClick?: () => void;
+  }) => (
+    <Card
+      className={`flex w-fit max-w-md cursor-pointer items-center border p-3 text-sm ${className}`}
+      {...restProps}
+    >
+      <Label className={"border-r pr-2"}>{label}</Label>
+      <p className="ml-2 break-all text-xs text-muted-foreground lg:text-base">
+        {value}
+      </p>
+    </Card>
+  );
 
 export const pillColors: { [key: string]: Color } = {
   [Status.PENDING]: "amber",
@@ -131,7 +222,6 @@ const UpdateForm = ({ order }: { order: CompleteOrders }) => {
     return () => subscription.unsubscribe();
   }, [form.watch]);
 
-  // 2. Define a submit handler.
   async function onSubmit(values: z.infer<typeof OrderShippingUpdateSchema>) {
     updateOrderMutate({
       body: {
@@ -151,7 +241,9 @@ const UpdateForm = ({ order }: { order: CompleteOrders }) => {
             <FormField
               control={form.control}
               name="status"
-              render={({ field }) => (
+              render={({ field }: {
+                field: any
+              }) => (
                 <FormItem>
                   <FormLabel>Status</FormLabel>
                   <Select
@@ -180,7 +272,9 @@ const UpdateForm = ({ order }: { order: CompleteOrders }) => {
             <FormField
               control={form.control}
               name="courier"
-              render={({ field }) => (
+              render={({ field }: {
+                field: any
+              }) => (
                 <FormItem>
                   <FormLabel>Courier</FormLabel>
 
@@ -209,12 +303,14 @@ const UpdateForm = ({ order }: { order: CompleteOrders }) => {
               )}
             />
           </div>
-          <SizeSelection form={form} />
+          <SizeSelection form={form} order={order} />
           <div className="grid grid-cols-1 gap-3 lg:grid-cols-2">
             <FormField
               control={form.control}
               name="length"
-              render={({ field }) => (
+              render={({ field }: {
+                field: any
+              }) => (
                 <FormItem>
                   <FormLabel>Length</FormLabel>
                   <FormControl>
@@ -228,7 +324,9 @@ const UpdateForm = ({ order }: { order: CompleteOrders }) => {
             <FormField
               control={form.control}
               name="breadth"
-              render={({ field }) => (
+              render={({ field }: {
+                field: any
+              }) => (
                 <FormItem>
                   <FormLabel>Breadth</FormLabel>
                   <FormControl>
@@ -242,7 +340,9 @@ const UpdateForm = ({ order }: { order: CompleteOrders }) => {
             <FormField
               control={form.control}
               name="height"
-              render={({ field }) => (
+              render={({ field }: {
+                field: any
+              }) => (
                 <FormItem>
                   <FormLabel>Height</FormLabel>
                   <FormControl>
@@ -256,7 +356,9 @@ const UpdateForm = ({ order }: { order: CompleteOrders }) => {
             <FormField
               control={form.control}
               name="weight"
-              render={({ field }) => (
+              render={({ field }: {
+                field: any
+              }) => (
                 <FormItem>
                   <FormLabel>Weight</FormLabel>
                   <FormControl>
@@ -271,7 +373,9 @@ const UpdateForm = ({ order }: { order: CompleteOrders }) => {
           <FormField
             control={form.control}
             name="awb"
-            render={({ field }) => (
+            render={({ field }: {
+              field: any
+            }) => (
               <FormItem>
                 <FormLabel>AWB</FormLabel>
                 <FormControl>
@@ -301,7 +405,18 @@ const UpdateForm = ({ order }: { order: CompleteOrders }) => {
   );
 };
 
-export const SizeSelection = ({ form }: { form: any }) => {
+export const SizeSelection = ({ form, order }: {
+  form: UseFormReturn<{
+    awb: string;
+    length: string;
+    breadth: string;
+    height: string;
+    weight: string;
+    courier?: any;
+    status?: any;
+  }, any, undefined>,
+  order?: CompleteOrders
+}) => {
   const watchLength = form.watch(
     "length",
     AppConfig.DefaultPackageDetails["MEDIUM"]?.length,
@@ -321,10 +436,10 @@ export const SizeSelection = ({ form }: { form: any }) => {
             <Button
               type="button"
               onClick={() => {
-                form.setValue("weight", order?.weight);
-                form.setValue("length", order?.length);
-                form.setValue("breadth", order?.breadth);
-                form.setValue("height", order?.height);
+                form.setValue("weight", order?.weight ?? "");
+                form.setValue("length", order?.length ?? "");
+                form.setValue("breadth", order?.breadth ?? "");
+                form.setValue("height", order?.height ?? "");
               }}
               className={cn(
                 "cursor-pointer",
@@ -363,266 +478,278 @@ export function DashboardOrderDetailSheet({
         packageSize = key;
       }
     },
-  );
-
+  )
   return (
     <>
       <SheetContent
         side={"right"}
-        className={"max-h-screen w-full overflow-y-scroll pb-10 lg:w-full"}
+        className={cn("max-h-screen w-full overflow-y-scroll pb-10 lg:w-full", fontSans.className)}
       >
         {!order ? (
           <div>Order not found</div>
         ) : (
-          <SheetHeader className="top-0 bg-background px-3 pb-4 pt-6 dark:bg-background">
-            <div className="flex justify-end">
-              <SheetClose>
-                <Button variant={"ghost"}>
-                  <X className="h-4 w-4" />
-                </Button>
-              </SheetClose>
-            </div>
-            <div className="items flex flex-col space-y-2 text-left">
-              <div className="flex items-center gap-3">
-                <SheetTitle>
-                  {order.id.replace(/^(.{8}).+(.{8})$/, "$1").toUpperCase()}
-                </SheetTitle>
-                <StatusBadge
-                  size="xs"
-                  color={pillColors[order.status] as Color}
-                  className={"text-xs font-medium"}
-                >
-                  {order.status.slice(0, 1) +
-                    order.status.slice(1).toLowerCase()}
-                </StatusBadge>
-                <StatusBadge className="-ml-1" color="orange">
-                  {packageSize.slice(0, 1) + packageSize.slice(1).toLowerCase()}
-                </StatusBadge>
-              </div>
-              <div
-                onClick={async () => {
-                  if (navigator.clipboard) {
-                    await navigator.clipboard.writeText(order.id);
-                    toast.success("Copied to clipboard");
-                  } else {
-                    console.log("Clipboard API not available");
-                  }
-                }}
-              >
-                <SheetDescription>{order.id}</SheetDescription>
-              </div>
-            </div>
+          <SheetHeader className="top-0 px-3 pb-4 pt-6">
+            <SheetHeaderDetails title={
+              order.id.replace(/^(.{8}).+(.{8})$/, "$1").toUpperCase()
+            } status={
+              order.status
+            } size={packageSize.slice(0, 1) + packageSize.slice(1).toLowerCase()} id={order.id} description={order.id} />
           </SheetHeader>
         )}
         <DetailsContent order={order} />
-        <SheetFooter className={"text-left"}></SheetFooter>
       </SheetContent>
     </>
   );
 }
 
-const DetailsContent = ({ order }: { order: CompleteOrders }) => {
-  const [editDetailsFormVisible, setEditDetailsFormVisible] = useState(false);
-  const handleShareButton = async () => {
-    const text = `Thank you for your order love 🥰. Please fill up the details by clicking the link below. ${AppConfig.BaseOrderUrl}/order/${order.id}. This is a one time process and the details will be saved for future orders. You can visit the link anytime to track your order.`;
-    if (navigator.share) {
-      try {
-        await navigator
-          .share({ text })
-          .then(() =>
-            console.log("Hooray! Your content was shared to tha world"),
-          );
-      } catch (error) {
-        console.log(`Oops! I couldn't share to the world because: ${error}`);
-      }
-    } else {
-      // fallback code
-      //copy the text
-      if (navigator.clipboard) {
-        await navigator.clipboard.writeText(text);
-        toast.success("Copied to clipboard");
-      } else {
-        console.log("Clipboard API not available");
-      }
-    }
-  };
+
+
+const EditButton = ({ setEditDetailsFormVisible, editDetailsFormVisible }: { setEditDetailsFormVisible: Dispatch<SetStateAction<boolean>>, editDetailsFormVisible: boolean }) => {
+
   return (
-    <div className="px-3">
-      <div className="flex flex-wrap items-center justify-between gap-4">
-        {order.user && (
-          <div className="flex flex-wrap items-center justify-center gap-2">
-            <Button size={"sm"} variant={"outline"}>
-              <Link
-                href={`tel:${order.user?.phone_no}`}
-                className="flex items-center space-x-2"
-              >
-                <span>Call</span>
-                <Phone className="h-4 w-4" />
-              </Link>
-            </Button>
-            <Button size={"sm"} variant={"outline"}>
-              <Link
-                href={`mailto:${order.user?.email}`}
-                className="flex items-center space-x-2"
-              >
-                <span>Email</span>
-                <Mail className="h-4 w-4" />
-              </Link>
-            </Button>
-            <Button size={"sm"} variant={"outline"}>
-              <Link
-                href={`https://instagram.com/${order.user?.instagram_username}`}
-                className="flex items-center space-x-2"
-              >
-                <span>IG</span>
-                <Instagram className="h-4 w-4" />
-              </Link>
-            </Button>
-          </div>
-        )}
-        <Button
-          onClick={handleShareButton}
-          size={"sm"}
-          className="flex items-center space-x-2"
-          variant={"secondary"}
-        >
-          <span>Share</span>
-          <ShareIcon className="h-4 w-4" />
+    <>  {!editDetailsFormVisible && (
+      <Button
+        onClick={() => {
+          setEditDetailsFormVisible((prevState) => !prevState);
+        }}
+      >
+        {!editDetailsFormVisible ? "Edit Details" : "Close"}{" "}
+      </Button>
+    )}</>
+  )
+}
+
+const AcceptButton = ({ id, status }: { id: string, status: Status }) => {
+  return (
+    <>
+      {status === "PENDING" && (
+        <Button className="mt-3" variant={"secondary"}>
+          <a
+            className=" flex items-center space-x-2"
+            href={`/add?orderId=${id}`}
+          >
+            <span>Accept Manually</span>
+            <ChevronRight className="h-4 w-4" />
+          </a>
+        </Button>
+      )}
+    </>
+  )
+}
+
+
+const ActionPanel = ({
+  user,
+  id,
+}: {
+  user: CompleteUsers | null | undefined,
+  id: string
+}) => {
+  return (<div className="flex flex-wrap items-center justify-between gap-4">
+    {user && (
+      <div className="flex flex-wrap items-center justify-center gap-2">
+        <Button size={"sm"} variant={"outline"}>
+          <Link
+            href={`tel:${user?.phone_no}`}
+            className="flex items-center space-x-2"
+          >
+            <span>Call</span>
+            <Phone className="h-4 w-4" />
+          </Link>
+        </Button>
+        <Button size={"sm"} variant={"outline"}>
+          <Link
+            href={`mailto:${user?.email}`}
+            className="flex items-center space-x-2"
+          >
+            <span>Email</span>
+            <Mail className="h-4 w-4" />
+          </Link>
+        </Button>
+        <Button size={"sm"} variant={"outline"}>
+          <Link
+            href={`https://instagram.com/${user?.instagram_username}`}
+            className="flex items-center space-x-2"
+          >
+            <span>IG</span>
+            <Instagram className="h-4 w-4" />
+          </Link>
         </Button>
       </div>
-      <div className="grid gap-4 py-4">
-        <div className="flex flex-wrap items-center gap-3">
-          {order.status === "PENDING" && (
-            <Button className="mt-3" variant={"secondary"}>
-              <a
-                className=" flex items-center space-x-2"
-                href={`/add?orderId=${order.id}`}
-              >
-                <span>Accept Manually</span>
-                <ChevronRight className="h-4 w-4" />
-              </a>
-            </Button>
-          )}
-          {order.bundles && (
-            <Sheet>
-              <SheetTrigger>
-                <Button
-                  variant={"outline"}
-                  className="mb-3 flex items-center space-x-2"
-                >
-                  <span>View Bundle</span>
-                  <ChevronRight className="h-4 w-4" />
-                </Button>
-              </SheetTrigger>
-              <DashboardBundleDetailSheet bundle={order.bundles} />
-            </Sheet>
-          )}
-        </div>
-      </div>
-      {/* <Card className="my-3">
-        <div className="flex items-center justify-between py-1 px-4">
-          <p>Bundle Order</p>
-          <ChevronRight className="" />
-        </div>
-      </Card> */}
+    )}
+    <Button
+      onClick={() => {
+        async () => {
+          const text = `Thank you for your order love 🥰. Please fill up the details by clicking the link below. ${AppConfig.BaseOrderUrl}/order/${id}. This is a one time process and the details will be saved for future orders. You can visit the link anytime to track your order.`;
+          if (navigator.share) {
+            try {
+              await navigator
+                .share({ text })
+                .then(() =>
+                  toast.success("Shared to the world! 🌍. Thank you for sharing!"),
+                );
+            } catch (error) {
+              console.log(`Oops! I couldn't share to the world because: ${error}`);
+            }
+          } else {
+            // fallback code
+            if (navigator.clipboard) {
+              await navigator.clipboard.writeText(text);
+              toast.success("Copied to clipboard");
+            } else {
+              console.log("Clipboard API not available");
+            }
+          }
+        }
+      }}
+      size={"sm"}
+      className="flex items-center space-x-2"
+      variant={"secondary"}
+    >
+      <span>Share</span>
+      <ShareIcon className="h-4 w-4" />
+    </Button>
+  </div>)
+}
 
-      <div className="text-wrap grid gap-6 overflow-x-auto">
-        <Card className={"flex flex-col space-y-2"}>
-          <p className="p-3 text-xs font-medium text-muted-foreground">
-            Products in order
-          </p>
-          <CardContent className="grid grid-cols-1 gap-2">
-            {order.instagram_post_urls.map((url, index) => {
-              const uri = new URL(url);
-              const priceValue = uri.searchParams.get("price");
-              const parsedPrice = Number(priceValue);
-              const postId = uri.pathname.split("/")[2];
-              const slideNumber = uri.searchParams.get("img_index");
-              return (
-                <div className="flex items-center justify-between">
-                  <a href={url} target="_blank">
-                    <img
-                      width={50}
-                      height={50}
-                      className="rounded-md"
-                      src={order.images[index]}
-                    />
-                  </a>
-                  <div className="flex flex-col gap-2">
-                    <p className="text-sm font-medium">Item {index + 1}</p>
-                    <p className="text-xs text-muted-foreground">
-                      {postId} ({slideNumber})
-                    </p>
-                  </div>
-                  <p className="text-sm font-medium">{`₹ ${parsedPrice}`}</p>
-                </div>
-              );
-            })}
-            <div>
-              <div className="my-3">
-                <Separator />
-              </div>
-              <div className="mt-3 flex items-center justify-between">
-                <p className="text-sm font-medium">Total</p>
-                <p className="text-sm font-medium">{`₹ ${order.price}`}</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-        {order.user && (
-          <>
-            <div className="item-center justify-normal flex w-full gap-10">
-              <RecordText title="Name" value={order.user?.name ?? ""} />
-              <RecordText
-                title="Phone"
-                value={`${order.user?.phone_no}` ?? ""}
-              />
-            </div>
-            <RecordText
-              title="Address"
-              value={`${order.user?.house_number}, \n ${order.user?.locality}, ${order.user?.landmark} ${order.user?.city}, ${order.user?.state}- ${order.user?.pincode}`}
-            />
-            <RecordText title="Email" value={order.user?.email} />
-            <RecordText
-              title="Date"
-              value={format(
-                new Date(order.created_at ?? new Date()),
-                "dd/MM/yy, hh:mm a",
-              )}
-            />
-          </>
-        )}
-        <div className="item-center justify-normal flex flex-col gap-8">
-          {order.user && (
-            <RecordText
-              title="Est. Shipping Cost"
-              value={"₹ " + order.shipping_cost?.toString()}
-            />
-          )}
-          {order.user && (
-            <RecordText
-              title="Dimensions"
-              value={`${order.length} cm x ${order.breadth} cm x ${order.height} cm @ ${order.weight} gm`}
-            ></RecordText>
-          )}
-        </div>
-
-        {order.awb && <RecordText title="AWB" value={order.awb} />}
-
-        <SheetFooter>
-          {!editDetailsFormVisible && (
+const BundleDetails = ({ bundle }:
+  {
+    bundle: CompleteBundles | null | undefined
+  }) => {
+  return (
+    <>
+      {bundle && (
+        <Sheet>
+          <SheetTrigger>
             <Button
-              onClick={() => {
-                setEditDetailsFormVisible((prevState) => !prevState);
-              }}
+              variant={"outline"}
+              className="mb-3 flex items-center space-x-2"
             >
-              {!editDetailsFormVisible ? "Edit Details" : "Close"}{" "}
+              <span>View Bundle</span>
+              <ChevronRight className="h-4 w-4" />
             </Button>
-          )}
-        </SheetFooter>
+          </SheetTrigger>
+          <DashboardBundleDetailSheet bundle={bundle} />
+        </Sheet>
+      )}
+    </>
+  )
+}
 
-        {editDetailsFormVisible && <UpdateForm order={order} />}
-      </div>
+const ShippingDetails = ({
+  user,
+  shipping_cost,
+  height,
+  length,
+  breadth,
+  weight,
+  awb,
+}: {
+  user: CompleteUsers | null | undefined,
+  shipping_cost: number | null | undefined,
+  height: string | null | undefined,
+  length: string | null | undefined,
+  breadth: string | null | undefined,
+  weight: string | null | undefined,
+  awb: string | null | undefined,
+}) => {
+  return (
+    <div className="item-center justify-normal flex flex-col gap-8">
+      {user && (
+        <RecordText
+          title="Est. Shipping Cost"
+          value={"₹ " + shipping_cost?.toString()}
+        />
+      )}
+      {(length && breadth && height && weight) && (
+        <RecordText
+          title="Dimensions"
+          value={`${length} cm x ${breadth} cm x ${height} cm @ ${weight} gm`}
+        ></RecordText>
+      )}
+      {awb && <RecordText title="AWB" value={awb} />}
     </div>
-  );
-};
+  )
+}
+
+const UserDetails = ({ user }: {
+  user: CompleteUsers | null | undefined
+}) => {
+  return (
+    <>
+      {user &&
+        <>
+          <div className="item-center justify-normal flex w-full gap-10">
+            <RecordText title="Name" value={user?.name ?? ""} />
+            <RecordText
+              title="Phone"
+              value={`${user?.phone_no}` ?? ""}
+            />
+          </div>
+          <RecordText
+            title="Address"
+            value={`${user?.house_number}, \n ${user?.locality}, ${user?.landmark} ${user?.city}, ${user?.state}- ${user?.pincode}`}
+          />
+          <RecordText title="Email" value={user?.email} />
+
+        </>
+      }
+    </>
+  )
+}
+
+const ProductDetails = ({
+  post_urls,
+  images,
+  price,
+
+}: {
+  post_urls: string[],
+  images: string[],
+  price: number
+}) => {
+  return (
+    <Card className={"flex flex-col space-y-2"}>
+      <p className="p-3 text-xs font-medium text-muted-foreground">
+        Products in order
+      </p>
+      <CardContent className="grid grid-cols-1 gap-2">
+        {post_urls.map((url, index) => {
+          const uri = new URL(url);
+          const priceValue = uri.searchParams.get("price");
+          const parsedPrice = Number(priceValue);
+          const postId = uri.pathname.split("/")[2];
+          const slideNumber = uri.searchParams.get("img_index");
+          return (
+            <div className="flex items-center justify-between">
+              <a href={url} target="_blank">
+                <img
+                  width={50}
+                  height={50}
+                  className="rounded-md"
+                  src={images[index]}
+                />
+              </a>
+              <div className="flex flex-col gap-2">
+                <p className="text-sm font-medium">Item {index + 1}</p>
+                <p className="text-xs text-muted-foreground">
+                  {postId} ({slideNumber})
+                </p>
+              </div>
+              <p className="text-sm font-medium">{`₹ ${parsedPrice}`}</p>
+            </div>
+          );
+        })}
+        <div>
+          <div className="my-3">
+            <Separator />
+          </div>
+          <div className="mt-3 flex items-center justify-between">
+            <p className="text-sm font-medium">Total</p>
+            <p className="text-sm font-medium">{`₹ ${price}`}</p>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  )
+}

@@ -41,5 +41,23 @@ export const bundleContract = c.router({
         }),
         body: z.object({}),
         summary: "Delete bundles"
-    }
+    },
+    getBundles: {
+        method: "GET",
+        path: "/order",
+        responses: {
+            200: z.object({
+                count: z.number(),
+                bundles: BundlesModel.array(),
+            }),
+        },
+        query: z.object({
+            from: z.string().optional(),
+            to: z.string().optional(),
+            page: z.string().optional(),
+            pageSize: z.string().optional(),
+        }),
+        summary: "Get all bundles",
+    },
+
 })

@@ -2,13 +2,11 @@
 
 import { useEffect, useState, type Dispatch, type SetStateAction } from "react";
 import { useRouter } from "next/navigation";
-import { Status } from "@prisma/client";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { initQueryClient } from "@ts-rest/react-query";
+import { Status } from "@gramflow/db/types";
+import { useQueryClient } from "@tanstack/react-query";
 import { useTheme } from "next-themes";
 import { toast } from "sonner";
-
-import { orderContract } from "@gramflow/contract";
+import { fontSans } from "~/lib/fonts";
 import {
   Button,
   CommandDialog,
@@ -30,8 +28,6 @@ import {
   DropdownMenuTrigger,
 } from "@gramflow/ui";
 
-import useOrderQueryClient from "~/features/hooks/use-order-query-client";
-import useShippingQueryClient from "~/features/hooks/use-ship-query-client";
 import { downloadBulkOrderFiles } from "./dashboardBulkCsvDownloadButton";
 import useRestClient from "~/features/hooks/use-rest-client";
 
@@ -445,7 +441,7 @@ export default function DashboardBulkOptionsSelectComponent({
       <DropdownMenuTrigger>
         <Button variant={"outline"}>Actions</Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent>
+      <DropdownMenuContent className={fontSans.className}>
         <DropdownMenuLabel>Actions</DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuItem

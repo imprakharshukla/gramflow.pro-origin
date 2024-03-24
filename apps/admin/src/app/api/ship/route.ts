@@ -10,7 +10,7 @@ import {
 } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { auth, currentUser } from "@clerk/nextjs";
-import { Status } from "@prisma/client";
+import { Status } from "@gramflow/db/types";
 import { z } from "zod";
 
 import { AppConfig } from "@gramflow/utils";

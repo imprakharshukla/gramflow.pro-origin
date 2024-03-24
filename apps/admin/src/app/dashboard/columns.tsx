@@ -162,40 +162,40 @@ export const columns: ColumnDef<CompleteOrders>[] = [
         id: "created_at",
         accessorKey: "createdAt",
     },
-    {
-        id: "awb",
-        header: "AWB",
-        accessorKey: "awb",
-        cell: ({ row }) => {
-            return (
-                <div className={"flex items-center justify-center text-sm"}>
-                    {row.original.awb}
-                </div>
-            );
-        },
-    },
-    {
-        id: "user.phone_number",
-        accessorKey: "phone_number",
-        cell: ({ row }) => {
-            return (
-                <div className={"flex items-center justify-center text-sm"}>
-                    {row.original.user?.phone_no}
-                </div>
-            );
-        },
-    },
-    {
-        id: "user.email",
-        accessorKey: "email",
-        cell: ({ row }) => {
-            return (
-                <div className={"flex items-center justify-center text-sm"}>
-                    {row.original.user?.email}
-                </div>
-            );
-        },
-    },
+    // {
+    //     id: "awb",
+    //     header: "AWB",
+    //     accessorKey: "awb",
+    //     cell: ({ row }) => {
+    //         return (
+    //             <div className={"flex items-center justify-center text-sm"}>
+    //                 {row.original.awb}
+    //             </div>
+    //         );
+    //     },
+    // },
+    // {
+    //     id: "user.phone_number",
+    //     accessorKey: "phone_number",
+    //     cell: ({ row }) => {
+    //         return (
+    //             <div className={"flex items-center justify-center text-sm"}>
+    //                 {row.original.user?.phone_no}
+    //             </div>
+    //         );
+    //     },
+    // },
+    // {
+    //     id: "user.email",
+    //     accessorKey: "email",
+    //     cell: ({ row }) => {
+    //         return (
+    //             <div className={"flex items-center justify-center text-sm"}>
+    //                 {row.original.user?.email}
+    //             </div>
+    //         );
+    //     },
+    // },
     {
         accessorKey: "id",
         header: () => <div className={"w-48"}>Order ID</div>,

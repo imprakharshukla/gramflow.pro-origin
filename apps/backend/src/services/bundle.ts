@@ -11,6 +11,10 @@ const BundleInputZodSchema = BundlesModel.omit({ id: true, created_at: true, upd
     images: true,
     status: true
 });
+
+type BundlesModelType = z.infer<typeof BundlesModel>;
+
+
 @Service()
 export class BundleService {
     constructor(@Inject("logger") private logger: Logger) { }
@@ -77,5 +81,78 @@ export class BundleService {
             this.logger.error(e);
             throw e;
         }
+    }
+    public async getBundlesCount(from?: number, to?: number, searchTerm?: string) {
+
+        if (from === undefined || to === undefined) {
+            return db.orders.count();
+        }
+        return db.orders.count({
+            where: {
+                created_at: {
+                    gte: new Date(from).toISOString(),
+                    lte: new Date(to).toISOString(),
+                },
+            },
+        });
+    }
+    public async getBundles(
+        from?: number,
+        to?: number,
+        page?: number,
+        pageSize?: number,
+
+    ): Promise<BundlesModelType[]> {
+
+        if (from === undefined || to === undefined) {
+            this.logger.debug("from and to are not present");
+            // from and to are not present, so we are returning all the orders
+            return db.bundles.findMany({
+                include: {
+                    user: true,
+                },
+                orderBy: {
+                    created_at: "desc",
+                },
+            });
+        }
+
+        if (page === undefined || pageSize === undefined) {
+            this.logger.debug("page and pageSize are not present");
+            // page and pageSize are not present, so we are returning all the orders in the given date range
+            return db.bundles.findMany({
+                include: {
+                    user: true,
+                },
+                where: {
+                    created_at: {
+                        gte: new Date(from).toISOString(),
+                        lte: new Date(to).toISOString(),
+                    },
+                },
+                orderBy: {
+                    created_at: "desc",
+                },
+            });
+        }
+
+        // All the required parameters are present, so we are returning orders within the date range with pagination
+        const offset = page * pageSize;
+        return db.bundles.findMany({
+            include: {
+                user: true,
+            },
+            where: {
+                created_at: {
+                    gte: new Date(from).toISOString(),
+                    lte: new Date(to).toISOString(),
+                },
+            },
+            orderBy: {
+                created_at: "desc",
+            },
+            skip: (page - 1) * pageSize,
+            take: pageSize,
+        });
     }
 }

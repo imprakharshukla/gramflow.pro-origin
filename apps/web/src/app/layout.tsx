@@ -6,7 +6,7 @@ import { fontSans } from "~/lib/fonts";
 import { AuthSessionProvider } from "~/providers/auth-session-provider";
 import { ThemeProvider } from "~/providers/theme-provider";
 import "~/styles/globals.css";
-import { Metadata } from "next";
+import { Metadata, Viewport } from "next";
 import { GeistSans } from "geist/font";
 import posthog from "posthog-js";
 import { Toaster } from "sonner";
@@ -17,17 +17,23 @@ import NavMenu from "~/features/ui/components/navMenu";
 import PHProvider from "~/providers/posthog-provider";
 import QueryProvider from "~/providers/query-provider";
 
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
+  viewportFit: "cover",
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "white" },
+    { media: "(prefers-color-scheme: dark)", color: "black" },
+  ],
+}
 export const metadata: Metadata = {
-  viewport: "width=device-width, initial-scale=1, maximum-scale=1",
   title: {
     default: siteConfig.name,
     template: `%s | ${siteConfig.name}`,
   },
   description: siteConfig.description,
-  themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "white" },
-    { media: "(prefers-color-scheme: dark)", color: "black" },
-  ],
+  
   openGraph: {
     type: "website",
     locale: "en_US",

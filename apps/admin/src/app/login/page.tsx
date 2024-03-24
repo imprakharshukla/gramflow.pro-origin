@@ -10,6 +10,7 @@ import { toast } from "sonner";
 import { z } from "zod";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Icons } from "~/features/ui";
+import useSessionWithLoading from "~/features/hooks/use-session-auth";
 
 enum LoginState {
     Email,
@@ -18,9 +19,7 @@ enum LoginState {
 
 export default function Login() {
     const searchParams = useSearchParams()
-
     const redirect = searchParams.get('redirect') ?? "/dashboard/orders"
-
     const [isLoading, setIsLoading] = React.useState<boolean>(false)
     const emailRef = React.useRef<HTMLInputElement>(null)
     async function onSubmit(event: React.SyntheticEvent) {
@@ -30,8 +29,7 @@ export default function Login() {
             setIsLoading(false)
         }, 3000)
     }
-    const { data: session } = useSession()
-
+    const { session, loading: sessionLoading } = useSessionWithLoading()
     const router = useRouter()
     useEffect(() => {
         if (session) {
@@ -40,14 +38,13 @@ export default function Login() {
             router.push(redirect)
         }
     }, [session])
-
     const [loginState, setLoginState] = useState(LoginState.Email)
     const [otpEnterComplete, setOtpEnterComplete] = useState(false)
     const [otp, setOtp] = useState<string>("")
     const [email, setEmail] = useState<string>("")
     return (
         <>
-            <div className="flex items-center justify-center h-screen -mt-16">
+            <div className="flex items-center justify-center h-screen -mt-16 mx-4 md:mx-8">
                 <div className="mx-auto flex w-full flex-col justify-center space-y-6 sm:w-[350px]">
                     <img className="mx-auto" src="/cl_logo_dark.png" width={200} alt="" />
                     <div className="flex flex-col space-y-2 text-center">
@@ -85,7 +82,7 @@ export default function Login() {
                                         </div>
                                     }
                                 </div>
-                                <Button disabled={isLoading || (loginState === LoginState.OTP && !otpEnterComplete)} onClick={() => {
+                                <Button disabled={isLoading || (loginState === LoginState.OTP && !otpEnterComplete) || sessionLoading} onClick={() => {
                                     if (loginState === LoginState.Email) {
                                         const email = emailRef.current?.value
                                         const validated = z.string().email().safeParse(email)

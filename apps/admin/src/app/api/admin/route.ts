@@ -28,11 +28,6 @@ export async function GET(req: Request) {
     console.log(`Fetching orders within date range: ${fromDate} to ${toDate}`)
     if (searchTerm) {
       console.log("Returning everything...");
-      // const getSearchingReq = await getOrdersWithSearchParams({
-      //   searchParam,
-      //   searchTerm,
-      // });
-      // return NextResponse.json({ orders: getSearchingReq });
       const getReq = await getAllOrders();
       return NextResponse.json({ orders: getReq, count: getReq.length });
     }

@@ -115,6 +115,38 @@ export default (server: ReturnType<typeof initServer>) => {
                     };
                 }
             }
+        },
+        getBundles: {
+            middleware:
+                [
+                    adminOnlyMiddleware<TsRestRequest<typeof bundleContract.getBundles>>
+                ],
+            handler: async ({ query }) => {
+                try {
+                    logger.debug("Calling Get-Bundle endpoint with query: %o", query);
+                    const bundleServiceInstance = Container.get(BundleService);
+                    const bundles = await bundleServiceInstance.getBundles(
+                        Number(query.from),
+                        Number(query.to),
+                        Number(query.page),
+                        Number(query.pageSize),
+                    );
+                    const count = await bundleServiceInstance.getBundlesCount(
+                        Number(query.from),
+                        Number(query.to),
+                    );
+                    return {
+                        status: 200,
+                        body: { bundles, count }
+                    };
+                } catch (e: any) {
+                    logger.error(e);
+                    return {
+                        status: 400,
+                        body: e.message ? e.message : "Something went wrong!  ",
+                    };
+                }
+            }
         }
     });
 }

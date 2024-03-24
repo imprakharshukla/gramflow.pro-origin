@@ -1,4 +1,4 @@
-import { TsRestRequest, TsRestRequestHandler, initServer } from "@ts-rest/express";
+import { TsRestRequest, initServer } from "@ts-rest/express";
 import Container from "typedi";
 import { Logger } from "winston";
 

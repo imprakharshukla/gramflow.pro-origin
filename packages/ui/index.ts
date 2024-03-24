@@ -20,6 +20,8 @@ export { AspectRatio } from "./src/aspect-ratio";
 export { Avatar, AvatarFallback, AvatarImage } from "./src/avatar";
 export { Badge, badgeVariants } from "./src/badge";
 export { Button, buttonVariants } from "./src/button";
+export { LoadingButton, buttonVariants as loadingButtonVariants } from "./src/loading-button";
+
 export { Calendar } from "./src/calendar";
 export {
   Card,

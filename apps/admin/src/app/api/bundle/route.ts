@@ -3,7 +3,7 @@ import { auth } from "@clerk/nextjs";
 import { Redis } from "@upstash/redis";
 import { z } from "zod";
 
-import { Status } from "@prisma/client";
+import { Status } from "@gramflow/db/types";
 import { AppConfig } from "@gramflow/utils/config.mjs";
 
 import { env } from "~/env.mjs";

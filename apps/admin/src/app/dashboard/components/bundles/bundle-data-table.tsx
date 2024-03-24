@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { useUser } from "@clerk/nextjs";
-import { Status } from "@prisma/client";
+import { Status } from "@gramflow/db/types";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import {
   VisibilityState,

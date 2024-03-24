@@ -7,7 +7,7 @@ import localFont from 'next/font/local'
 
 import { ThemeProvider } from "~/providers/theme-provider";
 import "~/styles/globals.css";
-import { Metadata } from "next";
+import { Metadata, Viewport } from "next";
 import { ClerkProvider } from "@clerk/nextjs";
 import { Toaster } from "sonner";
 
@@ -16,17 +16,25 @@ import QueryProvider from "~/providers/query-provider";
 import { DayPickerProvider } from "react-day-picker";
 import { AuthSessionProvider } from "~/providers/auth-session-provider";
 
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
+  viewportFit: "cover",
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "white" },
+    { media: "(prefers-color-scheme: dark)", color: "black" },
+  ],
+}
+
 export const metadata: Metadata = {
-  viewport: "width=device-width, initial-scale=1, maximum-scale=1",
+
   title: {
     default: siteConfig.name,
     template: `%s | ${siteConfig.name}`,
   },
   description: siteConfig.description,
-  themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "white" },
-    { media: "(prefers-color-scheme: dark)", color: "black" },
-  ],
+  description: siteConfig.description,
   openGraph: {
     type: "website",
     locale: "en_US",

@@ -60,6 +60,5 @@ export class RestAPI {
                 }
             },
         });
-        console.log('constructor complete');
     }
 }

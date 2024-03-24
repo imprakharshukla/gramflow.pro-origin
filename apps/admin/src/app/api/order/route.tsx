@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
 import { auth } from "@clerk/nextjs";
 import { render } from "@jsx-email/render";
-import { Status } from "@prisma/client";
+import { Status } from "@gramflow/db/types";
 import { Resend } from "resend";
 import { z } from "zod";
 
