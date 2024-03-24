@@ -10,7 +10,6 @@ import { Metadata, Viewport } from "next";
 import { GeistSans } from "geist/font";
 import posthog from "posthog-js";
 import { Toaster } from "sonner";
-
 import { env } from "~/env.mjs";
 import Footer from "~/features/ui/components/footer";
 import NavMenu from "~/features/ui/components/navMenu";
@@ -33,7 +32,7 @@ export const metadata: Metadata = {
     template: `%s | ${siteConfig.name}`,
   },
   description: siteConfig.description,
-  
+
   openGraph: {
     type: "website",
     locale: "en_US",
@@ -78,27 +77,27 @@ export default function RootLayout({
         )}
       >
         <AuthSessionProvider>
-          <QueryProvider>
-            <PHProvider>
-              <ThemeProvider
-                attribute="class"
-                defaultTheme="system"
-                enableSystem
-              >
-                <Toaster theme="dark" />
-                <NavMenu />
-                <div
-                  className={
-                    "relative flex min-h-screen flex-col " + fontSans.className
-                  }
+            <QueryProvider>
+              <PHProvider>
+                <ThemeProvider
+                  attribute="class"
+                  defaultTheme="system"
+                  enableSystem
                 >
-                  {children}
-                </div>
-                <Footer />
-              </ThemeProvider>
-            </PHProvider>
-            <TailwindIndicator />
-          </QueryProvider>
+                  <Toaster theme="dark" />
+                  <NavMenu />
+                  <div
+                    className={
+                      "relative flex min-h-screen flex-col " + fontSans.className
+                    }
+                  >
+                    {children}
+                  </div>
+                  <Footer />
+                </ThemeProvider>
+              </PHProvider>
+              <TailwindIndicator />
+            </QueryProvider>
         </AuthSessionProvider>
       </body>
     </html>

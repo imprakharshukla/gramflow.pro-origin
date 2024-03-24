@@ -163,5 +163,21 @@ export default (server: ReturnType<typeof initServer>) => {
         };
       },
     },
+    getOrder: {
+      middleware:
+        [
+          checkAuthorization<TsRestRequest<typeof orderContract.getOrder>>
+        ],
+      handler: async ({ params }) => {
+        const logger: Logger = Container.get("logger");
+        logger.debug("Calling Get-Order endpoint with pathParams: %o", params);
+        const orderServiceInstance = Container.get(OrderService);
+        const order = await orderServiceInstance.getOrderById(params.id);
+        return {
+          status: 200,
+          body: order,
+        };
+      }
+    }
   });
 };

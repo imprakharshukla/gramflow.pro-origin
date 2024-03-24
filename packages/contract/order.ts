@@ -73,4 +73,15 @@ export const orderContract = c.router({
     }),
     summary: "Get all orders",
   },
+  getOrder: {
+    method: "GET",
+    path: "/order/:id",
+    responses: {
+      200: OrdersModel.nullable(),
+    },
+    pathParams: z.object({
+      id: z.string(),
+    }),
+    summary: "Get an order",
+  }
 });

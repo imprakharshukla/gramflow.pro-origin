@@ -5,15 +5,20 @@ import Link from "next/link";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { COURIER, Status } from "@gramflow/db/types"
 import { useQueryClient } from "@tanstack/react-query";
-import { Badge as StatusBadge, type Color } from "@tremor/react";
+import { type Color } from "@tremor/react";
 import useRestClient from "~/features/hooks/use-rest-client";
 import { format } from "date-fns";
 import { CompleteBundles, CompleteUsers, UsersModel } from "@gramflow/db/prisma/zod";
 import {
+  Box,
+  BoxIcon,
   ChevronRight,
   Instagram,
   Loader2,
+  Lock,
+  LockIcon,
   Mail,
+  MessageCircle,
   Phone,
   ShareIcon,
   X,
@@ -27,6 +32,11 @@ import {
   Button,
   Card,
   CardContent,
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
   Form,
   FormControl,
   FormField,
@@ -35,6 +45,7 @@ import {
   FormMessage,
   Input,
   Label,
+  Pill,
   Select,
   SelectContent,
   SelectItem,
@@ -52,8 +63,8 @@ import { SheetClose, SheetTrigger } from "@gramflow/ui/src/sheet";
 import { AppConfig, cn } from "@gramflow/utils";
 import { OrderShippingUpdateSchema } from "@gramflow/utils/src/schema";
 
-import { DashboardBundleDetailSheet } from "./bundles/dashboardBundleDetailSheet";
-import { RecordText } from "./recordText";
+import { DashboardBundleDetailSheet } from "../components/bundles/dashboardBundleDetailSheet";
+import { RecordText } from "../components/recordText";
 import { SetStateAction } from "jotai";
 import { fontSans } from "~/lib/fonts";
 
@@ -78,21 +89,19 @@ const SheetHeaderDetails = ({
         </SheetClose>
       </div>
       <div className="items flex flex-col space-y-2 text-left">
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2">
           <SheetTitle>
             {title}
           </SheetTitle>
-          <StatusBadge
-            size="xs"
-            color={pillColors[status] as Color}
-            className={"text-xs font-medium"}
+          <Pill
+            variant={pillColors[status] as Color}
           >
             {(status.slice(0, 1) +
               status.slice(1).toLowerCase()).replaceAll("_", " ")}
-          </StatusBadge>
-          <StatusBadge className="-ml-1" color="orange">
+          </Pill>
+          <Pill className="-ml-1" variant="orange">
             {size}
-          </StatusBadge>
+          </Pill>
         </div>
         <div
           onClick={async () => {
@@ -111,11 +120,11 @@ const SheetHeaderDetails = ({
   )
 }
 
-const DetailsContent = ({ order }: { order: CompleteOrders | null }) => {
-  if (order === null) return null;
+export const OrderDetailsContent = ({ order }: { order: CompleteOrders | null | undefined }) => {
+  if (order === null || order === undefined) return null;
   const [editDetailsFormVisible, setEditDetailsFormVisible] = useState(false);
   return (
-    <div className="px-3">
+    <div className="">
       <ActionPanel user={order.user} id={order.id} />
       <div className="grid gap-4 py-4">
         <div className="flex flex-wrap items-center gap-3">
@@ -459,7 +468,7 @@ export const SizeSelection = ({ form, order }: {
 export function DashboardOrderDetailSheet({
   order,
 }: {
-  order: CompleteOrders | null;
+  order: CompleteOrders | null | undefined;
 }) {
 
   const height = order?.height;
@@ -496,7 +505,9 @@ export function DashboardOrderDetailSheet({
             } size={packageSize.slice(0, 1) + packageSize.slice(1).toLowerCase()} id={order.id} description={order.id} />
           </SheetHeader>
         )}
-        <DetailsContent order={order} />
+        <div className="px-3">
+        <OrderDetailsContent order={order} />
+        </div>
       </SheetContent>
     </>
   );
@@ -545,6 +556,31 @@ const ActionPanel = ({
   user: CompleteUsers | null | undefined,
   id: string
 }) => {
+
+  const handleShareClick = async ({ text }: {
+    text: string
+  }) => {
+
+    if (navigator.share) {
+      try {
+        await navigator
+          .share({ text })
+          .then(() =>
+            toast.success("Shared to the world! 🌍. Thank you for sharing!"),
+          );
+      } catch (error) {
+        console.log(`Oops! I couldn't share to the world because: ${error}`);
+      }
+    } else {
+      // fallback code
+      if (navigator.clipboard) {
+        await navigator.clipboard.writeText(text);
+        toast.success("Copied to clipboard");
+      } else {
+        console.log("Clipboard API not available");
+      }
+    }
+  }
   return (<div className="flex flex-wrap items-center justify-between gap-4">
     {user && (
       <div className="flex flex-wrap items-center justify-center gap-2">
@@ -577,38 +613,50 @@ const ActionPanel = ({
         </Button>
       </div>
     )}
-    <Button
-      onClick={() => {
-        async () => {
-          const text = `Thank you for your order love 🥰. Please fill up the details by clicking the link below. ${AppConfig.BaseOrderUrl}/order/${id}. This is a one time process and the details will be saved for future orders. You can visit the link anytime to track your order.`;
-          if (navigator.share) {
-            try {
-              await navigator
-                .share({ text })
-                .then(() =>
-                  toast.success("Shared to the world! 🌍. Thank you for sharing!"),
-                );
-            } catch (error) {
-              console.log(`Oops! I couldn't share to the world because: ${error}`);
-            }
-          } else {
-            // fallback code
-            if (navigator.clipboard) {
-              await navigator.clipboard.writeText(text);
-              toast.success("Copied to clipboard");
-            } else {
-              console.log("Clipboard API not available");
-            }
-          }
-        }
-      }}
-      size={"sm"}
-      className="flex items-center space-x-2"
-      variant={"secondary"}
-    >
-      <span>Share</span>
-      <ShareIcon className="h-4 w-4" />
-    </Button>
+    <DropdownMenu>
+      <DropdownMenuTrigger>
+        <Button
+          size={"sm"}
+          className="flex items-center space-x-2"
+          variant={"secondary"}
+        >
+          <span>Share</span>
+          <ShareIcon className="h-4 w-4" />
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="start" className={fontSans.className}>
+        <DropdownMenuItem
+          className="flex items-center space-x-2"
+          onClick={() => handleShareClick({ text: `Thank you for your order. Please fill up the details by clicking the link below. ${AppConfig.BaseOrderUrl}/order/${id}. This is a one time process and the details will be saved for future orders. You can visit the link anytime to track your order.` })}
+        >
+          <MessageCircle className="h-4 w-4" />
+          <span>Template Message</span>
+
+        </DropdownMenuItem>
+        <DropdownMenuSeparator />
+        <DropdownMenuItem
+          className="flex items-center space-x-2"
+          onClick={() => handleShareClick({ text: `${AppConfig.BaseOrderUrl}/order/${id}` })}
+        >
+
+          <BoxIcon className="h-4 w-4" />
+          <span>Order Link</span>
+
+        </DropdownMenuItem>
+        <DropdownMenuSeparator />
+        <DropdownMenuItem
+          className="flex items-center space-x-2"
+          onClick={() => handleShareClick({ text: `${AppConfig.BaseAdminUrl}/dashboard/orders/${id}` })}
+        >
+
+          <LockIcon className="h-4 w-4" />
+          <span>Admin Link</span>
+
+        </DropdownMenuItem>
+
+      </DropdownMenuContent>
+    </DropdownMenu>
+
   </div>)
 }
 
@@ -709,7 +757,7 @@ const ProductDetails = ({
   price: number
 }) => {
   return (
-    <Card className={"flex flex-col space-y-2"}>
+    <Card className={"flex flex-col space-y-2 max-w-md"}>
       <p className="p-3 text-xs font-medium text-muted-foreground">
         Products in order
       </p>

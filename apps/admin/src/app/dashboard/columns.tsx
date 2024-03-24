@@ -10,6 +10,7 @@ import {
     Badge,
     Button,
     Checkbox,
+    Pill,
     Popover,
     PopoverContent,
     PopoverTrigger,
@@ -18,7 +19,7 @@ import { AppConfig } from "@gramflow/utils";
 
 import {
     pillColors,
-} from "./components/dashboardOrderDetailSheet";
+} from "./orders/dashboardOrderDetailSheet";
 
 export const columns: ColumnDef<CompleteOrders>[] = [
     {
@@ -103,23 +104,19 @@ export const columns: ColumnDef<CompleteOrders>[] = [
                     className={"flex flex-col items-center justify-center text-xs gap-2"}
                 >
                     {row.original.bundles && (
-                        <StatusBadge
-                            size="xs"
-                            color={"fuchsia" as Color}
-                            className={"text-xs font-medium"}
+                        <Pill
+                            variant={"fuchsia" as Color}
                         >
                             Bundle
-                        </StatusBadge>
+                        </Pill>
                     )}
-                    <StatusBadge
-                        size="xs"
-                        color={pillColors[row.original.status] as Color}
-                        className={"text-xs font-medium"}
+                    <Pill
+                        variant={pillColors[row.original.status]}
                     >
                         {(row.original.status.slice(0, 1) +
                             row.original.status.slice(1).toLowerCase()).replaceAll("_", " ")}
 
-                    </StatusBadge>
+                    </Pill>
                 </div>
             );
         },

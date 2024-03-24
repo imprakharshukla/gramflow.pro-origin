@@ -88,8 +88,8 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                 <span className="sr-only">Toggle navigation menu</span>
               </Button>
             </SheetTrigger>
-            <SheetContent side="left">
-              <nav className="grid gap-6 text-lg font-medium">
+            <SheetContent side="left" className={fontSans.className}>
+              <nav className={cn("grid gap-6 text-lg font-medium", fontSans.className)}>
                 {
                   navigationLinks.map((link) => {
                     return (
@@ -126,7 +126,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                   <span className="sr-only">Toggle user menu</span>
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent className={fontSans.className} align="end">  
+              <DropdownMenuContent className={fontSans.className} align="end">
                 <span className="text-sm text-muted-foreground p-2">{session?.user?.email ? session?.user?.email : <Loader />}</span>
                 <DropdownMenuSeparator />
                 <DropdownMenuLabel>
@@ -141,7 +141,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             </DropdownMenu>
           </div>
         </header>
-        <main className="flex min-h-[calc(100vh_-_theme(spacing.16))] flex-1 flex-col gap-4 bg-muted/40 p-4 md:gap-8 md:p-10">
+        <main className="flex min-h-[calc(100vh_-_theme(spacing.16))] flex-1 flex-col gap-4 bg-muted/40 py-2 md:gap-8 md:py-10 md:px-5">
           {/* <div className="mx-auto grid w-full max-w-6xl gap-2">
             <h1 className="text-3xl font-semibold">Settings</h1>
           </div>

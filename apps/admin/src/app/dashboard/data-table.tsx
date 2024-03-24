@@ -47,7 +47,6 @@ export interface DataTableProps<TData, TValue> {
     setColumnFilters: Dispatch<SetStateAction<ColumnFiltersState>>,
     refetchData: () => void,
     hiddenColumns?: string[];
-    rowSelection: {};
     setRowSelection: Dispatch<SetStateAction<{}>>;
     globalFilter: string;
     table: TableType<TData>;
@@ -67,7 +66,6 @@ export function DataTable<TData, TValue>({
     fetchNextPage,
     isFetchingNextPage,
     hiddenColumns,
-    rowSelection,
     table,
 }: DataTableProps<TData, TValue>) {
     const tableContainerRef = useRef<HTMLDivElement>(null)
@@ -85,14 +83,24 @@ export function DataTable<TData, TValue>({
                 if (
                     scrollHeight - scrollTop - clientHeight < 500 &&
                     !isFetching &&
-                    totalFetched <= totalDBRowCount
+                    totalFetched < totalDBRowCount
                 ) {
                     fetchNextPage()
                 }
             }
         },
         [fetchNextPage, isFetching, totalFetched, totalDBRowCount]
+
     )
+
+    /* {
+        "totalDBRowCount": 8,
+        "totalFetched": 8,
+        "scrollHeight": 600,
+        "scrollTop": 0,
+        "clientHeight": 600,
+        "diff": true
+    } */
 
     //a check on mount and after a fetch to see if the table is already scrolled to the bottom and immediately needs to fetch more data
     useEffect(() => {
@@ -174,103 +182,94 @@ export function DataTable<TData, TValue>({
 
     return (
         <div>
-            <Card className={"flex w-fit items-center justify-center lg:hidden"}>
-                <DashboardSelectedRowDisplayCard
-                    data={data}
-                    rowSelection={rowSelection}
-                />
-            </Card>
-            <div>
-                <div className="rounded-md border">
-
-                    <div
-                        className="no-scrollbar w-full overflow-x-scroll"
-                        onScroll={e => fetchMoreOnBottomReached(e.target as HTMLDivElement)}
-                        ref={tableContainerRef}
-                        style={{
-                            overflowY: "scroll",
-                            position: 'relative',
-                            height: '600px',
-                        }}
-                    >
-                        <Table>
-                            <TableHeader >
-                                {table.getHeaderGroups().map((headerGroup) => (
-                                    <TableRow key={headerGroup.id}>
-                                        {headerGroup.headers.map((header) => {
-                                            return (
-                                                <TableHead key={header.id}>
-                                                    {header.isPlaceholder
-                                                        ? null
-                                                        : flexRender(
-                                                            header.column.columnDef.header,
-                                                            header.getContext(),
-                                                        )}
-                                                </TableHead>
-                                            );
-                                        })}
-                                    </TableRow>
-                                ))}
-                            </TableHeader>
-
-                            <TableBody>
-                                {table.getRowModel().rows?.length ? (
-                                    table.getRowModel().rows.map((row, index) => (
-                                        <TableRow
-                                            key={row.id}
-                                            className=""
-                                            data-state={row.getIsSelected() && "selected"}
-                                        >
-                                            {row.getVisibleCells().map((cell) => (
-                                                <TableCell key={cell.id} onClick={() => {
-                                                    if (cell.column.id === "image") { onRowClick && onRowClick(row.original) }
-                                                }}>
-
-                                                    {flexRender(
-                                                        cell.column.columnDef.cell,
-                                                        cell.getContext(),
+            <div className="rounded-md border">
+                <div
+                    className="no-scrollbar w-full overflow-x-scroll"
+                    onScroll={e => fetchMoreOnBottomReached(e.target as HTMLDivElement)}
+                    ref={tableContainerRef}
+                    style={{
+                        overflowY: "scroll",
+                        position: 'relative',
+                        height: '600px',
+                    }}
+                >
+                    <Table>
+                        <TableHeader >
+                            {table.getHeaderGroups().map((headerGroup) => (
+                                <TableRow key={headerGroup.id}>
+                                    {headerGroup.headers.map((header) => {
+                                        return (
+                                            <TableHead key={header.id}>
+                                                {header.isPlaceholder
+                                                    ? null
+                                                    : flexRender(
+                                                        header.column.columnDef.header,
+                                                        header.getContext(),
                                                     )}
-                                                </TableCell>
-                                            ))}
-                                        </TableRow>
+                                            </TableHead>
+                                        );
+                                    })}
+                                </TableRow>
+                            ))}
+                        </TableHeader>
 
-                                    ))
-                                ) : (
+                        <TableBody>
+                            {table.getRowModel().rows?.length ? (
+                                table.getRowModel().rows.map((row, index) => (
+                                    <TableRow
+                                        key={row.id}
+                                        className=""
+                                        data-state={row.getIsSelected() && "selected"}
+                                    >
+                                        {row.getVisibleCells().map((cell) => (
+                                            <TableCell key={cell.id} onClick={() => {
+                                                if (cell.column.id === "image") { onRowClick && onRowClick(row.original) }
+                                            }}>
 
-                                    <TableRow>
-                                        <TableCell
-                                            colSpan={columns.length}
-                                            className="h-24 text-center"
-                                        >
-                                            {
-                                                (isLoading || isFetching || isFetchingNextPage)
-                                                    ? <div className="flex items-center justify-center w-full"><Loader /></div>
-                                                    :
-                                                    "No data found"
-                                            }
-                                        </TableCell>
+                                                {flexRender(
+                                                    cell.column.columnDef.cell,
+                                                    cell.getContext(),
+                                                )}
+                                            </TableCell>
+                                        ))}
                                     </TableRow>
-                                )}
-                            </TableBody>
-                        </Table>
 
-                    </div>
+                                ))
+                            ) : (
+
+                                <TableRow>
+                                    <TableCell
+                                        colSpan={columns.length}
+                                        className="h-24 text-center"
+                                    >
+                                        {
+                                            (isLoading || isFetching || isFetchingNextPage)
+                                                ? <div className="flex items-center justify-center w-full"><Loader /></div>
+                                                :
+                                                "No data found"
+                                        }
+                                    </TableCell>
+                                </TableRow>
+                            )}
+                        </TableBody>
+                    </Table>
+
                 </div>
-                {isFetchingNextPage &&
-                    <div className="flex items-center justify-center my-5">
-                        <Loader />
-                    </div>
-                }
-                {
-                    !hasNextPage &&
-                    <div className="flex items-center justify-center my-5">
-                        <Badge variant={"outline"} className="">
-                            All rows fetched
-                        </Badge>
-                    </div>
-                }
             </div>
-        </div >
+            {isFetchingNextPage &&
+                <div className="flex items-center justify-center my-5">
+                    <Loader />
+                </div>
+            }
+            {
+                !hasNextPage &&
+                <div className="flex items-center justify-center my-5">
+                    <Badge variant={"outline"} className="">
+                        All rows fetched
+                    </Badge>
+                </div>
+            }
+        </div>
     );
 }
 

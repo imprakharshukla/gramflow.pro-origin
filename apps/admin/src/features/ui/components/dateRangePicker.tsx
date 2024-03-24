@@ -7,6 +7,7 @@ import { DateRange } from "react-day-picker";
 import { Button } from "@gramflow/ui";
 import { Popover, PopoverContent, PopoverTrigger } from "@gramflow/ui";
 import { cn } from "@gramflow/utils";
+import { fontSans } from "~/lib/fonts";
 
 export function DatePickerWithRange({
     className,
@@ -21,7 +22,7 @@ export function DatePickerWithRange({
 }) {
     const [PopoverOpen, setPopoverOpen] = React.useState(false);
     return (
-        <div className={cn("grid gap-2", className)}>
+        <div className={cn("grid gap-2", className, fontSans.className)}>
             <Popover open={PopoverOpen} onOpenChange={setPopoverOpen}>
                 <PopoverTrigger asChild>
                     <Button
@@ -54,6 +55,7 @@ export function DatePickerWithRange({
                         defaultMonth={date?.from}
                         selected={date}
                         onSelect={setDate}
+                        className={fontSans.className}
                         numberOfMonths={2}
                     />
                     <div className="p-3 w-full flex justify-end">

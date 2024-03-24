@@ -89,7 +89,8 @@
     "uploadthing": "^5.7.4",
     "web": "^0.0.2",
     "zod": "^3.22.4",
-    "zod-prisma": "^0.5.4"
+    "zod-prisma": "^0.5.4",
+    "zustand": "^4.5.2"
   },
   "devDependencies": {
     "@gramflow/eslint-config": "workspace:*",

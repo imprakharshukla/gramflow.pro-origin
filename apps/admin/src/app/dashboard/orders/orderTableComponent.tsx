@@ -12,16 +12,21 @@ import { CompleteOrders } from "@gramflow/db/prisma/zod";
 import { DateRange } from "react-day-picker";
 import useRestClient from "~/features/hooks/use-rest-client";
 import { toast } from "sonner";
-import { ActionPanel } from "./table/actionPanel";
+import { ActionPanel } from "./ordersActionPanel";
 import { Status } from "@gramflow/db";
+import { orderDataAtom } from "~/features/state/data";
+import { useAtom } from "jotai";
+import { useRouter } from "next/navigation";
 
 export const OrderTable = () => {
+    const router = useRouter();
     const [isSheetOpen, setIsSheetOpen] = useState(false);
     const [rowDetails, setRowDetails] = useState<CompleteOrders | null>(null);
     const handleRowClick = (row: CompleteOrders) => {
         setIsSheetOpen(true);
         setRowDetails(row);
     };
+    const [_, SetUniversalOrderData] = useAtom(orderDataAtom)
     const LIMIT = 20;
     const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
     const [rowSelection, setRowSelection] = useState({});
@@ -63,7 +68,7 @@ export const OrderTable = () => {
                 };
             },
             {
-
+                refetchOnWindowFocus: false,
                 getNextPageParam: (lastPage, allPages) => {
                     const nextPage =
                         lastPage.body.orders.length === LIMIT ? allPages.length + 1 : undefined;
@@ -71,18 +76,17 @@ export const OrderTable = () => {
                 },
                 onSuccess: (data) => {
                     setOrderData(data.pages.flatMap((page) => page.body.orders));
-                    console.log({ count: data.pages.flatMap((page) => page.body.count)[0] })
                     setOrderCount(data.pages.flatMap((page) => page.body.count)[0] ?? -1);
+                    SetUniversalOrderData(data.pages.flatMap((page) => page.body.orders));
                 },
+
                 onError: (error) => {
                     console.error(error);
                     toast.error("Error fetching orders");
                 }
                 // refetchInterval: 10000,
             },
-
         );
-
     const pagination = useMemo(
         () => ({
             pageIndex,
@@ -174,6 +178,8 @@ export const OrderTable = () => {
                 rowSelection={rowSelection}
                 globalFilter={globalFilter}
                 setGlobalFilter={setGlobalFilter}
+                setSearchTerm={setSearchTerm}
+                searchTerm={searchTerm}
             />
             {table.getFilteredSelectedRowModel().rows.length > 0 &&
                 <motion.div
@@ -181,6 +187,7 @@ export const OrderTable = () => {
                     whileInView="visible"
                     viewport={{ once: true }}
                     transition={{ duration: 0.3 }}
+                    className="mb-2"
                     variants={{
                         visible: { opacity: 1, y: 10 },
                         hidden: { opacity: 0, y: 0 }
@@ -203,7 +210,6 @@ export const OrderTable = () => {
                 pageSize={pageSize}
                 columnFilters={columnFilters}
                 setColumnFilters={setColumnFilters}
-                rowSelection={rowSelection}
                 setRowSelection={setRowSelection}
                 globalFilter={globalFilter}
                 setGlobalFilter={setGlobalFilter}
@@ -211,7 +217,6 @@ export const OrderTable = () => {
                 hiddenColumns={[
                     "user.email",
                     "user.phone_no",
-                    "user.name",
                     "awb"
                 ]}
             />
@@ -221,11 +226,11 @@ export const OrderTable = () => {
 
 
 
-function RowSelectionComponent<TData>({ table }: {
-    table: Table<TData>
+function RowSelectionComponent({ table }: {
+    table: Table<CompleteOrders>
 }) {
     return (
-        <p className="h-10 py-2 px-4 inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none ring-offset-background ">
+        <p className="h-10 py-2 px-1 text-muted-foreground inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none ring-offset-background ">
             {
                 table.getFilteredSelectedRowModel().rows.length > 0 && (
                     <div className="flex items-center justify-center gap-x-3">
@@ -242,7 +247,6 @@ function RowSelectionComponent<TData>({ table }: {
                                         return (
                                             acc +
                                             Number(
-                                                // @ts-ignore
                                                 row.original.price
                                             )
                                         );

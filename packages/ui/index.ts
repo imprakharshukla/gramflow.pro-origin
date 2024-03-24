@@ -151,7 +151,7 @@ export {
   SheetTitle,
   SheetTrigger,
 } from "./src/sheet";
-export { Skeleton } from "./src/skeleton";
+export { Skeleton, SVGSkeleton } from "./src/skeleton";
 export { Slider } from "./src/slider";
 export { Switch } from "./src/switch";
 export {
@@ -227,3 +227,7 @@ export {
 export {
   OtpInputComponent
 } from "./src/otp-input"
+
+export {
+  Pill, pillVariants
+} from "./src/pill"

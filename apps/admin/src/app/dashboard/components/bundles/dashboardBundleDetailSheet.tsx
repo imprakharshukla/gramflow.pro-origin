@@ -51,7 +51,7 @@ import { OrderShippingUpdateSchema } from "@gramflow/utils/src/schema";
 
 import { ImageViewer } from "~/features/ui/components/imageViewer";
 import NextJsImage from "~/features/ui/components/nextImage";
-import { DashboardOrderDetailSheet } from "../dashboardOrderDetailSheet";
+import { DashboardOrderDetailSheet } from "../../orders/dashboardOrderDetailSheet";
 import { RecordText } from "../recordText";
 
 export const RecordDisplay = ({

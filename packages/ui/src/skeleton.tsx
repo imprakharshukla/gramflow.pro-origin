@@ -12,4 +12,17 @@ function Skeleton({
   );
 }
 
-export { Skeleton };
+function SVGSkeleton({
+  className,
+}: React.HTMLAttributes<HTMLDivElement>) {
+  return (
+    <svg
+      className={
+        className + " animate-pulse rounded bg-gray-300"
+      }
+    />
+
+  )
+}
+
+export { Skeleton, SVGSkeleton };

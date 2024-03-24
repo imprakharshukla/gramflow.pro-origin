@@ -18,6 +18,15 @@ type OptionalOrdersModelType = z.infer<typeof optionalOrdersModelType>;
 export default class OrderService {
   constructor(@Inject("logger") private logger: Logger) { }
 
+
+  public async getOrderById(order_id: string) {
+    return db.orders.findUnique({
+      where: {
+        id: order_id,
+      },
+    });
+  }
+
   public async createOrder(order: IOrderInputDTO): Promise<OrdersModelType> {
     return db.orders.create({
       data: {

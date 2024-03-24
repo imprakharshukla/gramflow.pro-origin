@@ -7,12 +7,12 @@ import { Dispatch, SetStateAction, useState, useEffect } from "react";
 import { DateRange } from "react-day-picker";
 import useRestClient from "~/features/hooks/use-rest-client";
 import { DatePickerWithRange } from "~/features/ui/components/dateRangePicker";
-import { NullableVoidFunction } from "../../data-table";
-import DashboardBulkOptionsSelectComponent from "../dashboadBulkOptionsSelect";
-import DashboardBulkCsvDownloadButton from "../dashboardBulkCsvDownloadButton";
-import DashboardSelectedRowDisplayCard from "../dashboardSelectedRowDisplayCard";
+import { NullableVoidFunction } from "../data-table";
+import DashboardBulkOptionsSelectComponent from "../components/dashboadBulkOptionsSelect";
+import DashboardBulkCsvDownloadButton from "../components/dashboardBulkCsvDownloadButton";
+import DashboardSelectedRowDisplayCard from "../components/dashboardSelectedRowDisplayCard";
 import { ColumnFiltersState, Table } from "@tanstack/react-table";
-import DashboardConfirmModal from "../dashboardConfirmModal";
+import DashboardConfirmModal from "../components/dashboardConfirmModal";
 import { motion } from "framer-motion"
 import { debounce } from "lodash"
 import { fontSans } from "~/lib/fonts";
@@ -29,11 +29,11 @@ export function ActionPanel<TData>({
     loading,
     setRowSelection,
     data,
-    globalFilter,
     setGlobalFilter,
     rowSelection,
     searchInputRef,
-    config,
+    setSearchTerm,
+    searchTerm,
 }: {
     table: Table<TData>;
     dateRange: DateRange;
@@ -51,6 +51,8 @@ export function ActionPanel<TData>({
     setRowSelection: Dispatch<SetStateAction<{}>>;
     data: TData[];
     rowSelection: {};
+    setSearchTerm: Dispatch<SetStateAction<string>>;
+    searchTerm: string;
     config?: {
         isBulkActionDisabled: boolean;
         isCsvDownloadDisabled: boolean;
@@ -94,8 +96,26 @@ export function ActionPanel<TData>({
                                             {status.slice(0, 1).toUpperCase() +
                                                 status.slice(1).toLowerCase().replaceAll("_", " ")}
                                         </DropdownMenuCheckboxItem>
+
                                     ))
+
                                 }
+                                <DropdownMenuCheckboxItem
+                                    key={"bundle"}
+                                    className="capitalize"
+                                    checked={
+                                        searchTerm === "bundle"
+                                    }
+                                    onCheckedChange={() => {
+                                        if (searchTerm === "bundle") {
+                                            setSearchTerm("")
+                                        } else {
+                                            setSearchTerm("bundle")
+                                        }
+                                    }}
+                                >
+                                    Bundle
+                                </DropdownMenuCheckboxItem>
                             </DropdownMenuContent>
                         </DropdownMenu>
                     </div>
@@ -114,9 +134,9 @@ export function ActionPanel<TData>({
                         placeholder={`Search Orders`}
                         ref={searchInputRef}
                         onChange={(event) => {
-                            // debounce(() => {
-                            setGlobalFilter(event.target.value);
-                            // }, 200);
+                            debounce(() => {
+                                setGlobalFilter(event.target.value);
+                            }, 200);
 
                         }}
                         className="w-fit"
@@ -150,7 +170,7 @@ export function ActionPanel<TData>({
                         </Button>
                     </div>
                 </div>
-            </div>
+            </div >
 
             <div
                 className={"flex items-center gap-1 md:justify-self-end md:gap-2 md:flex-row-reverse"}

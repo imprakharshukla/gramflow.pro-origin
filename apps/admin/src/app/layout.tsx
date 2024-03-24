@@ -10,7 +10,7 @@ import "~/styles/globals.css";
 import { Metadata, Viewport } from "next";
 import { ClerkProvider } from "@clerk/nextjs";
 import { Toaster } from "sonner";
-
+import { Provider as JotainProvider } from "jotai";
 import { PageLoaderProvider } from "~/providers/page-loader-provider";
 import QueryProvider from "~/providers/query-provider";
 import { DayPickerProvider } from "react-day-picker";
@@ -33,7 +33,6 @@ export const metadata: Metadata = {
     default: siteConfig.name,
     template: `%s | ${siteConfig.name}`,
   },
-  description: siteConfig.description,
   description: siteConfig.description,
   openGraph: {
     type: "website",
@@ -79,31 +78,6 @@ export const metadata: Metadata = {
 };
 
 
-// const interFont = localFont({
-//   src: [{
-//     path: '../fonts/Inter-Black.ttf',
-//     weight: '900',
-//   }, {
-//     path: '../fonts/Inter-Bold.ttf',
-//     weight: '700',
-//   }, {
-//     path: '../fonts/Inter-SemiBold.ttf',
-//     weight: '600',
-//   }, {
-//     path: '../fonts/Inter-Medium.ttf',
-//     weight: '500',
-//   }, {
-//     path: '../fonts/Inter-Regular.ttf',
-//     weight: '400',
-//   }, {
-//     path: '../fonts/Inter-Light.ttf',
-//     weight: '300',
-//   }],
-//   variable: "--font-sans",
-//   display: "swap",
-//   adjustFontFallback: false,
-// })
-
 export default async function RootLayout({
   children,
 }: {
@@ -123,18 +97,21 @@ export default async function RootLayout({
           >
             <main className={fontSans.className}>
               <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
-                <Toaster theme="dark" />
-                <PageLoaderProvider>
-                  <div className={`relative flex min-h-screen flex-col`}>
-                    {children}
-                  </div>
-                </PageLoaderProvider>
+                <JotainProvider>
+
+                  <Toaster theme="dark" />
+                  <PageLoaderProvider>
+                    <div className={`relative flex min-h-screen flex-col`}>
+                      {children}
+                    </div>
+                  </PageLoaderProvider>
+                </JotainProvider>
               </ThemeProvider>
               <TailwindIndicator />
             </main>
           </body>
         </QueryProvider>
       </html>
-    </AuthSessionProvider>
+    </AuthSessionProvider >
   );
 }
