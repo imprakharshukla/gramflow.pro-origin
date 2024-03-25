@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@gramflow/utils": "workspace:*",
+    "@hookform/resolvers": "^3.2.0",
     "@radix-ui/react-accessible-icon": "^1.0.1",
     "@radix-ui/react-accordion": "^1.1.0",
     "@radix-ui/react-alert-dialog": "^1.0.2",
@@ -53,9 +54,11 @@
     "react": "18.2.0",
     "react-day-picker": "^8.9.1",
     "react-dom": "18.2.0",
+    "react-hook-form": "^7.45.4",
     "tailwind-merge": "^1.12.0",
     "tailwindcss-animate": "^1.0.5",
-    "vaul": "^0.8.0"
+    "vaul": "^0.8.0",
+    "zod": "^3.22.4"
   },
   "devDependencies": {
     "@gramflow/eslint-config": "workspace:*",

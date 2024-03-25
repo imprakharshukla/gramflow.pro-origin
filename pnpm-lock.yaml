@@ -339,6 +339,9 @@ importers:
       '@gramflow/email':
         specifier: workspace:^
         version: link:../../packages/email
+      '@jvddavid/cloudflare-images':
+        specifier: ^1.0.3
+        version: 1.0.3
       '@prisma/client':
         specifier: ^4.13.0
         version: 4.13.0(prisma@4.13.0)
@@ -810,6 +813,9 @@ importers:
       '@gramflow/utils':
         specifier: workspace:*
         version: link:../utils
+      '@hookform/resolvers':
+        specifier: ^3.2.0
+        version: 3.2.0(react-hook-form@7.45.4)
       '@radix-ui/react-accessible-icon':
         specifier: ^1.0.1
         version: 1.0.1(react-dom@18.2.0)(react@18.2.0)
@@ -933,6 +939,9 @@ importers:
       react-dom:
         specifier: 18.2.0
         version: 18.2.0(react@18.2.0)
+      react-hook-form:
+        specifier: ^7.45.4
+        version: 7.45.4(react@18.2.0)
       tailwind-merge:
         specifier: ^1.12.0
         version: 1.12.0
@@ -942,6 +951,9 @@ importers:
       vaul:
         specifier: ^0.8.0
         version: 0.8.0(@types/react-dom@18.2.18)(@types/react@18.2.63)(react-dom@18.2.0)(react@18.2.0)
+      zod:
+        specifier: ^3.22.4
+        version: 3.22.4
     devDependencies:
       '@gramflow/eslint-config':
         specifier: workspace:*
@@ -3269,6 +3281,15 @@ packages:
       react: ^18.2.0
     dependencies:
       react: 18.2.0
+    dev: false
+
+  /@jvddavid/cloudflare-images@1.0.3:
+    resolution: {integrity: sha512-Nr1g2M3u2g4yxG+NomsK3kFTDPqJntB80yHv1yfEWCx/ibRxfim7nUnhSWo6bpHLWzhD1Tey/E4TzcKOJYp4nw==}
+    dependencies:
+      axios: 1.6.7
+      form-data: 4.0.0
+    transitivePeerDependencies:
+      - debug
     dev: false
 
   /@lezer/common@1.2.1:

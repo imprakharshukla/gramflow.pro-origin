@@ -223,10 +223,18 @@ export {
   CarouselNext,
 } from "./src/carousel";
 
+export {
+  DatePicker
+} from "./src/date-picker"
 
 export {
   OtpInputComponent
 } from "./src/otp-input"
+
+export {
+  AutoFormSubmit,
+  AutoForm
+} from "./src/auto-form"
 
 export {
   Pill, pillVariants

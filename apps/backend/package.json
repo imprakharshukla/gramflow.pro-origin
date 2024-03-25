@@ -29,6 +29,7 @@
     "@gramflow/contract": "workspace:^",
     "@gramflow/db": "workspace:^",
     "@gramflow/email": "workspace:^",
+    "@jvddavid/cloudflare-images": "^1.0.3",
     "@prisma/client": "^4.13.0",
     "@scalar/express-api-reference": "^0.2.57",
     "@ts-rest/express": "^3.33.0",
